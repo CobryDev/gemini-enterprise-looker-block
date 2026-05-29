@@ -1,0 +1,21 @@
+project_id       = "your-gcp-project-id"
+engine_project_id = "your-gemini-enterprise-project-id"
+staging_project_id = "your-gemini-enterprise-project-id"
+region           = "europe-west2"
+dataset_location = "EU"
+exporter_image   = "europe-docker.pkg.dev/your-gcp-project-id/gemini-analytics/gemini-exporter:latest"
+
+engines = [
+  {
+    engine_id         = "your-engine-id_0000000000000"
+    location          = "eu"
+    endpoint_location = "eu"
+    schedule          = "0 6 * * *"
+    time_zone         = "Etc/UTC"
+  }
+]
+
+labels = {
+  application = "gemini-analytics"
+  managed_by  = "terraform"
+}

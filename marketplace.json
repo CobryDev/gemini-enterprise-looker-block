@@ -1,0 +1,36 @@
+{
+  "label": "Gemini Enterprise Analytics",
+  "category_label": "Models",
+  "branding": {
+    "image_uri": "https://marketplace-api.looker.com/block-icons/google-cloud.png",
+    "tagline": "Adoption, usage, quality, agent, and value dashboards for Gemini Enterprise, built on the BigQuery tables produced by the Gemini analytics pipeline."
+  },
+  "constants": {
+    "connection_name": {
+      "label": "BigQuery Connection",
+      "value_constraint": "connection"
+    },
+    "gemini_project": {
+      "label": "BigQuery Project ID",
+      "description": "GCP project that holds the gemini_analytics dataset (your data lake project)."
+    },
+    "gemini_dataset": {
+      "label": "Gemini analytics dataset",
+      "description": "BigQuery dataset that holds metrics_history. Leave as gemini_analytics unless you renamed it."
+    },
+    "workspace_dataset": {
+      "label": "Workspace audit dataset (optional)",
+      "description": "BigQuery dataset holding the Workspace Gemini audit log export. Leave as workspace_audit if you are not using Workspace reporting."
+    }
+  },
+  "models": [
+    {
+      "name": "gemini_enterprise",
+      "connection_constant": "connection_name"
+    },
+    {
+      "name": "workspace_gemini",
+      "connection_constant": "connection_name"
+    }
+  ]
+}
