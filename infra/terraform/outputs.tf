@@ -13,9 +13,9 @@ output "analytics_dataset_id" {
   value       = module.gemini_analytics_pipeline.analytics_dataset_id
 }
 
-output "metrics_history_table" {
-  description = "Fully qualified metrics history table."
-  value       = module.gemini_analytics_pipeline.metrics_history_table
+output "export_history_table" {
+  description = "Fully qualified export history table."
+  value       = module.gemini_analytics_pipeline.export_history_table
 }
 
 output "cloud_run_job_name" {

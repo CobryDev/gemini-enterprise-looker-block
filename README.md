@@ -43,32 +43,37 @@ Use matching BigQuery locations for your engines. Global and US Gemini Enterpris
 
 Workspace Gemini usage comes from the Google Workspace audit log export. This export is configured in the Workspace Admin console, not Terraform.
 
-1. In the Workspace Admin console, go to **Reporting > BigQuery Export**.
-2. Enable the BigQuery export.
-3. Choose the destination GCP project.
-4. Choose or create a dataset, for example `workspace_audit`.
-5. Confirm the Workspace export service account has **BigQuery Data Editor** on the destination dataset.
-6. Wait for the export to start. The first `activity` table can take about 24 hours to appear.
+1. As a Workspace **super admin**, go to **Reporting > BigQuery Export** (now labelled "Enable audit and reports data export to Google BigQuery").
+2. Enable the export.
+3. Choose the destination GCP project (e.g. `your-gcp-project-id`).
+4. Note the dataset name it creates (e.g. `raw_google_workspace_exports`). You set the Looker `workspace_dataset` constant to this value later.
+5. A Google-managed service account is automatically added as an editor on that project.
+6. Wait for the export to start. The `activity` table backfills history and can take up to ~24 hours to first appear.
 
-Verify the export with this query:
+Verify the export with this query (swap in your dataset name):
 
 ```sql
 SELECT
-  DATE(TIMESTAMP_MICROS(time_usec)) AS event_date,
-  email,
   gemini_for_workspace.app_name,
   gemini_for_workspace.feature_source,
+  gemini_for_workspace.event_category,
   COUNT(*) AS event_count
-FROM `your-gcp-project-id.workspace_audit.activity`
+FROM `your-gcp-project-id.raw_google_workspace_exports.activity`
 WHERE gemini_for_workspace.app_name IS NOT NULL
-GROUP BY event_date, email, app_name, feature_source
-ORDER BY event_date DESC
+GROUP BY 1, 2, 3
+ORDER BY event_count DESC
 LIMIT 100;
 ```
 
-If the query returns rows, the Workspace side is ready for Looker.
+If the query returns rows, the Workspace side is ready for Looker. The block reads
+this table directly (no merge needed) and uses `event_category` to separate active
+usage (`active_generate`, `active_conversations`, `active_summarize`) from passive
+surfacing (`inactive`).
 
-> **Note:** Workspace audit exports only include Workspace Gemini activity. Gemini Enterprise engine metrics come from the separate export API in the next steps.
+> **Note:** This export only covers Workspace Gemini activity (Gmail, Chat, Meet,
+> Drive, Docs, etc.). Gemini Enterprise engine metrics come from the separate
+> export API in the next steps. The export is created in the Admin console, not by
+> Terraform, and requires a Workspace super admin.
 
 ## 2. Build and publish the Gemini Enterprise exporter
 
@@ -161,11 +166,11 @@ terraform apply
 Terraform creates:
 
 - `gemini_analytics_staging`, the raw 30-day export dataset.
-- `gemini_analytics.metrics_history`, the partitioned history table for Looker.
+- `gemini_analytics.export_history`, the partitioned, full-fidelity history table for Looker.
 - A Cloud Run job named `gemini-analytics-exporter`.
 - One Cloud Scheduler job per engine.
 - A Secret Manager secret containing the engine config.
-- A BigQuery scheduled query that merges staging data into `metrics_history`.
+- A BigQuery scheduled query that merges staging data into `export_history`.
 - Service accounts and IAM bindings for the exporter, scheduler, and merge query.
 
 ## 5. Run the first export
@@ -194,27 +199,33 @@ FROM `your-gcp-project-id.gemini_analytics_staging.INFORMATION_SCHEMA.TABLES`
 ORDER BY creation_time DESC;
 ```
 
-The scheduled BigQuery merge runs daily after the export. To test the merge immediately, copy the SQL from `infra/terraform/sql/merge_metrics_history.sql.tpl`, replace the template variables, and run it in BigQuery.
+The scheduled BigQuery merge runs daily after the export. To test the merge immediately, copy the SQL from `infra/terraform/sql/merge_export_history.sql.tpl`, replace the template variables, and run it in BigQuery.
 
 Verify the history table:
 
 ```sql
 SELECT
-  engine_id,
   metric_date,
-  metric_type,
-  metric_value,
-  ingested_at
-FROM `your-gcp-project-id.gemini_analytics.metrics_history`
+  data_source,
+  product_type,
+  device_type,
+  daily_active_user_count,
+  search_count,
+  seats_claimed
+FROM `your-gcp-project-id.gemini_analytics.export_history`
 ORDER BY metric_date DESC
 LIMIT 100;
 ```
+
+Each row preserves the original export grain, so different rows carry different
+metrics (active users per `product_type`, activity per `device_type`, seats on
+the aggregated rows). The Looker views slice these into clean explores.
 
 ## 6. Connect Looker to BigQuery
 
 Create or confirm a Looker BigQuery connection that can read:
 
-- `your-gcp-project-id.gemini_analytics.metrics_history`
+- `your-gcp-project-id.gemini_analytics.export_history`
 - `your-gcp-project-id.workspace_audit.activity`, if using Workspace Gemini reporting
 
 Grant the Looker service account:
@@ -255,7 +266,7 @@ Use this checklist before handing the dashboard to users:
 2. Cloud Scheduler has one enabled job per Gemini Enterprise engine.
 3. The Cloud Run exporter logs `export_completed`.
 4. BigQuery staging tables exist in `gemini_analytics_staging`.
-5. `gemini_analytics.metrics_history` contains recent rows.
+5. `gemini_analytics.export_history` contains recent rows.
 6. The Looker BigQuery connection tests successfully.
 7. LookML validation passes.
 8. Dashboards load with a 90-day date filter.
@@ -268,7 +279,7 @@ Confirm the Workspace Admin BigQuery export is enabled and the `activity` table 
 
 ### The Gemini Enterprise dashboard is empty
 
-Check the Cloud Run job logs first. If the export succeeded, check the staging dataset, then run or wait for the scheduled BigQuery merge into `metrics_history`.
+Check the Cloud Run job logs first. If the export succeeded, check the staging dataset, then run or wait for the scheduled BigQuery merge into `export_history`.
 
 ### The exporter fails with permission errors
 

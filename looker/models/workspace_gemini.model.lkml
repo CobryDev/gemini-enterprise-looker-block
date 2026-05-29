@@ -2,6 +2,7 @@ connection: "@{connection_name}"
 
 include: "/looker/views/workspace_gemini_activity.view.lkml"
 include: "/looker/explores/workspace_gemini.explore.lkml"
+include: "/looker/dashboards/workspace_overview.dashboard.lookml"
 
 datagroup: workspace_gemini_default_datagroup {
   max_cache_age: "24 hours"

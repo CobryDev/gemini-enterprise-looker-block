@@ -1,19 +1,27 @@
 view: agents {
+  label: "Agents"
+  # Per-agent usage. The export only emits these rows once agents are created and
+  # used, so this view is empty until there is agent activity on the engine.
   derived_table: {
     sql:
       SELECT
         engine_id,
         metric_date,
-        MAX(IF(metric_type = 'MONTHLY_ACTIVE_AGENT_USERS', metric_value, NULL)) AS monthly_active_agent_users,
-        MAX(IF(metric_type = 'MONTHLY_CHAT_SESSIONS', metric_value, NULL)) AS monthly_chat_sessions,
-        MAX(IF(metric_type = 'MONTHLY_AGENTS_USED', metric_value, NULL)) AS monthly_agents_used,
-        MAX(IF(metric_type = 'MONTHLY_AGENTS_CREATED', metric_value, NULL)) AS monthly_agents_created,
-        MAX(IF(metric_type = 'NOTEBOOKS_CREATED', metric_value, NULL)) AS notebooks_created,
-        MAX(IF(metric_type = 'NOTEBOOKS_SHARED', metric_value, NULL)) AS notebooks_shared,
-        MAX(IF(metric_type = 'AUDIO_OVERVIEWS_CREATED', metric_value, NULL)) AS audio_overviews_created,
-        MAX(IF(metric_type = 'NOTEBOOKLM_ACTIVE_USERS', metric_value, NULL)) AS notebooklm_active_users
-      FROM `@{gemini_project}.@{gemini_dataset}.metrics_history`
-      GROUP BY engine_id, metric_date ;;
+        agent_name,
+        agent_type,
+        agent_ownership,
+        agent_session_count,
+        agent_active_user_count,
+        monthly_agent_active_user_count,
+        monthly_new_agent_count
+      FROM `@{gemini_project}.@{gemini_dataset}.export_history`
+      WHERE agent_name IS NOT NULL ;;
+  }
+
+  dimension: pk {
+    primary_key: yes
+    hidden: yes
+    sql: CONCAT(${TABLE}.metric_date, '|', ${TABLE}.agent_name) ;;
   }
 
   dimension: engine_id {
@@ -22,6 +30,7 @@ view: agents {
   }
 
   dimension_group: metric {
+    label: "Metric"
     type: time
     timeframes: [date, week, month, quarter, year]
     convert_tz: no
@@ -29,43 +38,50 @@ view: agents {
     sql: ${TABLE}.metric_date ;;
   }
 
-  measure: monthly_active_agent_users {
-    type: max
-    sql: ${TABLE}.monthly_active_agent_users ;;
+  dimension: agent_name {
+    type: string
+    sql: ${TABLE}.agent_name ;;
   }
 
-  measure: monthly_chat_sessions {
-    type: max
-    sql: ${TABLE}.monthly_chat_sessions ;;
+  dimension: agent_type {
+    type: string
+    sql: ${TABLE}.agent_type ;;
   }
 
-  measure: monthly_agents_used {
-    type: max
-    sql: ${TABLE}.monthly_agents_used ;;
+  dimension: agent_ownership {
+    description: "Whether the agent is owned by the customer or provided by Google."
+    type: string
+    sql: ${TABLE}.agent_ownership ;;
   }
 
-  measure: monthly_agents_created {
-    type: max
-    sql: ${TABLE}.monthly_agents_created ;;
+  measure: agent_count {
+    label: "Distinct Agents Used"
+    type: count_distinct
+    sql: ${agent_name} ;;
   }
 
-  measure: notebooks_created {
+  measure: agent_sessions {
     type: sum
-    sql: ${TABLE}.notebooks_created ;;
+    sql: ${TABLE}.agent_session_count ;;
+    value_format_name: decimal_0
   }
 
-  measure: notebooks_shared {
+  measure: agent_active_users {
     type: sum
-    sql: ${TABLE}.notebooks_shared ;;
+    sql: ${TABLE}.agent_active_user_count ;;
+    value_format_name: decimal_0
   }
 
-  measure: audio_overviews_created {
-    type: sum
-    sql: ${TABLE}.audio_overviews_created ;;
-  }
-
-  measure: notebooklm_active_users {
+  measure: monthly_agent_active_users {
     type: max
-    sql: ${TABLE}.notebooklm_active_users ;;
+    sql: ${TABLE}.monthly_agent_active_user_count ;;
+    value_format_name: decimal_0
+  }
+
+  measure: new_agents {
+    label: "New Agents Created"
+    type: sum
+    sql: ${TABLE}.monthly_new_agent_count ;;
+    value_format_name: decimal_0
   }
 }

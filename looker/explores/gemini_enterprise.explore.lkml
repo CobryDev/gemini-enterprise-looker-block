@@ -1,24 +1,35 @@
-explore: metrics_history {
-  label: "Gemini Enterprise Raw Metrics"
-  description: "Longitudinal metric history preserved from the daily Gemini Enterprise analytics export."
+explore: active_users {
+  label: "Active Users & Retention"
+  description: "Daily/weekly/monthly active users plus retention, growth and churn, broken down by product surface (Total, Search, Assistant, Other)."
 }
 
-explore: adoption {
-  label: "Gemini Enterprise Adoption"
-  description: "Adoption and seat utilisation metrics."
+explore: activity {
+  label: "Activity & Engagement"
+  description: "Searches, clicks, Assistant answers, feedback and page visits, broken down by device."
 }
 
-explore: usage_quality {
-  label: "Gemini Enterprise Usage and Quality"
-  description: "Search, answer, action, and feedback metrics."
+explore: seats {
+  label: "Seats & Licensing"
+  description: "Seats purchased vs claimed and seat utilisation over time."
 }
 
 explore: agents {
-  label: "Gemini Enterprise Agents"
-  description: "Agent and NotebookLM Enterprise activity metrics."
+  label: "Agents"
+  description: "Per-agent sessions and active users. Populates once there is agent activity on the engine."
 }
 
-explore: value {
-  label: "Gemini Enterprise Value"
-  description: "Hours and value saved metrics."
+explore: search_queries {
+  label: "Search Queries"
+  description: "What people are querying. Populates once search volume exceeds Google's privacy suppression threshold."
+}
+
+explore: documents {
+  label: "Documents"
+  description: "Which documents are surfaced and viewed. Populates above the suppression threshold."
+}
+
+explore: export_history {
+  label: "Export History (raw)"
+  description: "Raw export rows preserving the full grain. Use for ad-hoc analysis across every dimension and metric."
+  hidden: yes
 }

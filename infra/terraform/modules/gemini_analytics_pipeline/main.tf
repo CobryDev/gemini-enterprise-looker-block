@@ -61,47 +61,70 @@ resource "google_bigquery_dataset" "analytics" {
   depends_on = [google_project_service.required]
 }
 
-resource "google_bigquery_table" "metrics_history" {
+resource "google_bigquery_table" "export_history" {
   project    = var.project_id
   dataset_id = google_bigquery_dataset.analytics.dataset_id
-  table_id   = "metrics_history"
+  table_id   = "export_history"
   labels     = var.labels
 
   deletion_protection = true
+
+  description = "Full-fidelity history of the Gemini Enterprise analytics export. Each row preserves the original export grain (data_source x product_type x device_type x query x document x agent), merged daily so history is retained beyond the export's rolling 30-day window."
 
   time_partitioning {
     type  = "DAY"
     field = "metric_date"
   }
 
-  clustering = ["engine_id", "metric_type"]
+  clustering = ["engine_id", "data_source", "product_type"]
 
   schema = jsonencode([
-    {
-      name = "engine_id"
-      type = "STRING"
-      mode = "REQUIRED"
-    },
-    {
-      name = "metric_date"
-      type = "DATE"
-      mode = "REQUIRED"
-    },
-    {
-      name = "metric_type"
-      type = "STRING"
-      mode = "REQUIRED"
-    },
-    {
-      name = "metric_value"
-      type = "FLOAT"
-      mode = "NULLABLE"
-    },
-    {
-      name = "ingested_at"
-      type = "TIMESTAMP"
-      mode = "REQUIRED"
-    }
+    { name = "row_key", type = "STRING", mode = "REQUIRED", description = "Stable hash of the dimension columns; the merge key." },
+    { name = "engine_id", type = "STRING", mode = "REQUIRED" },
+    { name = "metric_date", type = "DATE", mode = "REQUIRED" },
+    { name = "project_number", type = "INTEGER", mode = "NULLABLE" },
+    { name = "data_source", type = "STRING", mode = "NULLABLE", description = "AGGREGATED_METRIC, GWS_LOG, or USER_EVENT." },
+    { name = "product_type", type = "STRING", mode = "NULLABLE", description = "Total, Search, Assistant, Other (for active-user rows)." },
+    { name = "device_type", type = "STRING", mode = "NULLABLE" },
+    { name = "serving_config_id", type = "STRING", mode = "NULLABLE" },
+    { name = "original_search_query", type = "STRING", mode = "NULLABLE", description = "Query text. Populated only above Google's k-anonymity threshold." },
+    { name = "document_name", type = "STRING", mode = "NULLABLE" },
+    { name = "agent_name", type = "STRING", mode = "NULLABLE" },
+    { name = "agent_type", type = "STRING", mode = "NULLABLE" },
+    { name = "agent_ownership", type = "STRING", mode = "NULLABLE" },
+    { name = "dislike_reasons", type = "STRING", mode = "NULLABLE" },
+    { name = "search_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "search_click_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "answer_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "action_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "total_search_contents", type = "FLOAT", mode = "NULLABLE" },
+    { name = "total_view_contents", type = "FLOAT", mode = "NULLABLE" },
+    { name = "feedback_like_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "feedback_dislike_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "daily_active_user_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "weekly_active_user_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "monthly_active_user_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "user_retention_ratio_for7d", type = "FLOAT", mode = "NULLABLE" },
+    { name = "user_retention_ratio_for28d", type = "FLOAT", mode = "NULLABLE" },
+    { name = "user_churn_rate_for7d", type = "FLOAT", mode = "NULLABLE" },
+    { name = "user_churn_rate_for28d", type = "FLOAT", mode = "NULLABLE" },
+    { name = "user_growth_rate_for7d", type = "FLOAT", mode = "NULLABLE" },
+    { name = "user_growth_rate_for28d", type = "FLOAT", mode = "NULLABLE" },
+    { name = "total_home_page_visit_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "total_agent_gallery_page_visit_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "total_prompts_page_visit_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "total_people_page_visit_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "total_notebook_lm_page_visit_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "total_deep_research_page_visit_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "total_idea_generation_page_visit_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "total_agent_page_visit_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "seats_purchased", type = "FLOAT", mode = "NULLABLE" },
+    { name = "seats_claimed", type = "FLOAT", mode = "NULLABLE" },
+    { name = "monthly_new_agent_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "agent_session_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "agent_active_user_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "monthly_agent_active_user_count", type = "FLOAT", mode = "NULLABLE" },
+    { name = "ingested_at", type = "TIMESTAMP", mode = "REQUIRED" }
   ])
 }
 
@@ -172,17 +195,17 @@ resource "google_cloud_run_v2_job" "exporter" {
   depends_on = [google_project_service.required]
 }
 
-resource "google_bigquery_data_transfer_config" "merge_metrics_history" {
+resource "google_bigquery_data_transfer_config" "merge_export_history" {
   project                = var.project_id
   location               = var.dataset_location
-  display_name           = "gemini_metrics_history_merge"
+  display_name           = "gemini_export_history_merge"
   data_source_id         = "scheduled_query"
   schedule               = "every day 07:00"
   service_account_name   = google_service_account.scheduled_query.email
   destination_dataset_id = google_bigquery_dataset.analytics.dataset_id
 
   params = {
-    query = templatefile("${path.module}/../../sql/merge_metrics_history.sql.tpl", {
+    query = templatefile("${path.module}/../../sql/merge_export_history.sql.tpl", {
       project_id           = var.project_id
       staging_project_id   = local.staging_project_id
       staging_dataset_id   = google_bigquery_dataset.staging.dataset_id
@@ -191,7 +214,7 @@ resource "google_bigquery_data_transfer_config" "merge_metrics_history" {
   }
 
   depends_on = [
-    google_bigquery_table.metrics_history,
+    google_bigquery_table.export_history,
     google_project_service.required,
   ]
 }

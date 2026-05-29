@@ -8,34 +8,88 @@ dashboard: usage_and_quality {
     default_value: "90 days"
   }
 
-  element: usage_volume {
-    title: "Usage Volume"
+  element: search_volume {
+    title: "Searches and Clicks"
     type: looker_column
     model: gemini_enterprise
-    explore: usage_quality
-    fields: [usage_quality.metric_date, usage_quality.searches, usage_quality.answers, usage_quality.actions]
-    filters: [usage_quality.metric_date: "{{ _filters['date_filter'] }}"]
+    explore: activity
+    fields: [activity.metric_date, activity.searches, activity.search_clicks]
+    filters: {
+      field: activity.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 12
+    height: 8
   }
 
-  element: success_rates {
-    title: "Success Rates"
+  element: ctr {
+    title: "Search Click-Through Rate"
+    type: single_value
+    model: gemini_enterprise
+    explore: activity
+    fields: [activity.click_through_rate]
+    filters: {
+      field: activity.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 6
+    height: 4
+  }
+
+  element: answers_total {
+    title: "Assistant Answers"
+    type: single_value
+    model: gemini_enterprise
+    explore: activity
+    fields: [activity.answers]
+    filters: {
+      field: activity.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 6
+    height: 4
+  }
+
+  element: answers_trend {
+    title: "Assistant Answers Over Time"
     type: looker_line
     model: gemini_enterprise
-    explore: usage_quality
-    fields: [
-      usage_quality.metric_date,
-      usage_quality.successful_search_rate,
-      usage_quality.successful_answer_rate
-    ]
-    filters: [usage_quality.metric_date: "{{ _filters['date_filter'] }}"]
+    explore: activity
+    fields: [activity.metric_date, activity.answers]
+    filters: {
+      field: activity.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 12
+    height: 8
+  }
+
+  element: activity_by_device {
+    title: "Searches by Device"
+    type: looker_column
+    model: gemini_enterprise
+    explore: activity
+    fields: [activity.metric_date, activity.device_type, activity.searches]
+    pivots: [activity.device_type]
+    filters: {
+      field: activity.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 12
+    height: 8
   }
 
   element: feedback {
-    title: "Feedback"
+    title: "Feedback (Likes vs Dislikes)"
     type: looker_column
     model: gemini_enterprise
-    explore: usage_quality
-    fields: [usage_quality.metric_date, usage_quality.likes, usage_quality.dislikes]
-    filters: [usage_quality.metric_date: "{{ _filters['date_filter'] }}"]
+    explore: activity
+    fields: [activity.metric_date, activity.likes, activity.dislikes]
+    filters: {
+      field: activity.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 12
+    height: 8
   }
 }

@@ -1,5 +1,5 @@
 dashboard: value_realised {
-  title: "Gemini Enterprise Value Realised"
+  title: "Gemini Enterprise Engagement and Content"
   layout: newspaper
 
   filter: date_filter {
@@ -8,39 +8,63 @@ dashboard: value_realised {
     default_value: "90 days"
   }
 
-  element: value_saved {
-    title: "Value Saved"
-    type: single_value
-    model: gemini_enterprise
-    explore: value
-    fields: [value.value_saved]
-    filters: [value.metric_date: "{{ _filters['date_filter'] }}"]
-  }
-
-  element: hours_saved {
-    title: "Employee Hours Saved"
-    type: single_value
-    model: gemini_enterprise
-    explore: value
-    fields: [value.employee_hours_saved]
-    filters: [value.metric_date: "{{ _filters['date_filter'] }}"]
-  }
-
-  element: projected_annual_value {
-    title: "Projected Annual Value"
-    type: single_value
-    model: gemini_enterprise
-    explore: value
-    fields: [value.projected_annual_value_saved]
-    filters: [value.metric_date: "{{ _filters['date_filter'] }}"]
-  }
-
-  element: successful_outcomes {
-    title: "Successful Searches and Answers"
+  element: page_visits {
+    title: "Page Visits by Surface"
     type: looker_column
     model: gemini_enterprise
-    explore: value
-    fields: [value.metric_date, value.successful_searches, value.successful_answers]
-    filters: [value.metric_date: "{{ _filters['date_filter'] }}"]
+    explore: activity
+    fields: [
+      activity.metric_date,
+      activity.home_page_visits,
+      activity.agent_page_visits,
+      activity.prompts_page_visits,
+      activity.notebook_lm_page_visits,
+      activity.deep_research_page_visits,
+      activity.idea_generation_page_visits
+    ]
+    filters: {
+      field: activity.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 24
+    height: 8
+  }
+
+  element: top_queries {
+    title: "Top Search Queries"
+    type: looker_grid
+    model: gemini_enterprise
+    explore: search_queries
+    fields: [search_queries.query, search_queries.searches, search_queries.search_clicks]
+    sorts: [search_queries.searches desc]
+    limit: 50
+    filters: {
+      field: search_queries.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    note_state: collapsed
+    note_display: hover
+    note_text: "Populates once search volume exceeds Google's privacy suppression threshold."
+    width: 12
+    height: 8
+  }
+
+  element: top_documents {
+    title: "Top Documents Surfaced"
+    type: looker_grid
+    model: gemini_enterprise
+    explore: documents
+    fields: [documents.document_name, documents.times_surfaced_in_search, documents.times_viewed]
+    sorts: [documents.times_surfaced_in_search desc]
+    limit: 50
+    filters: {
+      field: documents.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    note_state: collapsed
+    note_display: hover
+    note_text: "Populates above the suppression threshold."
+    width: 12
+    height: 8
   }
 }

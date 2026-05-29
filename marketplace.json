@@ -16,7 +16,7 @@
     },
     "gemini_dataset": {
       "label": "Gemini analytics dataset",
-      "description": "BigQuery dataset that holds metrics_history. Leave as gemini_analytics unless you renamed it."
+      "description": "BigQuery dataset that holds export_history. Leave as gemini_analytics unless you renamed it."
     },
     "workspace_dataset": {
       "label": "Workspace audit dataset (optional)",

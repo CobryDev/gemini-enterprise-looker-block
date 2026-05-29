@@ -10,16 +10,21 @@ For the full export-to-dashboard walkthrough, start with the root `README.md`.
 
 Confirm these are ready before installing the block:
 
-- `gemini_analytics.metrics_history` contains Gemini Enterprise metric rows.
-- `workspace_audit.activity` exists if you want Workspace Gemini reporting.
+- `gemini_analytics.export_history` contains Gemini Enterprise metric rows.
+- The Workspace audit export dataset (e.g. `raw_google_workspace_exports`) has an `activity` table, if you want Workspace Gemini reporting. Set the `workspace_dataset` constant to match.
 - Your Looker instance has a BigQuery connection.
 - The Looker service account can read the datasets and run BigQuery jobs.
 
 Grant the Looker service account:
 
 - **BigQuery Data Viewer** on `gemini_analytics`.
-- **BigQuery Data Viewer** on `workspace_audit`, if using Workspace Gemini reporting.
+- **BigQuery Data Viewer** on the Workspace audit dataset, if using Workspace Gemini reporting.
 - **BigQuery Job User** on the GCP project.
+
+> If the Gemini Enterprise datasets are in a different BigQuery location than the
+> Workspace audit export (common: `gemini_analytics` in EU, the audit export in US),
+> the same connection still works because the two models are queried separately and
+> never joined.
 
 You also need the `develop`, `manage_models`, and `deploy` Looker permissions to install.
 
@@ -54,15 +59,25 @@ The block uses these constants in SQL table references, so the same LookML point
 
 ## Models
 
-- `gemini_enterprise`: adoption, usage, quality, agent, and value metrics from the longitudinal `metrics_history` table.
+- `gemini_enterprise`: active users & retention, activity & engagement, seats, agents, search queries, and documents, all built on the full-fidelity `export_history` table.
 - `workspace_gemini`: Workspace Gemini activity from the Workspace Admin BigQuery export `activity` table.
+
+## Explores
+
+- **Active Users & Retention** — DAU/WAU/MAU plus retention, growth, churn by product surface (Total, Search, Assistant, Other).
+- **Activity & Engagement** — searches, clicks, Assistant answers, feedback, and page visits by device.
+- **Seats & Licensing** — seats purchased vs claimed and utilisation.
+- **Agents** — per-agent sessions and active users (populates once there is agent activity).
+- **Search Queries** — what people query (populates above Google's privacy suppression threshold).
+- **Documents** — which documents are surfaced and viewed (populates above the threshold).
 
 ## Dashboards
 
 - Adoption overview
 - Usage and quality
 - Agent activity
-- Value realised
+- Engagement and content
+- Workspace Gemini overview (active vs passive usage, by app, feature, and org unit)
 
 ## Validate the block
 
@@ -71,11 +86,11 @@ The block uses these constants in SQL table references, so the same LookML point
 3. Run **Validate LookML**.
 4. Open each dashboard with the default 90-day filter.
 
-If a dashboard is empty, test the underlying Explore first. Empty Workspace dashboards usually mean the Workspace Admin export has not produced Gemini events yet. Empty Gemini Enterprise dashboards usually mean the scheduled merge has not written rows into `metrics_history`.
+If a dashboard is empty, test the underlying Explore first. Empty Workspace dashboards usually mean the Workspace Admin export has not produced Gemini events yet. Empty Gemini Enterprise dashboards usually mean the scheduled merge has not written rows into `export_history`. Note that the **Search Queries**, **Documents**, and **Agents** explores stay empty until the engine has enough usage — Google suppresses query/document rows below a k-anonymity threshold, and agent rows only appear once agents are used.
 
 ## Caveats
 
-- Gemini Enterprise analytics exports only cover a rolling 30-day source window. The Terraform pipeline preserves history by merging daily exports into `metrics_history`.
+- Gemini Enterprise analytics exports only cover a rolling 30-day source window. The Terraform pipeline preserves history by merging daily exports into `export_history`.
 - User-level Gemini Enterprise metrics require allowlisting from the Google account team and are not part of the base block.
 - Discovery Engine apps using CMEK may return incomplete metrics.
 - Workspace Gemini audit logs must be enabled separately in the Workspace Admin console.

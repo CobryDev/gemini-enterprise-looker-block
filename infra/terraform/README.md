@@ -9,14 +9,14 @@ For the full export-to-dashboard walkthrough, start with the root `README.md`.
 Terraform creates the scheduled ETL path for Gemini Enterprise metrics:
 
 - BigQuery staging dataset for the rolling 30-day export window.
-- BigQuery analytics dataset with a partitioned `metrics_history` table.
+- BigQuery analytics dataset with a partitioned, full-fidelity `export_history` table.
 - Cloud Run job for the exporter container.
 - Cloud Scheduler jobs, one per Gemini Enterprise engine.
 - Secret Manager secret containing the engine configuration.
 - BigQuery scheduled query that merges staging exports into history.
 - Service accounts and IAM bindings for the exporter, scheduler, and scheduled query.
 
-Cloud Scheduler is part of the required production setup. It invokes the Cloud Run job every day so the Gemini Enterprise staging export stays fresh. The BigQuery scheduled query then handles the transform step into `metrics_history`.
+Cloud Scheduler is part of the required production setup. It invokes the Cloud Run job every day so the Gemini Enterprise staging export stays fresh. The BigQuery scheduled query then handles the transform step into `export_history`.
 
 ## Before you apply
 
@@ -101,5 +101,5 @@ Workspace Gemini audit logs are not created by Terraform. Configure them in the 
 ## Notes
 
 - The scheduled merge SQL assumes the exported staging tables expose `engine_id`, `metric_date`, `metric_type`, and `metric_value` columns.
-- Confirm the exact export schema during the first real Gemini Enterprise spike and adjust `sql/merge_metrics_history.sql.tpl` if Google changes the payload shape.
+- Confirm the exact export schema during the first real Gemini Enterprise spike and adjust `sql/merge_export_history.sql.tpl` if Google changes the payload shape.
 - Terraform enables the Google APIs needed by the module, but the caller still needs permission to enable services and create IAM bindings.

@@ -8,40 +8,76 @@ dashboard: agent_activity {
     default_value: "90 days"
   }
 
-  element: agent_usage {
-    title: "Agent Usage"
+  element: agent_sessions_trend {
+    title: "Agent Sessions Over Time"
     type: looker_line
     model: gemini_enterprise
     explore: agents
-    fields: [
-      agents.metric_date,
-      agents.monthly_active_agent_users,
-      agents.monthly_chat_sessions,
-      agents.monthly_agents_used
-    ]
-    filters: [agents.metric_date: "{{ _filters['date_filter'] }}"]
+    fields: [agents.metric_date, agents.agent_sessions, agents.agent_active_users]
+    filters: {
+      field: agents.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 12
+    height: 8
   }
 
-  element: agent_creation {
-    title: "Agents Created"
+  element: distinct_agents {
+    title: "Distinct Agents Used"
+    type: single_value
+    model: gemini_enterprise
+    explore: agents
+    fields: [agents.agent_count]
+    filters: {
+      field: agents.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 6
+    height: 4
+  }
+
+  element: new_agents {
+    title: "New Agents Created"
+    type: single_value
+    model: gemini_enterprise
+    explore: agents
+    fields: [agents.new_agents]
+    filters: {
+      field: agents.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 6
+    height: 4
+  }
+
+  element: top_agents {
+    title: "Top Agents by Sessions"
+    type: looker_grid
+    model: gemini_enterprise
+    explore: agents
+    fields: [agents.agent_name, agents.agent_type, agents.agent_ownership, agents.agent_sessions, agents.agent_active_users]
+    sorts: [agents.agent_sessions desc]
+    limit: 50
+    filters: {
+      field: agents.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 12
+    height: 8
+  }
+
+  element: sessions_by_agent_type {
+    title: "Sessions by Agent Type"
     type: looker_column
     model: gemini_enterprise
     explore: agents
-    fields: [agents.metric_date, agents.monthly_agents_created]
-    filters: [agents.metric_date: "{{ _filters['date_filter'] }}"]
-  }
-
-  element: notebooklm_activity {
-    title: "NotebookLM Enterprise Activity"
-    type: looker_column
-    model: gemini_enterprise
-    explore: agents
-    fields: [
-      agents.metric_date,
-      agents.notebooks_created,
-      agents.notebooks_shared,
-      agents.audio_overviews_created
-    ]
-    filters: [agents.metric_date: "{{ _filters['date_filter'] }}"]
+    fields: [agents.metric_date, agents.agent_type, agents.agent_sessions]
+    pivots: [agents.agent_type]
+    filters: {
+      field: agents.metric_date
+      value: "{{ _filters['date_filter'] }}"
+    }
+    width: 12
+    height: 8
   }
 }
