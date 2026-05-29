@@ -155,6 +155,12 @@ engines = [
 
 All engines export to their own staging tables and then merge into the single `export_history` table, so the data is unioned automatically and distinguished by `engine_id` / `app_name`. Staggering keeps the pipeline below the Gemini Enterprise analytics export rate limits.
 
+### Region requirement (important)
+
+> **All engines in one deployment must live in the same location.** A Gemini Enterprise app's analytics export runs in the region of the app's data (an `eu` app exports in the EU, a `global` app exports in the US), and BigQuery cannot load or `UNION` data across regions. Because every engine merges into a single `export_history` table in `dataset_location`, mixing regions in one deployment fails with a `Dataset ... not found in location <REGION>` error.
+
+To get unified analytics across engines, keep them in the same region. **If you have apps in two regions (for example EU and US), deploy this block twice** — once per region, each with its own project/datasets and its own `dataset_location` — and point a separate Looker connection at each. This keeps each region's data (including search query text and user emails) resident in its own region rather than copying personal data across jurisdictions. A single cross-region dashboard would require deliberately consolidating data into one region, which is a data-residency decision to make explicitly rather than a default of this pipeline.
+
 ## 4. Deploy the infrastructure
 
 Run Terraform from `infra/terraform`:

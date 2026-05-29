@@ -71,6 +71,8 @@ engines = [
 
 Add one `engines` entry per Gemini Enterprise app you want to track. Each engine gets its own Cloud Scheduler job and staging table, and all of them merge into the single `export_history` table. `display_name` is optional and sets the friendly `app_name` exposed in BigQuery and Looker (it defaults to `engine_id`); use it to tell apps apart in dashboards. Stagger schedules by a minute or two to stay below API rate limits.
 
+**All engines listed here must be in the same location.** Each app's analytics export runs in the region of the app's data (`eu` apps export in the EU, `global` apps in the US), and BigQuery cannot union across regions into the single `export_history` table — a cross-region engine fails with `Dataset ... not found in location <REGION>`. For apps in two regions, deploy this stack twice (one per region/`dataset_location`) and use a separate Looker connection for each, so each region's data stays resident in that region.
+
 ## Apply Terraform
 
 ```sh
