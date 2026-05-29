@@ -2,18 +2,9 @@ view: documents {
   label: "Documents"
   # Per-document surfacing. Populated once documents are returned/viewed in search
   # and answer results above the suppression threshold.
-  derived_table: {
-    sql:
-      SELECT
-        engine_id,
-        app_name,
-        metric_date,
-        document_name,
-        total_search_contents,
-        total_view_contents
-      FROM `@{gemini_project}.@{gemini_dataset}.export_history`
-      WHERE document_name IS NOT NULL ;;
-  }
+  # Document-row slice of export_history (document_name IS NOT NULL), applied as a
+  # sql_always_where on the explore so the partitioned base table is read directly.
+  sql_table_name: `@{gemini_project}.@{gemini_dataset}.export_history` ;;
 
   dimension: pk {
     primary_key: yes

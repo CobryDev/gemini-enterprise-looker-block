@@ -3,20 +3,9 @@ view: search_queries {
   # Query-level rows. Google only emits query text above a k-anonymity threshold,
   # so low-volume queries are suppressed and this view stays empty until there is
   # enough search traffic.
-  derived_table: {
-    sql:
-      SELECT
-        engine_id,
-        app_name,
-        metric_date,
-        original_search_query,
-        serving_config_id,
-        document_name,
-        search_count,
-        search_click_count
-      FROM `@{gemini_project}.@{gemini_dataset}.export_history`
-      WHERE original_search_query IS NOT NULL ;;
-  }
+  # Query-row slice of export_history (original_search_query IS NOT NULL), applied
+  # as a sql_always_where on the explore so the partitioned base table is read directly.
+  sql_table_name: `@{gemini_project}.@{gemini_dataset}.export_history` ;;
 
   dimension: pk {
     primary_key: yes

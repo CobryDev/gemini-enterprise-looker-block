@@ -1,16 +1,15 @@
 view: seats {
   label: "Seats & Licensing"
   # Seat counts come from the engine-wide aggregated metric rows, one per day.
-  derived_table: {
-    sql:
-      SELECT
-        engine_id,
-        app_name,
-        metric_date,
-        seats_purchased,
-        seats_claimed
-      FROM `@{gemini_project}.@{gemini_dataset}.export_history`
-      WHERE data_source = 'DATA_SOURCE_AGGREGATED_METRIC' ;;
+  # AGGREGATED_METRIC slice of export_history, applied as a sql_always_where on
+  # the explore so the partitioned base table is read directly.
+  sql_table_name: `@{gemini_project}.@{gemini_dataset}.export_history` ;;
+
+  dimension: data_source {
+    hidden: yes
+    description: "AGGREGATED_METRIC, GWS_LOG, or USER_EVENT. Used to slice this view at the explore level."
+    type: string
+    sql: ${TABLE}.data_source ;;
   }
 
   dimension: pk {

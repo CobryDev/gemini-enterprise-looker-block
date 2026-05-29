@@ -3,31 +3,17 @@ view: activity {
   # Search, answer, click, feedback and page-visit activity. These arrive on the
   # USER_EVENT and GWS_LOG rows, broken down by device. Slice by device_type to
   # compare desktop vs other clients.
-  derived_table: {
-    sql:
-      SELECT
-        engine_id,
-        app_name,
-        metric_date,
-        data_source,
-        device_type,
-        search_count,
-        search_click_count,
-        answer_count,
-        action_count,
-        feedback_like_count,
-        feedback_dislike_count,
-        total_home_page_visit_count,
-        total_agent_gallery_page_visit_count,
-        total_prompts_page_visit_count,
-        total_people_page_visit_count,
-        total_notebook_lm_page_visit_count,
-        total_deep_research_page_visit_count,
-        total_idea_generation_page_visit_count,
-        total_agent_page_visit_count
-      FROM `@{gemini_project}.@{gemini_dataset}.export_history`
-      WHERE data_source IN ('DATA_SOURCE_USER_EVENT', 'DATA_SOURCE_GWS_LOG')
-        AND device_type IS NOT NULL ;;
+  #
+  # USER_EVENT / GWS_LOG slice of export_history, filtered to rows with a device.
+  # The slice is applied as a sql_always_where on the explore so BigQuery reads
+  # the partitioned base table directly rather than a derived-table subquery.
+  sql_table_name: `@{gemini_project}.@{gemini_dataset}.export_history` ;;
+
+  dimension: data_source {
+    hidden: yes
+    description: "AGGREGATED_METRIC, GWS_LOG, or USER_EVENT. Used to slice this view at the explore level."
+    type: string
+    sql: ${TABLE}.data_source ;;
   }
 
   dimension: pk {

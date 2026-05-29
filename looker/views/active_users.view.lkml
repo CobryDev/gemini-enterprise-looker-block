@@ -3,25 +3,18 @@ view: active_users {
   # Active-user counts are reported per product (Total, Search, Assistant, Other),
   # one row per day per product. Filter to product_type = "Total" for headline
   # numbers, or break down by product_type to compare surfaces.
-  derived_table: {
-    sql:
-      SELECT
-        engine_id,
-        app_name,
-        metric_date,
-        product_type,
-        daily_active_user_count,
-        weekly_active_user_count,
-        monthly_active_user_count,
-        user_retention_ratio_for7d,
-        user_retention_ratio_for28d,
-        user_growth_rate_for7d,
-        user_growth_rate_for28d,
-        user_churn_rate_for7d,
-        user_churn_rate_for28d
-      FROM `@{gemini_project}.@{gemini_dataset}.export_history`
-      WHERE data_source = 'DATA_SOURCE_GWS_LOG'
-        AND product_type IS NOT NULL ;;
+  #
+  # This view is the GWS_LOG / per-product slice of export_history. We point
+  # straight at the partitioned base table and apply the slice as a
+  # sql_always_where on the explore, so BigQuery prunes partitions and columns
+  # natively instead of materialising a derived-table subquery.
+  sql_table_name: `@{gemini_project}.@{gemini_dataset}.export_history` ;;
+
+  dimension: data_source {
+    hidden: yes
+    description: "AGGREGATED_METRIC, GWS_LOG, or USER_EVENT. Used to slice this view at the explore level."
+    type: string
+    sql: ${TABLE}.data_source ;;
   }
 
   dimension: pk {

@@ -2,22 +2,9 @@ view: agents {
   label: "Agents"
   # Per-agent usage. The export only emits these rows once agents are created and
   # used, so this view is empty until there is agent activity on the engine.
-  derived_table: {
-    sql:
-      SELECT
-        engine_id,
-        app_name,
-        metric_date,
-        agent_name,
-        agent_type,
-        agent_ownership,
-        agent_session_count,
-        agent_active_user_count,
-        monthly_agent_active_user_count,
-        monthly_new_agent_count
-      FROM `@{gemini_project}.@{gemini_dataset}.export_history`
-      WHERE agent_name IS NOT NULL ;;
-  }
+  # Agent-row slice of export_history (agent_name IS NOT NULL), applied as a
+  # sql_always_where on the explore so the partitioned base table is read directly.
+  sql_table_name: `@{gemini_project}.@{gemini_dataset}.export_history` ;;
 
   dimension: pk {
     primary_key: yes
