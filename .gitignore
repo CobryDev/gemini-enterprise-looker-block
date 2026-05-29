@@ -32,3 +32,5 @@ override.tf.json
 *_override.tf.json
 *.tfvars
 !terraform.tfvars.example
+backend.hcl
+!backend.hcl.example

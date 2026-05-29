@@ -1,0 +1,12 @@
+# Remote state backend configuration.
+# Copy to backend.hcl and pass it at init time:
+#   terraform init -backend-config=backend.hcl
+#
+# The bucket must already exist and should have object versioning enabled so
+# state history is recoverable. Create one once per environment, e.g.:
+#   gcloud storage buckets create gs://your-tf-state-bucket \
+#     --location=EU --uniform-bucket-level-access
+#   gcloud storage buckets update gs://your-tf-state-bucket --versioning
+
+bucket = "your-tf-state-bucket"
+prefix = "gemini-enterprise-looker-block"

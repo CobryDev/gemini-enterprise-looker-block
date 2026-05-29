@@ -73,10 +73,24 @@ Add one `engines` entry per Gemini Enterprise app you want to track. Each engine
 
 **All engines listed here must be in the same location.** Each app's analytics export runs in the region of the app's data (`eu` apps export in the EU, `global` apps in the US), and BigQuery cannot union across regions into the single `export_history` table — a cross-region engine fails with `Dataset ... not found in location <REGION>`. For apps in two regions, deploy this stack twice (one per region/`dataset_location`) and use a separate Looker connection for each, so each region's data stays resident in that region.
 
+## Configure remote state
+
+State lives in a GCS bucket (the `backend "gcs"` block in `versions.tf`), not on
+your laptop. Create a versioned bucket once per environment, then point the
+backend at it:
+
+```sh
+gcloud storage buckets create gs://your-tf-state-bucket \
+  --location=EU --uniform-bucket-level-access
+gcloud storage buckets update gs://your-tf-state-bucket --versioning
+
+cp backend.hcl.example backend.hcl   # then edit bucket/prefix
+```
+
 ## Apply Terraform
 
 ```sh
-terraform init
+terraform init -backend-config=backend.hcl
 terraform plan
 terraform apply
 ```
