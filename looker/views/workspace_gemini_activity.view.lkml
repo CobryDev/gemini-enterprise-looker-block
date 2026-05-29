@@ -30,6 +30,7 @@ view: workspace_gemini_activity {
 
   dimension_group: event {
     label: "Event"
+    description: "Date (UTC) the Gemini event occurred, derived from the audit log timestamp."
     type: time
     timeframes: [date, week, month, quarter, year]
     convert_tz: no
@@ -39,18 +40,21 @@ view: workspace_gemini_activity {
 
   dimension: email {
     label: "User Email"
+    description: "Email address of the user who triggered the Gemini event."
     type: string
     sql: ${TABLE}.email ;;
   }
 
   dimension: domain_name {
     label: "Domain"
+    description: "Workspace domain the user belongs to."
     type: string
     sql: ${TABLE}.domain_name ;;
   }
 
   dimension: org_unit_name_path {
     label: "Org Unit"
+    description: "Full org-unit path of the user in the Workspace directory. Use to break adoption down by department or team."
     type: string
     sql: ${TABLE}.org_unit_name_path ;;
   }
@@ -70,6 +74,7 @@ view: workspace_gemini_activity {
   }
 
   dimension: action {
+    description: "Specific Gemini action recorded by the audit log for the event."
     type: string
     sql: ${TABLE}.action ;;
   }
@@ -89,12 +94,14 @@ view: workspace_gemini_activity {
 
   measure: events {
     label: "Gemini Events"
+    description: "Total Gemini-for-Workspace events (active and passive)."
     type: count
     drill_fields: [event_date, email, app_name, feature_source, event_category]
   }
 
   measure: active_events {
     label: "Active Gemini Events"
+    description: "Events where the user actively used Gemini (generate, converse, or summarise), excluding passive surfacing."
     type: count
     filters: [is_active_usage: "yes"]
   }
@@ -124,6 +131,7 @@ view: workspace_gemini_activity {
   }
 
   measure: events_per_user {
+    description: "Average Gemini events per user (total events divided by distinct users). A usage-intensity signal."
     type: number
     sql: SAFE_DIVIDE(${events}, NULLIF(${active_users}, 0)) ;;
     value_format_name: decimal_1
