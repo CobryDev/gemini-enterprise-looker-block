@@ -5,12 +5,32 @@ region           = "europe-west2"
 dataset_location = "EU"
 exporter_image   = "europe-docker.pkg.dev/your-gcp-project-id/gemini-analytics/gemini-exporter:latest"
 
+# One entry per Gemini Enterprise app. display_name is the friendly label exposed
+# as app_name in BigQuery and Looker (defaults to engine_id if omitted). Stagger
+# schedules across engines to stay under org-level API limits.
 engines = [
   {
-    engine_id         = "your-engine-id_0000000000000"
+    engine_id         = "your-first-engine-id_0000000000000"
+    display_name      = "Sales Assistant"
     location          = "eu"
     endpoint_location = "eu"
     schedule          = "0 6 * * *"
+    time_zone         = "Etc/UTC"
+  },
+  {
+    engine_id         = "your-second-engine-id_0000000000000"
+    display_name      = "Support Copilot"
+    location          = "eu"
+    endpoint_location = "eu"
+    schedule          = "15 6 * * *"
+    time_zone         = "Etc/UTC"
+  },
+  {
+    engine_id         = "your-third-engine-id_0000000000000"
+    display_name      = "HR Knowledge Base"
+    location          = "eu"
+    endpoint_location = "eu"
+    schedule          = "30 6 * * *"
     time_zone         = "Etc/UTC"
   }
 ]

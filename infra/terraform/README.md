@@ -52,15 +52,24 @@ exporter_image   = "europe-docker.pkg.dev/your-gcp-project-id/gemini-analytics/g
 engines = [
   {
     engine_id         = "customer-support-engine"
+    display_name      = "Support Copilot"
     location          = "eu"
     endpoint_location = "eu"
     schedule          = "0 6 * * *"
+    time_zone         = "Etc/UTC"
+  },
+  {
+    engine_id         = "sales-assistant-engine"
+    display_name      = "Sales Assistant"
+    location          = "eu"
+    endpoint_location = "eu"
+    schedule          = "15 6 * * *"
     time_zone         = "Etc/UTC"
   }
 ]
 ```
 
-Add one `engines` entry per Gemini Enterprise engine. Stagger schedules by one minute to stay below API rate limits.
+Add one `engines` entry per Gemini Enterprise app you want to track. Each engine gets its own Cloud Scheduler job and staging table, and all of them merge into the single `export_history` table. `display_name` is optional and sets the friendly `app_name` exposed in BigQuery and Looker (it defaults to `engine_id`); use it to tell apps apart in dashboards. Stagger schedules by a minute or two to stay below API rate limits.
 
 ## Apply Terraform
 

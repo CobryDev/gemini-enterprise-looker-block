@@ -24,6 +24,13 @@ USING (
       COALESCE(dislike_reasons, '')
     ], '|'))) AS row_key,
     engine_id,
+    -- Friendly app name per engine, generated from the Terraform `engines` config.
+    CASE engine_id
+%{ for engine_key, app_name in engine_app_names ~}
+      WHEN '${engine_key}' THEN '${replace(app_name, "'", "''")}'
+%{ endfor ~}
+      ELSE engine_id
+    END AS app_name,
     metric_date,
     data_source,
     product_type,
@@ -81,6 +88,7 @@ USING (
 ) AS source
 ON target.row_key = source.row_key
 WHEN MATCHED THEN UPDATE SET
+  app_name = source.app_name,
   project_number = source.project_number,
   search_count = source.search_count,
   search_click_count = source.search_click_count,
@@ -115,7 +123,7 @@ WHEN MATCHED THEN UPDATE SET
   monthly_agent_active_user_count = source.monthly_agent_active_user_count,
   ingested_at = CURRENT_TIMESTAMP()
 WHEN NOT MATCHED THEN INSERT (
-  row_key, engine_id, metric_date, project_number, data_source, product_type, device_type,
+  row_key, engine_id, app_name, metric_date, project_number, data_source, product_type, device_type,
   serving_config_id, original_search_query, document_name, agent_name, agent_type, agent_ownership,
   dislike_reasons, search_count, search_click_count, answer_count, action_count,
   total_search_contents, total_view_contents, feedback_like_count, feedback_dislike_count,
@@ -128,7 +136,7 @@ WHEN NOT MATCHED THEN INSERT (
   seats_purchased, seats_claimed, monthly_new_agent_count, agent_session_count,
   agent_active_user_count, monthly_agent_active_user_count, ingested_at
 ) VALUES (
-  source.row_key, source.engine_id, source.metric_date, source.project_number, source.data_source,
+  source.row_key, source.engine_id, source.app_name, source.metric_date, source.project_number, source.data_source,
   source.product_type, source.device_type, source.serving_config_id, source.original_search_query,
   source.document_name, source.agent_name, source.agent_type, source.agent_ownership,
   source.dislike_reasons, source.search_count, source.search_click_count, source.answer_count,

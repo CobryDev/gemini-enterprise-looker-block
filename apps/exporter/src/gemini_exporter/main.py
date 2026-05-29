@@ -11,7 +11,6 @@ import google.auth
 from google.auth.transport.requests import AuthorizedSession
 from google.cloud import bigquery, secretmanager
 
-DEFAULT_METRIC_FILTER = "metric_types: (TOTAL_USERS, DAU, WAU, MAU, SEARCH_COUNT, ANSWER_COUNT)"
 OPERATION_TIMEOUT_SECONDS = 1200
 POLL_INTERVAL_SECONDS = 10
 
@@ -19,6 +18,7 @@ POLL_INTERVAL_SECONDS = 10
 @dataclass(frozen=True)
 class EngineConfig:
     engine_id: str
+    display_name: str
     location: str
     endpoint_location: str
     table_id_prefix: str
@@ -47,9 +47,11 @@ def engine_from_env() -> EngineConfig | None:
     location = required_env("ENGINE_LOCATION")
     endpoint_location = os.getenv("ENDPOINT_LOCATION", location)
     table_id_prefix = os.getenv("TABLE_ID_PREFIX", f"export_{engine_id.replace('-', '_')}")
+    display_name = os.getenv("DISPLAY_NAME", engine_id)
 
     return EngineConfig(
         engine_id=engine_id,
+        display_name=display_name,
         location=location,
         endpoint_location=endpoint_location,
         table_id_prefix=table_id_prefix,
@@ -68,6 +70,7 @@ def load_engine_config_from_secret(secret_name: str) -> list[EngineConfig]:
         engines.append(
             EngineConfig(
                 engine_id=engine_id,
+                display_name=engine.get("display_name", engine_id),
                 location=location,
                 endpoint_location=engine.get("endpoint_location", location),
                 table_id_prefix=engine.get("table_id_prefix", f"export_{engine_id.replace('-', '_')}"),
@@ -144,7 +147,6 @@ def export_engine_metrics(
     engine_project_id: str,
     staging_project_id: str,
     staging_dataset: str,
-    metric_filter: str,
     engine: EngineConfig,
 ) -> str:
     session = authorized_session()
@@ -183,6 +185,7 @@ def export_engine_metrics(
     log_json(
         "export_started",
         engine_id=engine.engine_id,
+        app_name=engine.display_name,
         operation_name=operation_name,
         table_id_prefix=engine.table_id_prefix,
     )
@@ -216,7 +219,6 @@ def main() -> None:
     engine_project_id = os.getenv("ENGINE_PROJECT_ID", project_id)
     staging_project_id = os.getenv("STAGING_PROJECT_ID", engine_project_id)
     staging_dataset = required_env("STAGING_DATASET")
-    metric_filter = os.getenv("METRIC_FILTER", DEFAULT_METRIC_FILTER)
 
     engines = load_engines()
     log_json(
@@ -234,7 +236,6 @@ def main() -> None:
                 engine_project_id=engine_project_id,
                 staging_project_id=staging_project_id,
                 staging_dataset=staging_dataset,
-                metric_filter=metric_filter,
                 engine=engine,
             )
             row_count = count_exported_rows(
@@ -246,6 +247,7 @@ def main() -> None:
             log_json(
                 "export_completed",
                 engine_id=engine.engine_id,
+                app_name=engine.display_name,
                 operation_name=operation_name,
                 row_count=row_count,
             )

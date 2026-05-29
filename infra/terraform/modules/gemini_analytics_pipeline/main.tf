@@ -81,6 +81,7 @@ resource "google_bigquery_table" "export_history" {
   schema = jsonencode([
     { name = "row_key", type = "STRING", mode = "REQUIRED", description = "Stable hash of the dimension columns; the merge key." },
     { name = "engine_id", type = "STRING", mode = "REQUIRED" },
+    { name = "app_name", type = "STRING", mode = "NULLABLE", description = "Friendly name of the Gemini Enterprise app this engine maps to; falls back to engine_id." },
     { name = "metric_date", type = "DATE", mode = "REQUIRED" },
     { name = "project_number", type = "INTEGER", mode = "NULLABLE" },
     { name = "data_source", type = "STRING", mode = "NULLABLE", description = "AGGREGATED_METRIC, GWS_LOG, or USER_EVENT." },
@@ -180,11 +181,6 @@ resource "google_cloud_run_v2_job" "exporter" {
         }
 
         env {
-          name  = "METRIC_FILTER"
-          value = var.metric_filter
-        }
-
-        env {
           name  = "ENGINE_CONFIG_SECRET"
           value = google_secret_manager_secret.engine_config.id
         }
@@ -210,6 +206,7 @@ resource "google_bigquery_data_transfer_config" "merge_export_history" {
       staging_project_id   = local.staging_project_id
       staging_dataset_id   = google_bigquery_dataset.staging.dataset_id
       analytics_dataset_id = google_bigquery_dataset.analytics.dataset_id
+      engine_app_names     = local.engine_app_names
     })
   }
 
@@ -245,6 +242,10 @@ resource "google_cloud_scheduler_job" "export_engine" {
               {
                 name  = "ENGINE_ID"
                 value = each.value.engine_id
+              },
+              {
+                name  = "DISPLAY_NAME"
+                value = each.value.display_name
               },
               {
                 name  = "ENGINE_LOCATION"

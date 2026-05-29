@@ -44,16 +44,11 @@ variable "exporter_image" {
   type        = string
 }
 
-variable "metric_filter" {
-  description = "Metric filter passed to analytics:exportMetrics."
-  type        = string
-  default     = "metric_types: (TOTAL_USERS, DAU, WAU, MAU, SEARCH_COUNT, ANSWER_COUNT)"
-}
-
 variable "engines" {
-  description = "Gemini Enterprise engines to export. Stagger schedules to stay below org-level API limits."
+  description = "Gemini Enterprise engines to export. Each engine maps to one Gemini Enterprise app; add an entry per app you want to track. Stagger schedules to stay below org-level API limits."
   type = list(object({
     engine_id         = string
+    display_name      = optional(string)
     location          = string
     endpoint_location = optional(string)
     schedule          = string

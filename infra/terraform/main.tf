@@ -9,7 +9,6 @@ module "gemini_analytics_pipeline" {
   staging_dataset_id   = var.staging_dataset_id
   analytics_dataset_id = var.analytics_dataset_id
   exporter_image       = var.exporter_image
-  metric_filter        = var.metric_filter
   engines              = var.engines
   labels               = var.labels
 }

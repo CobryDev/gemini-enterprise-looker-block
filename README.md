@@ -132,18 +132,20 @@ engines = [
 ]
 ```
 
-For multiple engines, add one object per engine and stagger the schedules by at least one minute:
+Each engine maps to one Gemini Enterprise app. To track several apps, add one object per engine and stagger the schedules by at least one minute. Set `display_name` to a friendly app label — it is stored as `app_name` on every row in `export_history` and exposed as the **App** dimension in Looker, so you can tell apps apart and slice or group by them. If omitted, `app_name` falls back to the raw `engine_id`.
 
 ```hcl
 engines = [
   {
     engine_id         = "customer-support-engine"
+    display_name      = "Support Copilot"
     location          = "eu"
     endpoint_location = "eu"
     schedule          = "0 6 * * *"
   },
   {
     engine_id         = "sales-enablement-engine"
+    display_name      = "Sales Assistant"
     location          = "eu"
     endpoint_location = "eu"
     schedule          = "1 6 * * *"
@@ -151,7 +153,7 @@ engines = [
 ]
 ```
 
-Staggering keeps the pipeline below the Gemini Enterprise analytics export rate limits.
+All engines export to their own staging tables and then merge into the single `export_history` table, so the data is unioned automatically and distinguished by `engine_id` / `app_name`. Staggering keeps the pipeline below the Gemini Enterprise analytics export rate limits.
 
 ## 4. Deploy the infrastructure
 

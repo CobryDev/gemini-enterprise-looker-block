@@ -40,15 +40,11 @@ variable "exporter_image" {
   type        = string
 }
 
-variable "metric_filter" {
-  description = "Metric filter passed to analytics:exportMetrics."
-  type        = string
-}
-
 variable "engines" {
-  description = "Gemini Enterprise engines to export."
+  description = "Gemini Enterprise engines to export. Each engine maps to one Gemini Enterprise app."
   type = list(object({
     engine_id         = string
+    display_name      = optional(string)
     location          = string
     endpoint_location = optional(string)
     schedule          = string
