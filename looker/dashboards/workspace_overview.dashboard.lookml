@@ -14,9 +14,8 @@ dashboard: workspace_overview {
     model: workspace_gemini
     explore: workspace_gemini_activity
     fields: [workspace_gemini_activity.active_users]
-    filters: {
-      field: workspace_gemini_activity.event_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: workspace_gemini_activity.event_date
     }
     width: 8
     height: 4
@@ -28,9 +27,8 @@ dashboard: workspace_overview {
     model: workspace_gemini
     explore: workspace_gemini_activity
     fields: [workspace_gemini_activity.engaged_users]
-    filters: {
-      field: workspace_gemini_activity.event_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: workspace_gemini_activity.event_date
     }
     width: 8
     height: 4
@@ -42,9 +40,8 @@ dashboard: workspace_overview {
     model: workspace_gemini
     explore: workspace_gemini_activity
     fields: [workspace_gemini_activity.active_usage_rate]
-    filters: {
-      field: workspace_gemini_activity.event_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: workspace_gemini_activity.event_date
     }
     width: 8
     height: 4
@@ -56,9 +53,8 @@ dashboard: workspace_overview {
     model: workspace_gemini
     explore: workspace_gemini_activity
     fields: [workspace_gemini_activity.event_date, workspace_gemini_activity.events, workspace_gemini_activity.active_events]
-    filters: {
-      field: workspace_gemini_activity.event_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: workspace_gemini_activity.event_date
     }
     width: 24
     height: 8
@@ -71,9 +67,8 @@ dashboard: workspace_overview {
     explore: workspace_gemini_activity
     fields: [workspace_gemini_activity.app_name, workspace_gemini_activity.events, workspace_gemini_activity.active_users]
     sorts: [workspace_gemini_activity.events desc]
-    filters: {
-      field: workspace_gemini_activity.event_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: workspace_gemini_activity.event_date
     }
     width: 12
     height: 8
@@ -87,9 +82,8 @@ dashboard: workspace_overview {
     fields: [workspace_gemini_activity.app_name, workspace_gemini_activity.feature_source, workspace_gemini_activity.events, workspace_gemini_activity.active_events, workspace_gemini_activity.active_users]
     sorts: [workspace_gemini_activity.events desc]
     limit: 50
-    filters: {
-      field: workspace_gemini_activity.event_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: workspace_gemini_activity.event_date
     }
     width: 12
     height: 8
@@ -103,9 +97,8 @@ dashboard: workspace_overview {
     fields: [workspace_gemini_activity.org_unit_name_path, workspace_gemini_activity.active_users, workspace_gemini_activity.events]
     sorts: [workspace_gemini_activity.active_users desc]
     limit: 25
-    filters: {
-      field: workspace_gemini_activity.event_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: workspace_gemini_activity.event_date
     }
     width: 24
     height: 8

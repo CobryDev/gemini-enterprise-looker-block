@@ -15,12 +15,10 @@ dashboard: adoption_overview {
     explore: active_users
     fields: [active_users.metric_date, active_users.daily_active_users, active_users.weekly_active_users, active_users.monthly_active_users]
     filters: {
-      field: active_users.metric_date
-      value: "{{ _filters['date_filter'] }}"
+      active_users.product_type: "Total"
     }
-    filters: {
-      field: active_users.product_type
-      value: "Total"
+    listen: {
+      date_filter: active_users.metric_date
     }
     width: 12
     height: 8
@@ -34,12 +32,10 @@ dashboard: adoption_overview {
     fields: [active_users.metric_date, active_users.product_type, active_users.daily_active_users]
     pivots: [active_users.product_type]
     filters: {
-      field: active_users.metric_date
-      value: "{{ _filters['date_filter'] }}"
+      active_users.product_type: "-Total"
     }
-    filters: {
-      field: active_users.product_type
-      value: "-Total"
+    listen: {
+      date_filter: active_users.metric_date
     }
     width: 12
     height: 8
@@ -51,9 +47,8 @@ dashboard: adoption_overview {
     model: gemini_enterprise
     explore: seats
     fields: [seats.seats_purchased]
-    filters: {
-      field: seats.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: seats.metric_date
     }
     width: 6
     height: 4
@@ -65,9 +60,8 @@ dashboard: adoption_overview {
     model: gemini_enterprise
     explore: seats
     fields: [seats.seat_utilisation]
-    filters: {
-      field: seats.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: seats.metric_date
     }
     width: 6
     height: 4
@@ -79,9 +73,8 @@ dashboard: adoption_overview {
     model: gemini_enterprise
     explore: seats
     fields: [seats.metric_date, seats.seats_purchased, seats.seats_claimed]
-    filters: {
-      field: seats.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: seats.metric_date
     }
     width: 12
     height: 8
@@ -94,12 +87,10 @@ dashboard: adoption_overview {
     explore: active_users
     fields: [active_users.metric_date, active_users.retention_7d, active_users.retention_28d]
     filters: {
-      field: active_users.metric_date
-      value: "{{ _filters['date_filter'] }}"
+      active_users.product_type: "Total"
     }
-    filters: {
-      field: active_users.product_type
-      value: "Total"
+    listen: {
+      date_filter: active_users.metric_date
     }
     width: 12
     height: 8

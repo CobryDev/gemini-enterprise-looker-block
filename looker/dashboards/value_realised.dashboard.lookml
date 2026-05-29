@@ -22,9 +22,8 @@ dashboard: value_realised {
       activity.deep_research_page_visits,
       activity.idea_generation_page_visits
     ]
-    filters: {
-      field: activity.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: activity.metric_date
     }
     width: 24
     height: 8
@@ -38,9 +37,8 @@ dashboard: value_realised {
     fields: [search_queries.query, search_queries.searches, search_queries.search_clicks]
     sorts: [search_queries.searches desc]
     limit: 50
-    filters: {
-      field: search_queries.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: search_queries.metric_date
     }
     note_state: collapsed
     note_display: hover
@@ -57,9 +55,8 @@ dashboard: value_realised {
     fields: [documents.document_name, documents.times_surfaced_in_search, documents.times_viewed]
     sorts: [documents.times_surfaced_in_search desc]
     limit: 50
-    filters: {
-      field: documents.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: documents.metric_date
     }
     note_state: collapsed
     note_display: hover

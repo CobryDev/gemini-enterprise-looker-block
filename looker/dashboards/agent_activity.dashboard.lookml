@@ -14,9 +14,8 @@ dashboard: agent_activity {
     model: gemini_enterprise
     explore: agents
     fields: [agents.metric_date, agents.agent_sessions, agents.agent_active_users]
-    filters: {
-      field: agents.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: agents.metric_date
     }
     width: 12
     height: 8
@@ -28,9 +27,8 @@ dashboard: agent_activity {
     model: gemini_enterprise
     explore: agents
     fields: [agents.agent_count]
-    filters: {
-      field: agents.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: agents.metric_date
     }
     width: 6
     height: 4
@@ -42,9 +40,8 @@ dashboard: agent_activity {
     model: gemini_enterprise
     explore: agents
     fields: [agents.new_agents]
-    filters: {
-      field: agents.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: agents.metric_date
     }
     width: 6
     height: 4
@@ -58,9 +55,8 @@ dashboard: agent_activity {
     fields: [agents.agent_name, agents.agent_type, agents.agent_ownership, agents.agent_sessions, agents.agent_active_users]
     sorts: [agents.agent_sessions desc]
     limit: 50
-    filters: {
-      field: agents.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: agents.metric_date
     }
     width: 12
     height: 8
@@ -73,9 +69,8 @@ dashboard: agent_activity {
     explore: agents
     fields: [agents.metric_date, agents.agent_type, agents.agent_sessions]
     pivots: [agents.agent_type]
-    filters: {
-      field: agents.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: agents.metric_date
     }
     width: 12
     height: 8

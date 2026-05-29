@@ -14,9 +14,8 @@ dashboard: usage_and_quality {
     model: gemini_enterprise
     explore: activity
     fields: [activity.metric_date, activity.searches, activity.search_clicks]
-    filters: {
-      field: activity.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: activity.metric_date
     }
     width: 12
     height: 8
@@ -28,9 +27,8 @@ dashboard: usage_and_quality {
     model: gemini_enterprise
     explore: activity
     fields: [activity.click_through_rate]
-    filters: {
-      field: activity.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: activity.metric_date
     }
     width: 6
     height: 4
@@ -42,9 +40,8 @@ dashboard: usage_and_quality {
     model: gemini_enterprise
     explore: activity
     fields: [activity.answers]
-    filters: {
-      field: activity.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: activity.metric_date
     }
     width: 6
     height: 4
@@ -56,9 +53,8 @@ dashboard: usage_and_quality {
     model: gemini_enterprise
     explore: activity
     fields: [activity.metric_date, activity.answers]
-    filters: {
-      field: activity.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: activity.metric_date
     }
     width: 12
     height: 8
@@ -71,9 +67,8 @@ dashboard: usage_and_quality {
     explore: activity
     fields: [activity.metric_date, activity.device_type, activity.searches]
     pivots: [activity.device_type]
-    filters: {
-      field: activity.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: activity.metric_date
     }
     width: 12
     height: 8
@@ -85,9 +80,8 @@ dashboard: usage_and_quality {
     model: gemini_enterprise
     explore: activity
     fields: [activity.metric_date, activity.likes, activity.dislikes]
-    filters: {
-      field: activity.metric_date
-      value: "{{ _filters['date_filter'] }}"
+    listen: {
+      date_filter: activity.metric_date
     }
     width: 12
     height: 8
