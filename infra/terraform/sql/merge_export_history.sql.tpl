@@ -3,6 +3,23 @@
 -- upsert each row by a stable hash of its dimension columns. This preserves the
 -- original grain (data_source x product_type x device x query x document x agent)
 -- and keeps history beyond the export's retention window.
+--
+-- `export_history` is partitioned by `metric_date`, so we first read the exact
+-- date range present in staging into static variables and add a BETWEEN filter
+-- on the partition column to the merge condition. BigQuery only prunes
+-- partitions on static predicates (not subqueries computed at runtime), so this
+-- limits the target scan to the export window's partitions instead of the whole
+-- history table. The window bounds match the source range exactly, so a row can
+-- never miss its existing partition and be re-inserted as a duplicate.
+
+DECLARE window_start DATE;
+DECLARE window_end DATE;
+
+SET (window_start, window_end) = (
+  SELECT AS STRUCT MIN(SAFE_CAST(date AS DATE)), MAX(SAFE_CAST(date AS DATE))
+  FROM `${staging_project_id}.${staging_dataset_id}.export_*`
+  WHERE date IS NOT NULL
+);
 
 MERGE `${project_id}.${analytics_dataset_id}.export_history` AS target
 USING (
@@ -87,6 +104,7 @@ USING (
     original_search_query, document_name, agent_name, agent_type, agent_ownership, dislike_reasons
 ) AS source
 ON target.row_key = source.row_key
+  AND target.metric_date BETWEEN window_start AND window_end
 WHEN MATCHED THEN UPDATE SET
   app_name = source.app_name,
   project_number = source.project_number,
