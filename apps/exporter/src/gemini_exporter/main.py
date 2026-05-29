@@ -229,6 +229,7 @@ def main() -> None:
         staging_project_id=staging_project_id,
     )
 
+    failed_engines: list[str] = []
     for engine in engines:
         try:
             operation_name = export_engine_metrics(
@@ -252,10 +253,20 @@ def main() -> None:
                 row_count=row_count,
             )
         except Exception:
+            # Keep going so one bad engine can't block the rest of the run; we
+            # surface the failures with a non-zero exit at the end.
             logging.exception("Gemini analytics export failed for engine %s", engine.engine_id)
-            raise
+            failed_engines.append(engine.engine_id)
 
-    log_json("export_run_completed", engine_count=len(engines))
+    log_json(
+        "export_run_completed",
+        engine_count=len(engines),
+        failed_engine_count=len(failed_engines),
+        failed_engines=failed_engines,
+    )
+
+    if failed_engines:
+        raise SystemExit(f"Export failed for {len(failed_engines)} engine(s): {', '.join(failed_engines)}")
 
 
 if __name__ == "__main__":
