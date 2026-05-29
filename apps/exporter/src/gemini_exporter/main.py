@@ -10,9 +10,17 @@ from typing import Any
 import google.auth
 from google.auth.transport.requests import AuthorizedSession
 from google.cloud import bigquery, secretmanager
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 OPERATION_TIMEOUT_SECONDS = 1200
 POLL_INTERVAL_SECONDS = 10
+
+# Retry transient failures (connection errors and 429/5xx) with exponential
+# backoff so a momentary Discovery Engine blip doesn't fail the whole export.
+RETRY_TOTAL = 5
+RETRY_BACKOFF_FACTOR = 2.0
+RETRY_STATUS_CODES = (429, 500, 502, 503, 504)
 
 
 @dataclass(frozen=True)
@@ -95,7 +103,23 @@ def authorized_session() -> AuthorizedSession:
     credentials, _ = google.auth.default(
         scopes=["https://www.googleapis.com/auth/cloud-platform"]
     )
-    return AuthorizedSession(credentials)
+    session = AuthorizedSession(credentials)
+
+    retry = Retry(
+        total=RETRY_TOTAL,
+        connect=RETRY_TOTAL,
+        read=RETRY_TOTAL,
+        status=RETRY_TOTAL,
+        backoff_factor=RETRY_BACKOFF_FACTOR,
+        status_forcelist=RETRY_STATUS_CODES,
+        allowed_methods=frozenset({"GET", "POST"}),
+        respect_retry_after_header=True,
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
 
 
 def engine_path(project_id: str, engine: EngineConfig) -> str:
