@@ -192,13 +192,19 @@ resource "google_cloud_run_v2_job" "exporter" {
 }
 
 resource "google_bigquery_data_transfer_config" "merge_export_history" {
-  project                = var.project_id
-  location               = var.dataset_location
-  display_name           = "gemini_export_history_merge"
-  data_source_id         = "scheduled_query"
-  schedule               = "every day 07:00"
-  service_account_name   = google_service_account.scheduled_query.email
-  destination_dataset_id = google_bigquery_dataset.analytics.dataset_id
+  project        = var.project_id
+  location       = var.dataset_location
+  display_name   = "gemini_export_history_merge"
+  data_source_id = "scheduled_query"
+  schedule       = "every day 07:00"
+
+  service_account_name = google_service_account.scheduled_query.email
+
+  # No destination_dataset_id: the query is a multi-statement script (DECLARE +
+  # MERGE) that writes to a fully-qualified table itself. Setting a destination
+  # dataset is only for writing a SELECT's results to a table, and it makes DTS
+  # reject a script with "Dataset specified in the query ('') is not consistent
+  # with Destination dataset".
 
   params = {
     query = templatefile("${path.module}/../../sql/merge_export_history.sql.tpl", {
