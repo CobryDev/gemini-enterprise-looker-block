@@ -57,8 +57,110 @@ variable "engines" {
   }))
 }
 
+variable "alert_email" {
+  description = "Email address to notify when an exporter job execution fails. Leave empty to skip creating alerting resources."
+  type        = string
+  default     = ""
+}
+
+variable "looker_service_account_email" {
+  description = "Looker connection service account. When set, grants it BigQuery Data Viewer on the analytics dataset and BigQuery Job User on the project."
+  type        = string
+  default     = ""
+}
+
 variable "labels" {
   description = "Labels applied to supported resources."
   type        = map(string)
   default     = {}
+}
+
+variable "enable_log_pipeline" {
+  description = "Route Gemini Enterprise, Model Armor and Antigravity logs through a short-lived raw log bucket into redacted user-level tables for the user-level Looker dashboard tabs."
+  type        = bool
+  default     = false
+}
+
+variable "log_source_project_ids" {
+  description = "Projects whose logs are routed. Defaults to [engine_project_id]."
+  type        = list(string)
+  default     = []
+}
+
+variable "raw_logs_dataset_id" {
+  description = "Name of the read-only BigQuery dataset linked to the raw log bucket."
+  type        = string
+  default     = "gemini_logs_raw"
+}
+
+variable "raw_log_retention_days" {
+  description = "Days the raw log bucket (which contains prompt text) keeps entries."
+  type        = number
+  default     = 2
+}
+
+variable "route_inference_logs" {
+  description = "Route the gen_ai inference log for token, tool and skill reporting."
+  type        = bool
+  default     = true
+}
+
+variable "enable_model_armor_audit_logs" {
+  description = "Turn on Model Armor Data Access audit logs (screening verdicts, no prompt text) in the log source projects."
+  type        = bool
+  default     = false
+}
+
+variable "exclude_content_logs_from_default_bucket" {
+  description = "Keep Gemini Enterprise and Antigravity prompt/response logs out of the _Default log bucket."
+  type        = bool
+  default     = false
+}
+
+variable "user_store_locations" {
+  description = "Gemini Enterprise user store locations to snapshot licences from. Defaults to the engine locations."
+  type        = list(string)
+  default     = null
+}
+
+variable "log_app_display_names" {
+  description = "Friendly app names for engine IDs that appear in the logs but are not listed in engines."
+  type        = map(string)
+  default     = {}
+}
+
+variable "log_transform_schedule" {
+  description = "Cron schedule for the hourly raw-log transform."
+  type        = string
+  default     = "20 * * * *"
+}
+
+variable "license_snapshot_schedule" {
+  description = "Cron schedule for the daily licence snapshot."
+  type        = string
+  default     = "0 5 * * *"
+}
+
+variable "workspace_audit_project_id" {
+  description = "Project holding the Workspace audit export dataset. Defaults to project_id."
+  type        = string
+  default     = ""
+}
+
+variable "workspace_audit_dataset_id" {
+  description = "Workspace audit export dataset (created by the Workspace Admin console BigQuery export). When set and workspace_audit_location differs from dataset_location, a daily BigQuery cross-region copy brings it into dataset_location so the Looker block can join it to the Gemini data. Leave empty to skip."
+  type        = string
+  default     = ""
+}
+
+variable "workspace_audit_location" {
+  description = "BigQuery location of the Workspace audit export dataset, for example US. Check it with: bq show --format=prettyjson PROJECT:DATASET."
+  type        = string
+  default     = ""
+}
+
+variable "workspace_copy_dataset_id" {
+  description = "Dataset in dataset_location that receives the Workspace audit copy. Set the Looker workspace_dataset constant to this name and workspace_export to same_region."
+  type        = string
+  default     = "workspace_audit_copy"
 }

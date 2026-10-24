@@ -4,11 +4,10 @@ locals {
 
   pipeline_project_services = toset([
     "bigquery.googleapis.com",
-    "bigquerydatatransfer.googleapis.com",
     "cloudscheduler.googleapis.com",
     "iam.googleapis.com",
+    "monitoring.googleapis.com",
     "run.googleapis.com",
-    "secretmanager.googleapis.com",
   ])
 
   engine_project_services = toset([
@@ -25,21 +24,18 @@ locals {
     })
   }
 
-  engine_config = {
-    engines = [
-      for engine in values(local.engines_by_id) : {
-        engine_id         = engine.engine_id
-        display_name      = engine.display_name
-        location          = engine.location
-        endpoint_location = engine.endpoint_location
-        table_id_prefix   = engine.table_id_prefix
-      }
-    ]
+  # An engine's analytics export writes BigQuery output in the region of the
+  # app's data: eu apps export in the EU, global/us apps in the US. The staging
+  # and analytics datasets must live in that same location or the export fails
+  # with a cross-region "dataset not found" error.
+  expected_dataset_location = {
+    eu     = "EU"
+    global = "US"
+    us     = "US"
   }
 
-  # engine_id -> friendly app name, injected into the merge query so every row in
-  # export_history carries a readable app_name alongside the raw engine_id.
-  engine_app_names = {
-    for engine in values(local.engines_by_id) : engine.engine_id => engine.display_name
-  }
+  engine_locations_consistent = alltrue([
+    for engine in var.engines :
+    upper(var.dataset_location) == lookup(local.expected_dataset_location, lower(engine.location), upper(var.dataset_location))
+  ])
 }

@@ -22,3 +22,13 @@ output "cloud_run_job_name" {
   description = "Cloud Run exporter job name."
   value       = module.gemini_analytics_pipeline.cloud_run_job_name
 }
+
+output "raw_logs_view" {
+  description = "Linked BigQuery view over the raw log bucket (exporter-only; contains prompt text)."
+  value       = module.gemini_analytics_pipeline.raw_logs_view
+}
+
+output "looker_workspace_settings" {
+  description = "Values for the Looker block's Workspace install settings."
+  value       = module.gemini_analytics_pipeline.looker_workspace_settings
+}

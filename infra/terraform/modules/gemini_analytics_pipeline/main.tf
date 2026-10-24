@@ -30,20 +30,19 @@ resource "google_service_account" "scheduler" {
   depends_on = [google_project_service.required]
 }
 
-resource "google_service_account" "scheduled_query" {
-  project      = var.project_id
-  account_id   = "gemini-bq-scheduled-query"
-  display_name = "Gemini BigQuery Scheduled Query"
-
-  depends_on = [google_project_service.required]
-}
-
 resource "google_bigquery_dataset" "staging" {
   project                    = local.staging_project_id
   dataset_id                 = var.staging_dataset_id
   location                   = var.dataset_location
   delete_contents_on_destroy = false
   labels                     = var.labels
+
+  lifecycle {
+    precondition {
+      condition     = local.engine_locations_consistent
+      error_message = "dataset_location does not match the engines' export location: eu engines export to BigQuery EU, global/us engines export to BigQuery US. Align dataset_location with the engine location (or deploy one stack per region)."
+    }
+  }
 
   depends_on = [
     google_project_service.required,
@@ -129,23 +128,6 @@ resource "google_bigquery_table" "export_history" {
   ])
 }
 
-resource "google_secret_manager_secret" "engine_config" {
-  project   = var.project_id
-  secret_id = "gemini-analytics-engine-config"
-  labels    = var.labels
-
-  replication {
-    auto {}
-  }
-
-  depends_on = [google_project_service.required]
-}
-
-resource "google_secret_manager_secret_version" "engine_config" {
-  secret      = google_secret_manager_secret.engine_config.id
-  secret_data = jsonencode(local.engine_config)
-}
-
 resource "google_cloud_run_v2_job" "exporter" {
   project  = var.project_id
   name     = "gemini-analytics-exporter"
@@ -155,7 +137,9 @@ resource "google_cloud_run_v2_job" "exporter" {
   template {
     template {
       service_account = google_service_account.exporter.email
-      timeout         = "1200s"
+      # Export operation poll allows up to 1200s; the in-job merge and startup
+      # need headroom on top, so the job timeout must exceed the poll timeout.
+      timeout = "1800s"
 
       containers {
         image = var.exporter_image
@@ -181,45 +165,39 @@ resource "google_cloud_run_v2_job" "exporter" {
         }
 
         env {
-          name  = "ENGINE_CONFIG_SECRET"
-          value = google_secret_manager_secret.engine_config.id
+          name  = "ANALYTICS_PROJECT_ID"
+          value = var.project_id
+        }
+
+        env {
+          name  = "ANALYTICS_DATASET"
+          value = google_bigquery_dataset.analytics.dataset_id
+        }
+
+        env {
+          name  = "ANALYTICS_TABLE"
+          value = google_bigquery_table.export_history.table_id
+        }
+
+        # Used by the transform_logs and snapshot_licenses modes, which the
+        # log-pipeline schedulers select with a MODE override.
+        dynamic "env" {
+          for_each = var.enable_log_pipeline ? {
+            RAW_LOGS_VIEW        = local.raw_logs_view
+            APP_NAMES_JSON       = jsonencode(local.app_display_names)
+            USER_STORE_LOCATIONS = join(",", local.user_store_locations)
+          } : {}
+
+          content {
+            name  = env.key
+            value = env.value
+          }
         }
       }
     }
   }
 
   depends_on = [google_project_service.required]
-}
-
-resource "google_bigquery_data_transfer_config" "merge_export_history" {
-  project        = var.project_id
-  location       = var.dataset_location
-  display_name   = "gemini_export_history_merge"
-  data_source_id = "scheduled_query"
-  schedule       = "every day 07:00"
-
-  service_account_name = google_service_account.scheduled_query.email
-
-  # No destination_dataset_id: the query is a multi-statement script (DECLARE +
-  # MERGE) that writes to a fully-qualified table itself. Setting a destination
-  # dataset is only for writing a SELECT's results to a table, and it makes DTS
-  # reject a script with "Dataset specified in the query ('') is not consistent
-  # with Destination dataset".
-
-  params = {
-    query = templatefile("${path.module}/../../sql/merge_export_history.sql.tpl", {
-      project_id           = var.project_id
-      staging_project_id   = local.staging_project_id
-      staging_dataset_id   = google_bigquery_dataset.staging.dataset_id
-      analytics_dataset_id = google_bigquery_dataset.analytics.dataset_id
-      engine_app_names     = local.engine_app_names
-    })
-  }
-
-  depends_on = [
-    google_bigquery_table.export_history,
-    google_project_service.required,
-  ]
 }
 
 resource "google_cloud_scheduler_job" "export_engine" {
@@ -231,6 +209,12 @@ resource "google_cloud_scheduler_job" "export_engine" {
   description = "Daily Gemini Enterprise analytics export for ${each.key}"
   schedule    = each.value.schedule
   time_zone   = each.value.time_zone
+
+  retry_config {
+    retry_count          = 3
+    min_backoff_duration = "30s"
+    max_backoff_duration = "300s"
+  }
 
   http_target {
     http_method = "POST"

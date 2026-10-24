@@ -35,6 +35,44 @@ engines = [
   }
 ]
 
+# Recommended: email alert when an export run fails (dashboards go stale
+# silently otherwise). Leave empty to skip creating alerting resources.
+alert_email = "data-team@example.com"
+
+# Optional: the Looker connection's service account. When set, Terraform grants
+# it read access to the analytics dataset and BigQuery Job User on the project.
+looker_service_account_email = ""
+
+# Optional: user-level analytics for the Change Management dashboards. Routes
+# Gemini Enterprise, Model Armor and Antigravity logs into a raw log bucket that
+# keeps entries for raw_log_retention_days, and copies redacted metadata (no
+# prompts or responses) into gemini_analytics every hour.
+enable_log_pipeline = false
+
+# Projects whose logs are routed; defaults to engine_project_id. Add the Model
+# Armor template project and Antigravity subscription project if different.
+# log_source_project_ids = ["your-gemini-enterprise-project-id"]
+
+# Log Model Armor screening verdicts (Data Access audit logs, no prompt text).
+enable_model_armor_audit_logs = false
+
+# Keep prompt/response logs out of the 30-day _Default log bucket.
+exclude_content_logs_from_default_bucket = false
+
+# Friendly names for apps that appear in the logs but aren't in engines above.
+# log_app_display_names = {
+#   "your-global-engine-id" = "Company Assistant"
+# }
+
+# Optional: the Workspace audit export (Admin console > Reporting > BigQuery
+# Export) is often in the US while dataset_location is EU. BigQuery can't join
+# across locations, so set these to copy it daily into dataset_location; the
+# Looker block then shows Gemini for Workspace next to Gemini Enterprise.
+# The copy transfers the whole changed table each day, so expect egress costs
+# on large tenants.
+# workspace_audit_dataset_id = "workspace_audit"
+# workspace_audit_location   = "US"
+
 labels = {
   application = "gemini-analytics"
   managed_by  = "terraform"
