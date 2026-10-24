@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.9.*"
+
+    - name: terraform fmt
+      run: terraform fmt -check -recursive
+      working-directory: infra/terraform
+
+    - name: terraform init (no backend)
+      run: terraform init -backend=false -input=false
+      working-directory: infra/terraform
+
+    - name: terraform validate
+      run: terraform validate
+      working-directory: infra/terraform
+
+  exporter:
+    name: Exporter (ruff + pytest)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install
+      run: pip install -e "./apps/exporter[dev]"
+
+    - name: Ruff
+      run: ruff check apps/exporter/src apps/exporter/tests
+
+    - name: Pytest
+      run: pytest apps/exporter/tests
+
+  lookml:
+    name: LookML parse check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install parsers
+      run: pip install lkml pyyaml
+
+    - name: Parse LookML and dashboards
+      run: python scripts/check_lookml.py

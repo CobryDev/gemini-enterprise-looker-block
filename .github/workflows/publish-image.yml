@@ -1,0 +1,66 @@
+name: Publish exporter image
+
+# Builds the exporter container and pushes it to Artifact Registry so clients
+# can point `exporter_image` at a prebuilt image instead of building their own.
+#
+# One-time setup (repository settings -> Secrets and variables -> Actions):
+#   Variables:
+#     EXPORTER_IMAGE        e.g. europe-docker.pkg.dev/your-project/gemini-analytics/gemini-exporter
+#   Secrets:
+#     GCP_WORKLOAD_IDENTITY_PROVIDER
+#       e.g. projects/123456789/locations/global/workloadIdentityPools/github/providers/github
+#     GCP_SERVICE_ACCOUNT
+#       e.g. github-image-publisher@your-project.iam.gserviceaccount.com
+#       (needs roles/artifactregistry.writer on the target repository)
+#
+# See https://github.com/google-github-actions/auth#setup for creating the
+# Workload Identity Federation pool and provider.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Build and push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+    - name: Set up gcloud
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Configure Docker auth for Artifact Registry
+      run: gcloud auth configure-docker "$(echo "${{ vars.EXPORTER_IMAGE }}" | cut -d/ -f1)" --quiet
+
+    - name: Resolve image tag
+      id: tag
+      run: |
+        if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+          echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+        else
+          echo "tag=sha-${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Build
+      run: |
+        docker build \
+          -t "${{ vars.EXPORTER_IMAGE }}:${{ steps.tag.outputs.tag }}" \
+          -t "${{ vars.EXPORTER_IMAGE }}:latest" \
+          apps/exporter
+
+    - name: Push
+      run: |
+        docker push "${{ vars.EXPORTER_IMAGE }}:${{ steps.tag.outputs.tag }}"
+        docker push "${{ vars.EXPORTER_IMAGE }}:latest"
