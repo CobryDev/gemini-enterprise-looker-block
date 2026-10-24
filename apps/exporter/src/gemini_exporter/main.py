@@ -5,11 +5,12 @@ import logging
 import os
 import time
 from dataclasses import dataclass
+from importlib import resources
 from typing import Any
 
 import google.auth
 from google.auth.transport.requests import AuthorizedSession
-from google.cloud import bigquery, secretmanager
+from google.cloud import bigquery
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -32,6 +33,17 @@ class EngineConfig:
     table_id_prefix: str
 
 
+@dataclass(frozen=True)
+class PipelineConfig:
+    project_id: str
+    engine_project_id: str
+    staging_project_id: str
+    staging_dataset: str
+    analytics_project_id: str
+    analytics_dataset: str
+    analytics_table: str
+
+
 def configure_logging() -> None:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
@@ -47,15 +59,12 @@ def required_env(name: str) -> str:
     return value
 
 
-def engine_from_env() -> EngineConfig | None:
-    engine_id = os.getenv("ENGINE_ID")
-    if not engine_id:
-        return None
-
+def engine_from_env() -> EngineConfig:
+    engine_id = required_env("ENGINE_ID")
     location = required_env("ENGINE_LOCATION")
-    endpoint_location = os.getenv("ENDPOINT_LOCATION", location)
-    table_id_prefix = os.getenv("TABLE_ID_PREFIX", f"export_{engine_id.replace('-', '_')}")
-    display_name = os.getenv("DISPLAY_NAME", engine_id)
+    endpoint_location = os.getenv("ENDPOINT_LOCATION") or location
+    table_id_prefix = os.getenv("TABLE_ID_PREFIX") or f"export_{engine_id.replace('-', '_')}"
+    display_name = os.getenv("DISPLAY_NAME") or engine_id
 
     return EngineConfig(
         engine_id=engine_id,
@@ -66,37 +75,18 @@ def engine_from_env() -> EngineConfig | None:
     )
 
 
-def load_engine_config_from_secret(secret_name: str) -> list[EngineConfig]:
-    client = secretmanager.SecretManagerServiceClient()
-    response = client.access_secret_version(request={"name": f"{secret_name}/versions/latest"})
-    payload = json.loads(response.payload.data.decode("utf-8"))
-
-    engines = []
-    for engine in payload.get("engines", []):
-        engine_id = engine["engine_id"]
-        location = engine["location"]
-        engines.append(
-            EngineConfig(
-                engine_id=engine_id,
-                display_name=engine.get("display_name", engine_id),
-                location=location,
-                endpoint_location=engine.get("endpoint_location", location),
-                table_id_prefix=engine.get("table_id_prefix", f"export_{engine_id.replace('-', '_')}"),
-            )
-        )
-
-    if not engines:
-        raise ValueError("Engine config secret did not contain any engines")
-
-    return engines
-
-
-def load_engines() -> list[EngineConfig]:
-    env_engine = engine_from_env()
-    if env_engine:
-        return [env_engine]
-
-    return load_engine_config_from_secret(required_env("ENGINE_CONFIG_SECRET"))
+def pipeline_from_env() -> PipelineConfig:
+    project_id = required_env("PROJECT_ID")
+    engine_project_id = os.getenv("ENGINE_PROJECT_ID") or project_id
+    return PipelineConfig(
+        project_id=project_id,
+        engine_project_id=engine_project_id,
+        staging_project_id=os.getenv("STAGING_PROJECT_ID") or engine_project_id,
+        staging_dataset=required_env("STAGING_DATASET"),
+        analytics_project_id=os.getenv("ANALYTICS_PROJECT_ID") or project_id,
+        analytics_dataset=required_env("ANALYTICS_DATASET"),
+        analytics_table=os.getenv("ANALYTICS_TABLE") or "export_history",
+    )
 
 
 def authorized_session() -> AuthorizedSession:
@@ -129,8 +119,8 @@ def engine_path(project_id: str, engine: EngineConfig) -> str:
     )
 
 
-def api_base_url(endpoint_location: str) -> str:
-    return f"https://{endpoint_location}-discoveryengine.googleapis.com/v1alpha"
+def api_base_url(endpoint_location: str, version: str = "v1alpha") -> str:
+    return f"https://{endpoint_location}-discoveryengine.googleapis.com/{version}"
 
 
 def operation_url(base_url: str, operation_name: str) -> str:
@@ -162,26 +152,21 @@ def wait_for_operation(
 
         time.sleep(POLL_INTERVAL_SECONDS)
 
-    raise TimeoutError(f"Operation did not complete within {timeout_seconds} seconds: {operation_name}")
+    raise TimeoutError(
+        f"Operation did not complete within {timeout_seconds} seconds: {operation_name}"
+    )
 
 
-def export_engine_metrics(
-    *,
-    project_id: str,
-    engine_project_id: str,
-    staging_project_id: str,
-    staging_dataset: str,
-    engine: EngineConfig,
-) -> str:
+def export_engine_metrics(*, pipeline: PipelineConfig, engine: EngineConfig) -> str:
     session = authorized_session()
     base_url = api_base_url(engine.endpoint_location)
-    analytics_resource = engine_path(engine_project_id, engine)
+    analytics_resource = engine_path(pipeline.engine_project_id, engine)
     url = f"{base_url}/{analytics_resource}/analytics:exportMetrics"
     payload = {
         "analytics": analytics_resource,
         "outputConfig": {
             "bigqueryDestination": {
-                "datasetId": staging_dataset,
+                "datasetId": pipeline.staging_dataset,
                 "tableId": engine.table_id_prefix,
             }
         }
@@ -189,7 +174,7 @@ def export_engine_metrics(
 
     response = session.post(
         url,
-        headers={"X-Goog-User-Project": engine_project_id},
+        headers={"X-Goog-User-Project": pipeline.engine_project_id},
         json=payload,
         timeout=60,
     )
@@ -197,8 +182,8 @@ def export_engine_metrics(
         log_json(
             "export_request_failed",
             engine_id=engine.engine_id,
-            engine_project_id=engine_project_id,
-            staging_project_id=staging_project_id,
+            engine_project_id=pipeline.engine_project_id,
+            staging_project_id=pipeline.staging_project_id,
             status_code=response.status_code,
             response_body=response.text,
         )
@@ -218,79 +203,138 @@ def export_engine_metrics(
     return operation_name
 
 
+def staging_table_wildcard(pipeline: PipelineConfig, engine: EngineConfig) -> str:
+    return f"{pipeline.staging_project_id}.{pipeline.staging_dataset}.{engine.table_id_prefix}*"
+
+
+def history_table(pipeline: PipelineConfig) -> str:
+    return (
+        f"{pipeline.analytics_project_id}.{pipeline.analytics_dataset}.{pipeline.analytics_table}"
+    )
+
+
+def load_merge_sql() -> str:
+    return resources.files("gemini_exporter").joinpath("merge_export_history.sql").read_text()
+
+
+def render_merge_sql(pipeline: PipelineConfig, engine: EngineConfig) -> str:
+    # Identifiers can't be bound as query parameters; they come from trusted
+    # Terraform-supplied config. All values are bound as parameters.
+    return load_merge_sql().format(
+        staging_table_wildcard=staging_table_wildcard(pipeline, engine),
+        history_table=history_table(pipeline),
+    )
+
+
 def count_exported_rows(
-    job_project_id: str,
-    staging_project_id: str,
-    staging_dataset: str,
-    table_id_prefix: str,
+    client: bigquery.Client,
+    pipeline: PipelineConfig,
+    engine: EngineConfig,
 ) -> int | None:
     query = f"""
         SELECT COUNT(*) AS row_count
-        FROM `{staging_project_id}.{staging_dataset}.{table_id_prefix}*`
+        FROM `{staging_table_wildcard(pipeline, engine)}`
     """
     try:
-        rows = bigquery.Client(project=job_project_id).query(query).result()
+        rows = client.query(query).result()
         return next(iter(rows)).row_count
     except Exception:
         logging.exception("Failed to count exported rows")
         return None
 
 
+def merge_export_history(
+    client: bigquery.Client,
+    pipeline: PipelineConfig,
+    engine: EngineConfig,
+) -> int | None:
+    """Upsert this engine's staging window into the history table.
+
+    Returns the number of affected rows, or None when staging held no rows.
+    """
+    bounds_query = f"""
+        SELECT
+          MIN(SAFE_CAST(date AS DATE)) AS window_start,
+          MAX(SAFE_CAST(date AS DATE)) AS window_end
+        FROM `{staging_table_wildcard(pipeline, engine)}`
+        WHERE date IS NOT NULL
+    """
+    bounds = next(iter(client.query(bounds_query).result()))
+    if bounds.window_start is None:
+        log_json("merge_skipped_empty_staging", engine_id=engine.engine_id)
+        return None
+
+    job_config = bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("engine_id", "STRING", engine.engine_id),
+            bigquery.ScalarQueryParameter("app_name", "STRING", engine.display_name),
+            bigquery.ScalarQueryParameter("window_start", "DATE", bounds.window_start),
+            bigquery.ScalarQueryParameter("window_end", "DATE", bounds.window_end),
+        ]
+    )
+    job = client.query(render_merge_sql(pipeline, engine), job_config=job_config)
+    job.result()
+
+    log_json(
+        "merge_completed",
+        engine_id=engine.engine_id,
+        app_name=engine.display_name,
+        window_start=str(bounds.window_start),
+        window_end=str(bounds.window_end),
+        affected_rows=job.num_dml_affected_rows,
+    )
+    return job.num_dml_affected_rows
+
+
+def run_export() -> None:
+    pipeline = pipeline_from_env()
+    engine = engine_from_env()
+
+    log_json(
+        "export_run_started",
+        engine_id=engine.engine_id,
+        app_name=engine.display_name,
+        project_id=pipeline.project_id,
+        engine_project_id=pipeline.engine_project_id,
+        staging_project_id=pipeline.staging_project_id,
+    )
+
+    operation_name = export_engine_metrics(pipeline=pipeline, engine=engine)
+
+    client = bigquery.Client(project=pipeline.project_id)
+    row_count = count_exported_rows(client, pipeline, engine)
+    log_json(
+        "export_completed",
+        engine_id=engine.engine_id,
+        app_name=engine.display_name,
+        operation_name=operation_name,
+        row_count=row_count,
+    )
+
+    merge_export_history(client, pipeline, engine)
+
+    log_json("export_run_completed", engine_id=engine.engine_id)
+
+
+MODES = ("export", "transform_logs", "snapshot_licenses")
+
+
 def main() -> None:
     configure_logging()
 
-    project_id = required_env("PROJECT_ID")
-    engine_project_id = os.getenv("ENGINE_PROJECT_ID", project_id)
-    staging_project_id = os.getenv("STAGING_PROJECT_ID", engine_project_id)
-    staging_dataset = required_env("STAGING_DATASET")
+    mode = os.getenv("MODE") or "export"
+    if mode == "export":
+        run_export()
+    elif mode == "transform_logs":
+        from gemini_exporter import transform_logs
 
-    engines = load_engines()
-    log_json(
-        "export_run_started",
-        engine_count=len(engines),
-        project_id=project_id,
-        engine_project_id=engine_project_id,
-        staging_project_id=staging_project_id,
-    )
+        transform_logs.run()
+    elif mode == "snapshot_licenses":
+        from gemini_exporter import licenses
 
-    failed_engines: list[str] = []
-    for engine in engines:
-        try:
-            operation_name = export_engine_metrics(
-                project_id=project_id,
-                engine_project_id=engine_project_id,
-                staging_project_id=staging_project_id,
-                staging_dataset=staging_dataset,
-                engine=engine,
-            )
-            row_count = count_exported_rows(
-                project_id,
-                staging_project_id,
-                staging_dataset,
-                engine.table_id_prefix,
-            )
-            log_json(
-                "export_completed",
-                engine_id=engine.engine_id,
-                app_name=engine.display_name,
-                operation_name=operation_name,
-                row_count=row_count,
-            )
-        except Exception:
-            # Keep going so one bad engine can't block the rest of the run; we
-            # surface the failures with a non-zero exit at the end.
-            logging.exception("Gemini analytics export failed for engine %s", engine.engine_id)
-            failed_engines.append(engine.engine_id)
-
-    log_json(
-        "export_run_completed",
-        engine_count=len(engines),
-        failed_engine_count=len(failed_engines),
-        failed_engines=failed_engines,
-    )
-
-    if failed_engines:
-        raise SystemExit(f"Export failed for {len(failed_engines)} engine(s): {', '.join(failed_engines)}")
+        licenses.run()
+    else:
+        raise ValueError(f"Unknown MODE {mode!r}; expected one of {', '.join(MODES)}")
 
 
 if __name__ == "__main__":

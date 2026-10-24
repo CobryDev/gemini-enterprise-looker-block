@@ -1,0 +1,36 @@
+{
+  "gcp.vertex.agent.event_id": "event-1",
+  "gcp.vertex.agent.invocation_id": "invocation-1",
+  "gen_ai.agent.name": "root_agent",
+  "gen_ai.conversation.id": "conversation-1",
+  "gen_ai.input.messages": [
+    {"role": "user", "parts": [{"type": "text", "content": "<prompt text>"}]}
+  ],
+  "gen_ai.output.messages": [
+    {
+      "role": "assistant",
+      "finish_reason": "stop",
+      "parts": [
+        {"type": "text", "content": "<answer text>"},
+        {
+          "type": "tool_call",
+          "id": "call-1",
+          "name": "load_skill",
+          "arguments": {"skill_name": "email-polisher"}
+        },
+        {
+          "type": "tool_call",
+          "id": "call-2",
+          "name": "email_agent__search_email_tool",
+          "arguments": {"queries": ["<search query>"]}
+        }
+      ]
+    }
+  ],
+  "gen_ai.response.finish_reasons": ["stop"],
+  "gen_ai.usage.input_tokens": 1200,
+  "gen_ai.usage.output_tokens": 300,
+  "gen_ai.usage.cache_read.input_tokens": 800,
+  "gen_ai.usage.reasoning.output_tokens": 50,
+  "user.id": "user"
+}

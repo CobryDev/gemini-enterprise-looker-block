@@ -1,0 +1,163 @@
+[
+  {
+    "userIamPrincipal": "Ada.Lovelace@example.com",
+    "logMetadata": {
+      "methodName": "google.cloud.discoveryengine.v1alpha.AssistantService.StreamAssist",
+      "name": "projects/123/locations/global/collections/default_collection/engines/support-engine/assistants/default_assistant"
+    },
+    "request": {
+      "name": "projects/123/locations/global/collections/default_collection/engines/support-engine/assistants/default_assistant",
+      "query": {
+        "parts": [
+          {"text": "<prompt text>"},
+          {"mimeType": "application/pdf", "fileName": "<file name>"}
+        ]
+      },
+      "agentsSpec": {"agentSpecs": [{"agentId": "deep_research"}]},
+      "userInfo": {"timeZone": "Europe/London"}
+    },
+    "response": {
+      "assistToken": "token-1",
+      "answer": {
+        "name": "projects/123/locations/global/collections/default_collection/engines/support-engine/sessions/555/answers/1",
+        "state": "SUCCEEDED",
+        "replies": [
+          {
+            "groundedContent": {
+              "content": {"text": "<answer text>"},
+              "textGroundingMetadata": {
+                "references": [
+                  {
+                    "content": "<grounding snippet>",
+                    "documentMetadata": {
+                      "domain": "docs.example.com",
+                      "mimeType": "text/html",
+                      "title": "<document title>",
+                      "uri": "https://docs.example.com/<private path>"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "actionInvocation": {
+              "actionName": "send_email",
+              "args": {"to": "<recipient>", "body": "<email body>"}
+            }
+          }
+        ]
+      },
+      "agentInfo": {
+        "agent": "projects/123/locations/global/collections/default_collection/engines/support-engine/assistants/default_assistant/agents/deep_research",
+        "agentKind": "GOOGLE",
+        "coreAssistant": false,
+        "displayName": "Deep Research "
+      },
+      "modelInfo": {
+        "model": "gemini-3.5-flash",
+        "modelSelectionMode": "MODEL_SELECTION_MODE_AUTO",
+        "requestedModel": "gemini-3.5-pro"
+      },
+      "dataSourceInfo": {
+        "selectionMode": "AUTO",
+        "dataStores": ["projects/123/locations/global/collections/default_collection/dataStores/drive"]
+      }
+    },
+    "serviceTextReply": "<answer text>",
+    "status": {"code": 0, "message": "<status message>"}
+  },
+  {
+    "userIamPrincipal": "grace.hopper@example.com",
+    "logMetadata": {
+      "methodName": "google.cloud.discoveryengine.v1alpha.AssistantService.StreamAssist",
+      "name": "projects/123/locations/global/collections/default_collection/engines/support-engine/assistants/default_assistant"
+    },
+    "request": {
+      "agentsSpec": {"agentSpecs": [{"agentId": "4815162342", "scheduleId": "sched-1", "triggerId": "trig-1"}]},
+      "actionExecutionParams": {"actionName": "create_event", "args": {"title": "<event title>"}}
+    },
+    "response": {
+      "answer": {
+        "state": "SKIPPED",
+        "assistSkippedReasons": ["CUSTOMER_POLICY_VIOLATION"],
+        "skippedReasons": ["CUSTOMER_POLICY_VIOLATION"]
+      }
+    },
+    "status": {"code": 0}
+  },
+  {
+    "userIamPrincipal": "ada.lovelace@example.com",
+    "logMetadata": {
+      "methodName": "google.cloud.discoveryengine.v1alpha.SearchService.Search",
+      "name": "projects/123/locations/global/collections/default_collection/engines/support-engine/servingConfigs/default_search"
+    },
+    "request": {
+      "query": "<search query>",
+      "servingConfig": "projects/123/locations/global/collections/default_collection/engines/support-engine/servingConfigs/default_search",
+      "parent": "projects/123/locations/global/collections/default_collection/engines/support-engine",
+      "userInfo": {"userId": "ada", "timeZone": "Europe/London"}
+    },
+    "response": {
+      "results": [{"id": "doc-1", "document": {"name": "projects/123/locations/global/collections/default_collection/dataStores/drive/branches/0/documents/doc-1"}}]
+    }
+  },
+  {
+    "userIamPrincipal": "ada.lovelace@example.com",
+    "assistToken": "token-1",
+    "logMetadata": {
+      "methodName": "google.cloud.discoveryengine.v1alpha.UserEventService.WriteUserEvent",
+      "name": "projects/123/locations/global/dataStores/default_data_store"
+    },
+    "request": {
+      "userEvent": {
+        "engine": "projects/123/locations/global/collections/default_collection/engines/support-engine",
+        "eventType": "view-item",
+        "agentspaceInfo": {
+          "agentspacePageType": "agent_gallery",
+          "agentInfo": {"agentId": "4815162342", "name": "Sales Coach"}
+        },
+        "feedback": {
+          "feedbackType": "NEGATIVE",
+          "reasons": ["INACCURATE"],
+          "comment": "<feedback comment>",
+          "conversationInfo": {
+            "assistToken": "token-1",
+            "session": "projects/123/locations/global/collections/default_collection/engines/support-engine/sessions/555"
+          }
+        },
+        "userInfo": {"userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
+      }
+    }
+  },
+  {
+    "userIamPrincipal": "ada.lovelace@example.com",
+    "logMetadata": {
+      "methodName": "google.cloud.discoveryengine.v1alpha.SessionService.UploadSessionFile",
+      "name": "projects/123/locations/global/collections/default_collection/engines/support-engine/sessions/555"
+    },
+    "request": {
+      "name": "projects/123/locations/global/collections/default_collection/engines/support-engine/sessions/555"
+    },
+    "response": {"mimeType": "text/csv", "byteCount": "2048", "fileName": "<file name>"}
+  },
+  {
+    "userIamPrincipal": "grace.hopper@example.com",
+    "logMetadata": {
+      "methodName": "google.cloud.discoveryengine.v1alpha.AgentService.CreateAgent",
+      "name": "projects/123/locations/global/collections/default_collection/engines/support-engine/assistants/default_assistant/agents/4815162342"
+    },
+    "request": {
+      "agent": {
+        "name": "projects/123/locations/global/collections/default_collection/engines/support-engine/assistants/default_assistant/agents/4815162342",
+        "displayName": "Sales Coach",
+        "description": "<agent instructions>"
+      }
+    },
+    "response": {
+      "name": "projects/123/locations/global/collections/default_collection/engines/support-engine/assistants/default_assistant/agents/4815162342",
+      "displayName": "Sales Coach",
+      "description": "<agent instructions>"
+    }
+  }
+]

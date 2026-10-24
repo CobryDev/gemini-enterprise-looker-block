@@ -4,13 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gemini-analytics-exporter"
-version = "0.1.0"
+version = "0.2.0"
 description = "Cloud Run exporter for Gemini Enterprise analytics metrics."
 requires-python = ">=3.11"
 dependencies = [
   "google-auth",
   "google-cloud-bigquery",
-  "google-cloud-secret-manager",
   "requests",
   "urllib3",
 ]
@@ -18,6 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "ruff",
+  "pytest",
 ]
 
 [tool.ruff]
@@ -29,3 +29,6 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+gemini_exporter = ["*.sql", "sql/logs/*.sql"]
