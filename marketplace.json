@@ -3,7 +3,7 @@
   "category_label": "Models",
   "branding": {
     "image_uri": "https://marketplace-api.looker.com/block-icons/google-cloud.png",
-    "tagline": "Adoption, usage, quality, agent, and value dashboards for Gemini Enterprise, built on the BigQuery tables produced by the Gemini analytics pipeline."
+    "tagline": "One tabbed dashboard for AI adoption across Gemini Enterprise, Gemini for Workspace and Antigravity: activation, user cohorts, leaderboards, models, ROI and change-management target lists, plus Gemini Enterprise usage, agents and safety. Built on the BigQuery tables produced by the Gemini analytics pipeline."
   },
   "constants": {
     "connection_name": {
@@ -20,16 +20,52 @@
     },
     "workspace_dataset": {
       "label": "Workspace audit dataset (optional)",
-      "description": "BigQuery dataset holding the Workspace Gemini audit log export. Leave as workspace_audit if you are not using Workspace reporting."
+      "description": "BigQuery dataset holding the Workspace Gemini audit log export. Set it to the dataset name created by the Workspace Admin console; the value is only used if you enable Workspace reporting."
+    },
+    "workspace_export": {
+      "label": "Workspace audit export",
+      "description": "none, separate_region or same_region. Use same_region when the Workspace audit dataset is in the same BigQuery location as the Gemini analytics dataset (or copied there): this turns on Gemini for Workspace adoption, the Workspace population and org units. Use separate_region if it lives elsewhere: only the Workspace Gemini tab uses it. Use none if you have no Workspace export."
+    },
+    "reporting_time_zone": {
+      "label": "Reporting time zone",
+      "description": "IANA time zone for hour-of-day charts, for example Europe/London or America/New_York. Defaults to UTC."
+    },
+    "power_user_min_days": {
+      "label": "Power user threshold (days)",
+      "description": "AI-active days in the trailing 28 days that make someone a Power user. Default 12, about three days a week."
+    },
+    "normal_user_min_days": {
+      "label": "Normal user threshold (days)",
+      "description": "AI-active days in the trailing 28 days that make someone a Normal user. Default 4, about once a week. Fewer is Casual; zero is Non-AI."
+    },
+    "ge_seat_cost_monthly": {
+      "label": "Gemini Enterprise monthly seat cost",
+      "description": "Per licence, in your currency. Leave 0 to hide spend figures."
+    },
+    "gws_seat_cost_monthly": {
+      "label": "Gemini for Workspace monthly seat cost",
+      "description": "Per Workspace user, if Gemini is billed separately. Leave 0 if it is bundled or you don't want it in the ROI tiles."
+    },
+    "loaded_hourly_rate": {
+      "label": "Loaded hourly rate",
+      "description": "Fully loaded cost of an hour of employee time, used to value estimated time saved. Leave 0 to show hours only."
+    },
+    "currency_symbol": {
+      "label": "Currency symbol",
+      "description": "Shown on spend and value figures. Defaults to $."
+    },
+    "time_saved_minutes": {
+      "label": "Minutes saved per AI action",
+      "description": "Comma-separated feature=minutes pairs used for the time-saved estimate, for example default=2,Deep Research=30,help_me_write=5. Features not listed use default."
+    },
+    "org_unit_depth": {
+      "label": "Org-unit depth for departments",
+      "description": "How many segments of the Workspace org-unit path make a department: 1 for /Sales, 2 for /EMEA/Sales. Default 1."
     }
   },
   "models": [
     {
       "name": "gemini_enterprise",
-      "connection_constant": "connection_name"
-    },
-    {
-      "name": "workspace_gemini",
       "connection_constant": "connection_name"
     }
   ]

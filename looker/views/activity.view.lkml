@@ -51,6 +51,12 @@ view: activity {
     sql: ${TABLE}.device_type ;;
   }
 
+  dimension: dislike_reasons {
+    description: "Reason codes users selected when giving negative (dislike) feedback on an answer. Null on rows without dislike feedback."
+    type: string
+    sql: ${TABLE}.dislike_reasons ;;
+  }
+
   measure: searches {
     description: "Total search queries issued."
     type: sum
@@ -134,6 +140,13 @@ view: activity {
     description: "Total visits to the prompts page (saved/shared prompt library)."
     type: sum
     sql: ${TABLE}.total_prompts_page_visit_count ;;
+    value_format_name: decimal_0
+  }
+
+  measure: people_page_visits {
+    description: "Total visits to the People page (colleague profiles and expertise search)."
+    type: sum
+    sql: ${TABLE}.total_people_page_visit_count ;;
     value_format_name: decimal_0
   }
 

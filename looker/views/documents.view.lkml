@@ -36,9 +36,16 @@ view: documents {
   }
 
   dimension: document_name {
-    description: "Resource name of the document surfaced or viewed in search and answer results."
+    description: "Full resource name of the document surfaced or viewed in search and answer results."
     type: string
     sql: ${TABLE}.document_name ;;
+  }
+
+  dimension: document {
+    label: "Document"
+    description: "Readable document identifier: the last path segment of the full resource name."
+    type: string
+    sql: COALESCE(REGEXP_EXTRACT(${TABLE}.document_name, r'([^/]+)$'), ${TABLE}.document_name) ;;
   }
 
   measure: times_surfaced_in_search {

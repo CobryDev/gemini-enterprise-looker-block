@@ -4,21 +4,51 @@ view: workspace_gemini_activity {
   # One row per Gemini event. event_category distinguishes active usage
   # (active_generate / active_conversations / active_summarize) from passive
   # surfacing (inactive).
+  #
+  # Persisted (PDT) and rebuilt daily by the model datagroup: the raw audit
+  # export grows continuously and an unpersisted derived table would rescan the
+  # whole `activity` table on every dashboard query.
+  #
+  # Empty when the workspace_export constant is none, so the dashboard
+  # renders (with no data) before the Workspace export is set up.
   derived_table: {
+    datagroup_trigger: workspace_gemini_default_datagroup
     sql:
+      {% if '@{workspace_export}' != 'none' %}
       SELECT
         ROW_NUMBER() OVER (ORDER BY time_usec, email) AS pk,
+        TIMESTAMP_MICROS(time_usec) AS event_ts,
         DATE(TIMESTAMP_MICROS(time_usec)) AS event_date,
-        email,
+        LOWER(email) AS email,
         domain_name,
-        org_unit_name_path,
+        -- The export stores the org-unit path as an array that starts with
+        -- the organisation itself: [org, 'Sales', 'EMEA'] becomes /Sales/EMEA.
+        IF(ARRAY_LENGTH(org_unit_name_path) = 0, NULL, CONCAT('/', ARRAY_TO_STRING(ARRAY(
+          SELECT part FROM UNNEST(org_unit_name_path) AS part WITH OFFSET AS depth
+          WHERE depth > 0 ORDER BY depth
+        ), '/'))) AS org_unit_name_path,
         gemini_for_workspace.app_name AS app_name,
         gemini_for_workspace.feature_source AS feature_source,
         gemini_for_workspace.action AS action,
         gemini_for_workspace.event_category AS event_category,
         STARTS_WITH(gemini_for_workspace.event_category, 'active') AS is_active_usage
       FROM `@{gemini_project}.@{workspace_dataset}.activity`
-      WHERE gemini_for_workspace.app_name IS NOT NULL ;;
+      WHERE gemini_for_workspace.app_name IS NOT NULL
+      {% else %}
+      SELECT
+        CAST(NULL AS INT64) AS pk,
+        CAST(NULL AS TIMESTAMP) AS event_ts,
+        CAST(NULL AS DATE) AS event_date,
+        CAST(NULL AS STRING) AS email,
+        CAST(NULL AS STRING) AS domain_name,
+        CAST(NULL AS STRING) AS org_unit_name_path,
+        CAST(NULL AS STRING) AS app_name,
+        CAST(NULL AS STRING) AS feature_source,
+        CAST(NULL AS STRING) AS action,
+        CAST(NULL AS STRING) AS event_category,
+        CAST(NULL AS BOOL) AS is_active_usage
+      FROM UNNEST(ARRAY<INT64>[])
+      {% endif %} ;;
   }
 
   dimension: pk {
@@ -36,6 +66,16 @@ view: workspace_gemini_activity {
     convert_tz: no
     datatype: date
     sql: ${TABLE}.event_date ;;
+  }
+
+  dimension_group: event_local {
+    label: "Local Time"
+    description: "Event time in the reporting_time_zone constant, for time-of-day patterns."
+    type: time
+    timeframes: [time, hour_of_day, day_of_week, day_of_week_index]
+    convert_tz: no
+    datatype: datetime
+    sql: DATETIME(${TABLE}.event_ts, '@{reporting_time_zone}') ;;
   }
 
   dimension: email {
