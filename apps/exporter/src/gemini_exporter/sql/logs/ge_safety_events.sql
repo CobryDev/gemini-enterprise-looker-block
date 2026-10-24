@@ -10,6 +10,8 @@
 -- GEMINI_ENTERPRISE: answers Gemini Enterprise skipped for a policy reason,
 --   one row per skip reason, attributed directly from the activity log.
 --
+-- Log Analytics types the AuditLog fields; only the response body is JSON.
+--
 -- Parameters: @window_start TIMESTAMP, @app_engine_ids ARRAY<STRING>,
 -- @app_display_names ARRAY<STRING>.
 MERGE `{analytics_dataset}.ge_safety_events` AS target
@@ -40,7 +42,7 @@ USING (
       timestamp AS event_ts,
       REGEXP_EXTRACT(log_name, r'^projects/([^/]+)/') AS project_id,
       REGEXP_EXTRACT(trace, r'([^/]+)$') AS trace_id,
-      COALESCE(proto_payload.audit_log, proto_payload) AS audit
+      proto_payload.audit_log AS audit
     FROM `{raw_logs_view}`
     WHERE timestamp >= @window_start
       AND log_id = 'cloudaudit.googleapis.com/data_access'
@@ -53,13 +55,10 @@ USING (
       event_ts,
       project_id,
       trace_id,
-      COALESCE(JSON_VALUE(audit.service_name), JSON_VALUE(audit.serviceName)) AS service_name,
-      COALESCE(JSON_VALUE(audit.method_name), JSON_VALUE(audit.methodName)) AS method_name,
-      COALESCE(JSON_VALUE(audit.resource_name), JSON_VALUE(audit.resourceName)) AS resource_name,
-      LOWER(COALESCE(
-        JSON_VALUE(audit.authentication_info.principal_email),
-        JSON_VALUE(audit.authenticationInfo.principalEmail)
-      )) AS principal_email,
+      audit.service_name,
+      audit.method_name,
+      audit.resource_name,
+      LOWER(audit.authentication_info.principal_email) AS principal_email,
       COALESCE(
         audit.response.sanitizationResult, audit.response.sanitization_result
       ) AS result
