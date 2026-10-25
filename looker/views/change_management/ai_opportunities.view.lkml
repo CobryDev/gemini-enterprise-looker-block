@@ -12,7 +12,7 @@ view: ai_opportunities {
         LEFT JOIN ${user_org_unit.SQL_TABLE_NAME} AS user_org_unit USING (user_email)
       ),
 
-      department AS (
+      department_summary AS (
         SELECT
           department,
           COUNT(*) AS people,
@@ -70,7 +70,7 @@ view: ai_opportunities {
         CONCAT(CAST(active_people AS STRING), ' active of ', CAST(people AS STRING), ' eligible people; ', CAST(inactive_people AS STRING), ' inactive'),
         'Run a team-specific use-case session with early adopters and follow up after 28 days.',
         CASE WHEN inactive_people >= 5 THEN 2 ELSE 3 END
-      FROM department
+      FROM department_summary
       WHERE people > 0 AND inactive_people > 0
 
       UNION ALL
