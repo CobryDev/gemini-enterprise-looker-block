@@ -4,14 +4,16 @@ view: data_state {
   # empty sources, short history and genuine zero activity.
   derived_table: {
     datagroup_trigger: gemini_change_management_daily_datagroup
+    # Wrapped so Looker can prepend the ephemeral setup_health_* CTEs.
     sql:
+      SELECT * FROM (
       WITH source_status AS (
         SELECT
           table_id AS feature,
           status,
           row_count,
           last_modified,
-          next_step
+          fix AS next_step
         FROM ${setup_health_tables.SQL_TABLE_NAME}
       ),
 
@@ -113,7 +115,8 @@ view: data_state {
           ELSE 'Use-case classification coverage is healthy.'
         END,
         CASE WHEN IFNULL(ai_actions, 0) = 0 OR SAFE_DIVIDE(unclassified_actions, NULLIF(ai_actions, 0)) > 0.25 THEN 'Attention' ELSE 'OK' END
-      FROM activity_history ;;
+      FROM activity_history
+      ) ;;
   }
 
   dimension: feature {
