@@ -89,10 +89,10 @@ view: ai_activity_hourly {
 
       SELECT
         CONCAT(
-          user_email, '|', product, '|', IFNULL(surface, ''), '|', IFNULL(feature, ''), '|',
-          FORMAT_TIMESTAMP('%Y%m%d%H', event_hour)
+          unioned.user_email, '|', unioned.product, '|', IFNULL(unioned.surface, ''), '|', IFNULL(unioned.feature, ''), '|',
+          FORMAT_TIMESTAMP('%Y%m%d%H', unioned.event_hour)
         ) AS pk,
-        DATE(event_hour) AS event_date,
+        DATE(unioned.event_hour) AS event_date,
         unioned.*
       FROM unioned
       JOIN ${population_scope.SQL_TABLE_NAME} AS population_scope
