@@ -39,6 +39,7 @@ view: ge_safety_events {
     label: "User"
     description: "Model Armor is called by the Gemini Enterprise service agent, so the user is matched through the trace or the nearest assistant call; see Attribution Method."
     type: string
+    required_access_grants: [can_see_individuals]
     sql: ${TABLE}.user_email ;;
   }
 

@@ -15,6 +15,7 @@ Confirm these are ready before installing the block:
 - The Workspace audit export dataset (we use `workspace_audit` as the example name) has an `activity` table, if you want Workspace Gemini reporting. Set the `workspace_dataset` constant to your actual dataset name.
 - Your Looker instance has a BigQuery connection with a PDT/scratch dataset configured (the AI adoption and Workspace explores build persisted derived tables).
 - The Looker service account can read the datasets and run BigQuery jobs.
+- For individual-level coaching views, create a Looker user attribute named `gemini_individual_access` and set it to `yes` only for authorised change managers and administrators.
 
 Grant the Looker service account (Terraform does the first and third for you if you set `looker_service_account_email`):
 
@@ -42,7 +43,7 @@ You also need the `develop`, `manage_models`, and `deploy` Looker permissions to
    - **Workspace audit dataset** — prefilled with `workspace_audit`; set it to your Workspace export dataset name.
    - **Workspace audit export**: `none` (default), `separate_region` or `same_region`. `same_region` adds Gemini for Workspace adoption, the Workspace population and org units to the AI adoption tabs.
    - Optional, all with defaults: reporting time zone, Power and Normal user thresholds, seat costs, loaded hourly rate, currency symbol, minutes saved per AI action, and org-unit depth for departments.
-4. Click **Install**, then open the **Gemini | AI Adoption** dashboard's **Setup Health** tab to see which sources the block can read. Looker creates a read-only `marketplace_gemini_enterprise_looker_block` project with one model, its explores and one dashboard.
+4. Click **Install**, then open **Gemini | Admin AI Telemetry** → **Data Health** to see which sources the block can read. Looker creates a read-only `marketplace_gemini_enterprise_looker_block` project with one model, its explores and three role-based dashboards.
 
 To change any value later, use **Manage** on the block's Marketplace listing.
 
@@ -122,29 +123,43 @@ The `feature` dimension on **Gemini Enterprise Activity** is derived by the expo
 
 To change it, edit the `CASE` in `apps/exporter/src/gemini_exporter/sql/logs/ge_user_activity.sql`. New rows pick up the change, but existing rows keep their old label.
 
-## Dashboard
+## Dashboards
 
-One dashboard, **Gemini | AI Adoption** (`gemini_ai_adoption.dashboard.lookml`), with a tab per question area:
+The block installs three role-based dashboards instead of one large dashboard:
 
-| Tab | Answers | Needs |
-|---|---|---|
-| Executive Overview | AI active users, actions, hours saved, activation per product, product overlap, cohorts, department scorecard | Log pipeline |
-| Cohorts & Movement | Power, Normal, Casual and Non-AI users now and over time, and who moved up or down | Log pipeline |
-| People & Leaderboards | User and department leaderboards, depth of use, user profiles | Log pipeline |
-| Models & Time of Day | Model choice, Auto routing to advanced models, complex-query and reasoning leaderboards, weekday-by-hour heatmap | Log pipeline |
-| Features & Agents | Feature, agent, skill and tool adoption, actions, grounding, tokens, connector errors | Log pipeline |
-| ROI & Value | Spend, estimated time saved and its assumptions, retention, time to first use, answer quality | Log pipeline |
-| Change Targeting | Departments to train, champions, at-risk users, idle licences, cross-sell, skills gaps, licence demand | Log pipeline |
-| Safety & Governance | Model Armor flags by category and user, admin changes | Log pipeline and Model Armor |
-| Antigravity | Users, requests, agent tasks, tokens, clients and models | Log pipeline and Antigravity |
-| Gemini Enterprise Analytics | App-level adoption, seats, active users, search, answers, agents, queries and documents | Exporter only |
-| Workspace Gemini | Gemini in Gmail, Docs, Meet and the Gemini app, by app, feature and org unit | Workspace export |
-| Setup Health | Which sources the block can read, their freshness and the install settings | Nothing |
-| About this Dashboard | What each tab answers and how the numbers are defined | Nothing |
+- **Gemini | Executive AI Adoption** (`gemini_ai_executive.dashboard.lookml`): a concise decision view with canonical activation, regular adoption, engagement, retention, licence spend to review, a data-trust indicator and the top recommended actions.
+- **Gemini | AI Change Management** (`gemini_ai_change.dashboard.lookml`): an operational view for opportunity queues, cohort movement, use-case adoption, authorised people/coaching lists and intervention measurement.
+- **Gemini | Admin AI Telemetry** (`gemini_ai_admin.dashboard.lookml`): product telemetry, Workspace Gemini events, agents, models, Antigravity, governance, setup health and definitions.
 
-Dashboard filters are **Date** (default 90 days), **Product**, **Department**, **User** and **Gemini Enterprise App**. Each tile follows the filters its data supports: Product applies to the cross-product AI tiles, Department and User to every user-level tile, and App to Gemini Enterprise tiles. Tiles marked (28d) or Latest Week are rolling windows and ignore Date. Hover a tile's info icon for its definition.
+The old `gemini_ai_adoption` dashboard has been removed. Existing bookmarks to it should be replaced with one of the three role-based dashboards.
 
-The layout uses the 72-column `granular` grid. Every tab starts with a header banner, then a KPI strip with monthly sparklines, comparison charts, and detail tables last. Product, cohort and movement colours are fixed, so a series keeps its colour on every tile. The file uses YAML LookML dashboard syntax (`- dashboard:`), which is what Looker requires for `.dashboard.lookml` files; don't convert it to the brace syntax used by models and views.
+Headline definitions are now canonical across the dashboards:
+
+- **Activation:** eligible people with at least one AI-active day in the last 28 days, divided by eligible people in scope.
+- **Regular adoption:** eligible people with at least `normal_user_min_days` AI-active days in the last 28 days, divided by eligible people in scope.
+- **Engagement:** distinct AI-active days per active user.
+- **Retention:** people active in the previous 28-day window who returned in the current 28-day window.
+
+Product-specific telemetry keeps its own label and denominator. For example, **Daily Active / Seats Claimed** is the Gemini Enterprise Google export metric, while **Active Share of Workspace Gemini Events** is an event share, not a people activation rate.
+
+Dashboard filters are **Date** (default 90 days), **Product**, **Department** and **Gemini Enterprise App** where supported. Rolling 28-day people metrics ignore Date by design and show their effective window in the tile or definition.
+
+The layout uses the 72-column `granular` grid. Outcome tiles come first, explanation charts second, and investigation tables last. Sparse sources use data-state cards so users can distinguish **Not configured**, **No records**, **Insufficient history** and **Zero activity**.
+
+### Population scope and privacy
+
+Employee adoption rates use the optional Marketplace constants `employee_domains`, `excluded_org_units` and `excluded_email_pattern`. Use them to remove external users, guests and service accounts from the denominator. The Data Health tab shows excluded people by reason.
+
+Individual user fields are protected by the `can_see_individuals` access grant, driven by the `gemini_individual_access` user attribute. Give that attribute the value `yes` only to roles allowed to use coaching and administration lists.
+
+### Intervention and value tracking
+
+Terraform creates two optional tables:
+
+- `ai_interventions`: training, campaigns, coaching sessions and licence-review actions.
+- `ai_value_outcomes`: validated business outcomes from surveys, workflow systems or finance review.
+
+Load these tables when you want the Change Management dashboard to compare adoption before and after an intervention or to report validated outcomes separately from estimated productivity benefits. Intervention impact is labelled as comparison, not proof of causation.
 
 ## Validate the block
 

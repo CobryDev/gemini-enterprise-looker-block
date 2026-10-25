@@ -20,6 +20,7 @@ view: user_org_unit {
     primary_key: yes
     hidden: yes
     type: string
+    required_access_grants: [can_see_individuals]
     sql: ${TABLE}.user_email ;;
   }
 

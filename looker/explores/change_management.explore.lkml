@@ -166,6 +166,48 @@ explore: setup_settings {
   persist_with: gemini_change_management_datagroup
 }
 
+explore: data_state {
+  hidden: yes
+  label: "Data State"
+  description: "Compact source and history state cards for dashboards."
+  persist_with: gemini_change_management_datagroup
+}
+
+explore: ai_opportunities {
+  group_label: "Gemini AI Adoption"
+  label: "AI Opportunities"
+  description: "Prioritised queue of adoption, licence, access and data-quality opportunities with recommended next steps."
+  persist_with: gemini_change_management_datagroup
+}
+
+explore: ai_interventions {
+  group_label: "Gemini AI Adoption"
+  label: "AI Interventions"
+  description: "Optional training, campaign, coaching and licence-review interventions."
+  persist_with: gemini_change_management_datagroup
+}
+
+explore: intervention_impact {
+  group_label: "Gemini AI Adoption"
+  label: "Intervention Impact"
+  description: "Before/after intervention comparison against a simple comparison group. Directional, not causal proof."
+  persist_with: gemini_change_management_datagroup
+}
+
+explore: ai_value_outcomes {
+  group_label: "Gemini AI Adoption"
+  label: "Validated Value Outcomes"
+  description: "Optional externally validated business outcomes loaded into the analytics dataset."
+  persist_with: gemini_change_management_datagroup
+}
+
+explore: population_scope {
+  hidden: yes
+  label: "Population Scope"
+  description: "People included or excluded from employee adoption metrics."
+  persist_with: gemini_change_management_datagroup
+}
+
 # Gemini Enterprise-only segments (Dormant, Never used) for the licence
 # nudge lists; everywhere else uses the cross-product AI cohort.
 explore: ge_user_profile {

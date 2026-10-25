@@ -38,6 +38,24 @@ constant: workspace_export {
   export: override_optional
 }
 
+# Optional employee population scope. Leave employee_domains blank to include
+# every domain, then use the exclusion settings for service accounts, guests and
+# external org units.
+constant: employee_domains {
+  value: ""
+  export: override_optional
+}
+
+constant: excluded_org_units {
+  value: ""
+  export: override_optional
+}
+
+constant: excluded_email_pattern {
+  value: "gserviceaccount\\.com$|^noreply"
+  export: override_optional
+}
+
 # IANA time zone for hour-of-day and day-of-week charts.
 constant: reporting_time_zone {
   value: "UTC"
@@ -56,7 +74,7 @@ constant: normal_user_min_days {
   export: override_optional
 }
 
-# Monthly cost per seat, for the ROI tiles. 0 hides the cost figures.
+# Monthly cost per seat, for licence-spend and value tiles. 0 hides the cost figures.
 constant: ge_seat_cost_monthly {
   value: "0"
   export: override_optional
@@ -87,9 +105,38 @@ constant: time_saved_minutes {
   export: override_optional
 }
 
+constant: time_saved_low_factor {
+  value: "0.5"
+  export: override_optional
+}
+
+constant: time_saved_high_factor {
+  value: "1.5"
+  export: override_optional
+}
+
+# Comma-separated feature=Use Case pairs. Product defaults cover common
+# feature names and can be overridden by exact feature/source names.
+constant: use_case_mapping {
+  value: "help_me_write=Drafting & Editing,take_notes_for_me=Summarisation,conversation_summaries=Summarisation,summarize=Summarisation,Search=Research & Retrieval,Deep Research=Research & Retrieval,Assistant chat=Research & Retrieval,Workflows=Workflow Automation,Scheduled and triggered agents=Workflow Automation,Actions=Workflow Automation,Custom agents=Workflow Automation,Code Assist=Coding,default=Unclassified"
+  export: override_optional
+}
+
 # How many org-unit path segments make a department: 1 for /Sales, 2 for
 # /EMEA/Sales and so on.
 constant: org_unit_depth {
   value: "1"
+  export: override_optional
+}
+
+# Optional tables for validated value and change-management follow-up. Terraform
+# creates managed tables with these names by default.
+constant: interventions_table {
+  value: "ai_interventions"
+  export: override_optional
+}
+
+constant: value_outcomes_table {
+  value: "ai_value_outcomes"
   export: override_optional
 }

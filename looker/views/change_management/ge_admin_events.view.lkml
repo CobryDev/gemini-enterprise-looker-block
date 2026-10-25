@@ -36,6 +36,7 @@ view: ge_admin_events {
   dimension: principal_email {
     label: "Changed By"
     type: string
+    required_access_grants: [can_see_individuals]
     sql: ${TABLE}.principal_email ;;
   }
 

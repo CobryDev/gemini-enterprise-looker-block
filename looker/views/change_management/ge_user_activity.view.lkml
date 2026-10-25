@@ -57,6 +57,7 @@ view: ge_user_activity {
     label: "User"
     description: "Email of the signed-in user."
     type: string
+    required_access_grants: [can_see_individuals]
     sql: ${TABLE}.user_email ;;
   }
 

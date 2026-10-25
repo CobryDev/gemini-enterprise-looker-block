@@ -15,7 +15,9 @@ view: setup_health_tables {
           STRUCT(6, 'ge_connector_activity', 'event', 'Connector errors', 'Empty until a connector fails, which is normal.'),
           STRUCT(7, 'ge_safety_events', 'event', 'Safety and Model Armor', 'Needs Model Armor on the app and enable_model_armor_audit_logs = true. Empty until something is screened.'),
           STRUCT(8, 'ge_admin_events', 'event', 'Admin changes', 'Empty until someone changes an agent, connector or app.'),
-          STRUCT(9, 'antigravity_usage', 'event', 'Antigravity usage', 'Add the Antigravity subscription project to log_source_project_ids. Empty if nobody uses Antigravity.')
+          STRUCT(9, 'antigravity_usage', 'event', 'Antigravity usage', 'Add the Antigravity subscription project to log_source_project_ids. Empty if nobody uses Antigravity.'),
+          STRUCT(10, '@{interventions_table}', 'optional', 'Intervention tracking and before/after measurement', 'Terraform creates this table. Load rows when you want to measure change-management interventions.'),
+          STRUCT(11, '@{value_outcomes_table}', 'optional', 'Validated business outcome reporting', 'Terraform creates this table. Load externally validated outcomes when available.')
         ])
       ),
 
@@ -31,6 +33,7 @@ view: setup_health_tables {
         CASE
           WHEN actual.table_id IS NULL THEN 'Missing'
           WHEN actual.row_count = 0 AND expected.kind = 'core' THEN 'Empty'
+          WHEN actual.row_count = 0 AND expected.kind = 'optional' THEN 'No records yet'
           WHEN actual.row_count = 0 THEN 'No events yet'
           WHEN expected.kind = 'core' AND actual.last_modified < TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 3 DAY) THEN 'Stale'
           ELSE 'OK'
@@ -60,15 +63,15 @@ view: setup_health_tables {
   }
 
   dimension: status {
-    description: "OK, Missing, Empty, Stale (core table not updated in 3 days) or No events yet (normal for event tables)."
+    description: "OK, Missing, Empty, Stale (core table not updated in 3 days), No events yet (normal for event tables) or No records yet (normal for optional tables)."
     type: string
     sql: ${TABLE}.status ;;
-    html: {% if value == 'OK' or value == 'No events yet' %}<span style="color:#188038">{{ value }}</span>{% else %}<span style="color:#d93025;font-weight:bold">{{ value }}</span>{% endif %} ;;
+    html: {% if value == 'OK' or value == 'No events yet' or value == 'No records yet' %}<span style="color:#188038">{{ value }}</span>{% else %}<span style="color:#d93025;font-weight:bold">{{ value }}</span>{% endif %} ;;
   }
 
   dimension: next_step {
     type: string
-    sql: CASE WHEN ${TABLE}.status IN ('OK', 'No events yet') AND ${TABLE}.kind = 'core' THEN '' ELSE ${TABLE}.fix END ;;
+    sql: CASE WHEN ${TABLE}.status IN ('OK', 'No events yet', 'No records yet') AND ${TABLE}.kind != 'core' THEN '' WHEN ${TABLE}.status = 'OK' THEN '' ELSE ${TABLE}.fix END ;;
   }
 
   dimension: row_count {
@@ -197,7 +200,15 @@ view: setup_settings {
         STRUCT(8, 'Workspace Gemini monthly seat cost', '@{currency_symbol}@{gws_seat_cost_monthly}'),
         STRUCT(9, 'Loaded hourly rate', '@{currency_symbol}@{loaded_hourly_rate}'),
         STRUCT(10, 'Minutes saved per AI action', '@{time_saved_minutes}'),
-        STRUCT(11, 'Org-unit depth for departments', '@{org_unit_depth}')
+        STRUCT(11, 'Low time-saved scenario factor', '@{time_saved_low_factor}'),
+        STRUCT(12, 'High time-saved scenario factor', '@{time_saved_high_factor}'),
+        STRUCT(13, 'Use-case mapping', '@{use_case_mapping}'),
+        STRUCT(14, 'Employee domains', '@{employee_domains}'),
+        STRUCT(15, 'Excluded org units', '@{excluded_org_units}'),
+        STRUCT(16, 'Excluded email pattern', '@{excluded_email_pattern}'),
+        STRUCT(17, 'Org-unit depth for departments', '@{org_unit_depth}'),
+        STRUCT(18, 'Interventions table', '@{interventions_table}'),
+        STRUCT(19, 'Value outcomes table', '@{value_outcomes_table}')
       ]) ;;
   }
 

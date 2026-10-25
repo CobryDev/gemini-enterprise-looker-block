@@ -10,6 +10,7 @@ Terraform creates the scheduled ETL path for Gemini Enterprise metrics:
 
 - BigQuery staging dataset for the rolling 30-day export window.
 - BigQuery analytics dataset with a partitioned, full-fidelity `export_history` table.
+- Optional change-management tables in the analytics dataset: `ai_interventions` and `ai_value_outcomes`.
 - Cloud Run job for the exporter container, which exports an engine's metrics **and merges them into `export_history` in the same run**.
 - Cloud Scheduler jobs, one per Gemini Enterprise engine, with retry on transient failures.
 - Service accounts and IAM bindings for the exporter and scheduler.
@@ -121,6 +122,15 @@ gcloud logging read \
 ```
 
 A healthy run logs `export_started`, `export_completed`, and `merge_completed`.
+
+## Intervention and outcome tables
+
+Terraform creates two empty tables that the Looker block can read when you want to measure change-management work:
+
+- `ai_interventions`: one row per training session, campaign, coaching action or licence review. Required fields are `intervention_id`, `name`, `start_date`, `target_scope_type` and `target_scope`. `target_scope_type` supports `department`, `email_list` and `organisation`.
+- `ai_value_outcomes`: externally validated business outcomes, such as workflow cycle-time reductions, survey-backed time savings or quality measures.
+
+You can load these tables from the BigQuery console, scheduled queries, Dataform, or a Google Sheet ingestion pattern that your organisation already supports. The Looker dashboard compares 28 days before and after each intervention against a simple comparison group and labels the result as directional evidence, not causal proof.
 
 ## Log pipeline (user-level analytics)
 

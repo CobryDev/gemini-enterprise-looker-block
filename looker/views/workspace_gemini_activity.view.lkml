@@ -82,6 +82,7 @@ view: workspace_gemini_activity {
     label: "User Email"
     description: "Email address of the user who triggered the Gemini event."
     type: string
+    required_access_grants: [can_see_individuals]
     sql: ${TABLE}.email ;;
   }
 
@@ -147,7 +148,7 @@ view: workspace_gemini_activity {
   }
 
   measure: active_usage_rate {
-    label: "Active Usage Rate"
+    label: "Active Share of Workspace Gemini Events"
     description: "Share of Gemini events that were active usage rather than passive surfacing."
     type: number
     sql: SAFE_DIVIDE(${active_events}, ${events}) ;;

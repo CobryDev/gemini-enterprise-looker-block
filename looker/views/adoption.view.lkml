@@ -71,8 +71,8 @@ view: adoption {
   }
 
   measure: adoption_rate {
-    label: "Adoption Rate"
-    description: "Average daily active users divided by seats claimed. The headline share of licensed users actually using Gemini Enterprise on a given day."
+    label: "Daily Active / Seats Claimed"
+    description: "Google export metric: average daily active Gemini Enterprise users divided by seats claimed over the selected period. This is product telemetry, not the canonical employee activation rate."
     type: number
     sql: SAFE_DIVIDE(${average_daily_active_users}, ${seats_claimed}) ;;
     value_format_name: percent_1

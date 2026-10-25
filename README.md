@@ -8,9 +8,9 @@ The default setup is client-hosted: the client owns the GCP project, BigQuery da
 
 1. **Deploy the pipeline**: configure and apply Terraform (steps 2 to 5), with `enable_log_pipeline = true` for user-level analytics (step 8).
 2. **Install the block**: in Looker, **Marketplace → Install via Git URL**, then answer three prompts: connection, project and dataset (step 7). Every other prompt has a working default.
-3. **Open Setup Health**: it lists every data source the block reads, whether it has fresh rows, and what to do about anything missing.
+3. **Open Data Health** in the admin dashboard: it lists every data source the block reads, whether it has fresh rows, and what to do about anything missing.
 
-Everything else is optional: the Workspace export (step 1) adds Gemini for Workspace adoption, org units and the Workspace population; seat costs and an hourly rate turn on the ROI figures.
+Everything else is optional: the Workspace export (step 1) adds Gemini for Workspace adoption, org units and the Workspace population; seat costs and an hourly rate turn on the value scenarios; intervention and outcome rows turn on before/after measurement.
 
 ## How the pipeline works
 
@@ -22,16 +22,16 @@ Gemini Enterprise analytics API
   -> Cloud Run exporter job
        1. exports the engine's rolling 30-day window to BigQuery staging
        2. merges the window into the gemini_analytics.export_history table
-  -> Looker Block dashboard
+  -> Looker Block dashboards
 
 Workspace Admin BigQuery export
   -> BigQuery Workspace audit dataset
-  -> Looker Block dashboard
+  -> Looker Block dashboards
 
 Gemini Enterprise, Model Armor and Antigravity logs (optional, step 8)
   -> short-lived raw log bucket
   -> Cloud Run exporter job, hourly: redacted user-level tables
-  -> user-level dashboard tabs
+  -> executive, change-management and admin dashboards
 ```
 
 Cloud Scheduler triggers the Cloud Run exporter every day for each Gemini Enterprise engine. The exporter merges its own staging data into `export_history` in the same run, so the history table is updated the moment an export succeeds — there is no separate scheduled merge to keep in sync.
@@ -199,6 +199,7 @@ Terraform creates:
 
 - `gemini_analytics_staging`, the raw 30-day export dataset.
 - `gemini_analytics.export_history`, the partitioned, full-fidelity history table for Looker.
+- `gemini_analytics.ai_interventions` and `gemini_analytics.ai_value_outcomes`, optional empty tables for change-management interventions and validated outcomes.
 - A Cloud Run job named `gemini-analytics-exporter` that exports and merges in one run.
 - One Cloud Scheduler job per engine, with retries.
 - Service accounts and IAM bindings for the exporter and scheduler.
@@ -281,19 +282,21 @@ The remaining prompts are optional and have defaults:
 | Seat costs, loaded hourly rate | `0` | Turn on spend and value figures |
 | Currency symbol | `$` | Shown on spend and value figures |
 | Minutes saved per AI action | conservative per-feature values | Basis of the time-saved estimate |
+| Employee domains / exclusions | blank / defaults | Scope employee adoption rates and remove service accounts or guests |
+| Use-case mapping | built-in defaults | Maps technical feature names to business-facing use cases |
 | Org-unit depth for departments | `1` | How much of the org-unit path makes a department |
 
-Click **Install** and the model, explores and dashboard are ready. To change a value later, use **Manage** on the listing. With the defaults, the dashboard loads; tiles for sources you haven't set up stay empty rather than erroring.
+Click **Install** and the model, explores and dashboards are ready. To change a value later, use **Manage** on the listing. With the defaults, the dashboards load; tiles for sources you haven't set up show data-state messages rather than empty panels where possible.
 
 See `looker/README.md` for the alternative "plain Git project" install and required Looker permissions (`develop`, `manage_models`, `deploy`).
 
-After installing, open the **Gemini | AI Adoption** dashboard and start on its **Setup Health** tab. The block installs one model and one dashboard with a tab per question area. Without the log pipeline, the **Gemini Enterprise Analytics** tab already works: adoption rate, seats, active users and retention, searches and answers, feedback, agents, top queries and documents. The **Workspace Gemini** tab works once the Workspace export is set up. Step 8 fills the user-level tabs.
+After installing, open **Gemini | Admin AI Telemetry** and start on **Data Health**. The block installs one model and three role-based dashboards: **Gemini | Executive AI Adoption**, **Gemini | AI Change Management** and **Gemini | Admin AI Telemetry**. Without the log pipeline, the admin dashboard's Gemini Enterprise export telemetry already works: seats, active users and retention, searches and answers, feedback, agents, top queries and documents. Workspace Gemini works once the Workspace export is set up. Step 8 fills the cross-product executive and change-management views.
 
 The **Gemini Enterprise App** filter lets multi-app deployments slice every Gemini Enterprise tile per app.
 
 ## 8. Add user-level Change Management analytics (optional)
 
-The export API in steps 2 to 5 only gives app-level totals. To see who is using Gemini Enterprise, which features, agents and skills they use, how Antigravity is being adopted, and whose prompts Model Armor blocks (and for what), turn on the log pipeline. It fills the user-level tabs of the block's dashboard.
+The export API in steps 2 to 5 only gives app-level totals. To see who is using Gemini Enterprise, which features, agents and skills they use, how Antigravity is being adopted, and whose prompts Model Armor blocks (and for what), turn on the log pipeline. It fills the executive, change-management and admin views that use user-level telemetry.
 
 ### How the log pipeline handles prompts
 
@@ -306,7 +309,7 @@ Gemini Enterprise, Model Armor and Antigravity logs
   -> Cloud Run exporter, hourly (MODE=transform_logs)
        copies an allow-list of metadata fields into curated tables
   -> gemini_analytics.ge_* and antigravity_usage tables
-  -> user-level dashboard tabs
+  -> executive, change-management and admin dashboards
 ```
 
 - The raw bucket keeps entries for `raw_log_retention_days` (default 2). Only the exporter service account can read its linked BigQuery dataset.
@@ -386,25 +389,19 @@ If the `MODEL_ARMOR` rows arrive with `filter_match_state` and `category` both n
 
 If most rows are `unattributed`, check that the trace ID reaches both logs, and that screening and the assistant call land within 10 seconds of each other.
 
-### User-level tabs
+### Role-based dashboards
 
-The log pipeline fills these tabs of the **Gemini | AI Adoption** dashboard. The cross-product ones cover Gemini Enterprise, Gemini for Workspace (when the Workspace export is `same_region`) and Antigravity together:
+The log pipeline fills the role-based dashboards. Cross-product views cover Gemini Enterprise, Gemini for Workspace (when the Workspace export is `same_region`) and Antigravity together:
 
-- **Executive Overview**: AI active users, AI actions and estimated hours saved, each with a monthly trend; AI, Workspace Gemini and Gemini Enterprise activation; weekly users split into Gemini Enterprise only, Workspace only and both; product mix; cohorts per week; a department scorecard.
-- **Cohorts & Movement**: Power / Normal / Casual / Non-AI cards, cohorts over time, weekly movement up and down, cohorts by department, and the people who changed cohort last week.
-- **People & Leaderboards**: user and department leaderboards, depth of use, people who moved up a cohort, each person's history, and user profiles with top model, complex-query rate and peak hour.
-- **Models & Time of Day**: models used, Auto vs user-selected, which models Auto picks, a complex-query leaderboard (the share of a user's Auto prompts routed to Pro, Ultra or Thinking models), reasoning tokens per user, and a weekday-by-hour heatmap in local time.
-- **Features & Agents**: users per feature (Assistant chat, Search, Deep Research, agents, actions, NotebookLM, file upload and so on), feature breadth, agent runs, skills, tools, actions proposed and executed, grounding sources, tokens, connector errors, top agents and agent builders.
-- **ROI & Value**: spend, cost per active user, spend on idle licences, estimated hours saved with the per-feature assumptions, monthly retention, time from licence to first use, licence growth, advanced-feature adoption and answer quality.
-- **Change Targeting**: departments with the most room to grow, Power users per department (champion network), at-risk users who dropped a cohort, idle licences, Workspace Gemini users not on Gemini Enterprise yet, single-feature users, prompting-skills gaps, licence requests and a nudge list.
-- **Safety & Governance**: flagged prompts and responses by category and by user, prompt vs response, per-template flag rate, attribution quality, admin configuration changes.
-- **Antigravity**: users, requests, agent tasks, tokens, hour of day, clients and versions, models, top users, and how Antigravity users engage with Gemini Enterprise.
+- **Gemini | Executive AI Adoption**: canonical activation, regular adoption, engagement, retention, licence spend to review, data trust and the top recommended actions.
+- **Gemini | AI Change Management**: opportunity queue, cohort movement, use-case adoption, authorised people/coaching lists, licence demand and intervention measurement.
+- **Gemini | Admin AI Telemetry**: Gemini Enterprise export telemetry, Workspace event diagnostics, agents and models, Antigravity, governance and data health.
 
 Cohorts count AI-active days in the trailing 28 days across every product: a Gemini Enterprise prompt or search, an active Workspace Gemini event (generate, converse, summarise), or an Antigravity request. Non-AI is everyone in the population (Workspace users seen in the audit log, licensed Gemini Enterprise users) with none. Time saved is an estimate: AI actions times the **Minutes saved per AI action** setting, which you should agree with the client before presenting it.
 
 To split by department, enable the Workspace export (step 1) and set the **Workspace audit export** install prompt to `same_region`.
 
-> **Note:** User-level history starts the day you enable the pipeline; logs from before then can't be backfilled. Segments are a rolling 28 days, and for people who used Gemini Enterprise before the pipeline was on, the licence API's last-login date keeps them out of **Never used**. If you install the block without enabling the pipeline, the user-level tabs error until the tables exist; the Gemini Enterprise Analytics, Workspace Gemini and Setup Health tabs are unaffected.
+> **Note:** User-level history starts the day you enable the pipeline; logs from before then can't be backfilled. Segments are a rolling 28 days, and for people who used Gemini Enterprise before the pipeline was on, the licence API's last-login date keeps them out of **Never used**. If you install the block without enabling the pipeline, user-level tiles show missing or empty source states; the Gemini Enterprise export telemetry, Workspace Gemini and Data Health views are unaffected.
 
 ## Verify the full setup
 
@@ -416,17 +413,17 @@ Use this checklist before handing the dashboard to users:
 4. `gemini_analytics.export_history` contains recent rows.
 5. The Looker BigQuery connection tests successfully.
 6. LookML validation passes.
-7. The dashboard's **Setup Health** tab shows no red rows for the sources you set up.
-8. The dashboard's tabs load with the default date filter.
+7. **Gemini | Admin AI Telemetry** → **Data Health** shows no red rows for the sources you set up.
+8. The three dashboards load with the default date filter.
 9. If the log pipeline is on: `gemini-transform-logs` logs `transform_logs_completed`, and `ge_user_activity` has rows from the last hour.
 
 ## Troubleshooting
 
-Start with the dashboard's **Setup Health** tab: it names the missing or stale source and the fix.
+Start with **Gemini | Admin AI Telemetry** → **Data Health**: it names the missing or stale source and the fix.
 
 ### Gemini for Workspace tiles are empty on the AI adoption tabs
 
-The **Workspace audit export** install setting must be `same_region`, and the Workspace dataset must be in the same BigQuery location as `gemini_analytics` (step 1). If Setup Health shows a "not found in location" error, the locations differ: copy the export or switch the setting to `separate_region`.
+The **Workspace audit export** install setting must be `same_region`, and the Workspace dataset must be in the same BigQuery location as `gemini_analytics` (step 1). If Data Health shows a "not found in location" error, the locations differ: copy the export or switch the setting to `separate_region`.
 
 ### The Workspace Gemini tab is empty
 

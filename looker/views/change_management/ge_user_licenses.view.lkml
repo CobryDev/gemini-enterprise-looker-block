@@ -28,6 +28,7 @@ view: ge_user_licenses {
   dimension: user_email {
     label: "User"
     type: string
+    required_access_grants: [can_see_individuals]
     sql: ${TABLE}.user_email ;;
   }
 

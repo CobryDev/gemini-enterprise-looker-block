@@ -30,6 +30,7 @@ view: ge_tool_calls {
     label: "User"
     description: "Attributed through the trace shared with the user-activity log."
     type: string
+    required_access_grants: [can_see_individuals]
     sql: ${TABLE}.user_email ;;
   }
 

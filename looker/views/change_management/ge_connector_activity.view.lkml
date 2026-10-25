@@ -30,6 +30,7 @@ view: ge_connector_activity {
   dimension: user_email {
     label: "User"
     type: string
+    required_access_grants: [can_see_individuals]
     sql: ${TABLE}.user_email ;;
   }
 

@@ -76,7 +76,7 @@ variable "labels" {
 }
 
 variable "enable_log_pipeline" {
-  description = "Route Gemini Enterprise, Model Armor and Antigravity logs through a short-lived raw log bucket into redacted user-level tables for the user-level Looker dashboard tabs."
+  description = "Route Gemini Enterprise, Model Armor and Antigravity logs through a short-lived raw log bucket into redacted user-level tables for the executive, change-management and admin Looker dashboards."
   type        = bool
   default     = false
 }

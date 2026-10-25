@@ -71,17 +71,25 @@ view: ai_user_cohort_weekly {
         SELECT week_end, user_email FROM licensed_week
       ),
 
+      scoped_population AS (
+        SELECT population.week_end, population.user_email
+        FROM population
+        JOIN ${population_scope.SQL_TABLE_NAME} AS population_scope
+          ON population_scope.user_email = population.user_email
+        WHERE population_scope.in_scope
+      ),
+
       cohorts AS (
         SELECT
-          population.week_end,
-          population.user_email,
+          scoped_population.week_end,
+          scoped_population.user_email,
           IFNULL(ai_week.ai_days, 0) AS ai_days,
           IFNULL(ai_week.ge_days, 0) AS ge_days,
           IFNULL(ai_week.gws_days, 0) AS gws_days,
           IFNULL(ai_week.antigravity_days, 0) AS antigravity_days,
           workspace_week.user_email IS NOT NULL AS is_workspace_user,
           licensed_week.user_email IS NOT NULL AS is_ge_licensed
-        FROM population
+        FROM scoped_population
         LEFT JOIN ai_week USING (week_end, user_email)
         LEFT JOIN workspace_week USING (week_end, user_email)
         LEFT JOIN licensed_week USING (week_end, user_email)
@@ -154,6 +162,7 @@ view: ai_user_cohort_weekly {
   dimension: user_email {
     label: "User"
     type: string
+    required_access_grants: [can_see_individuals]
     sql: ${TABLE}.user_email ;;
   }
 

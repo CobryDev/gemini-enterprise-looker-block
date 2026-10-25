@@ -128,6 +128,64 @@ resource "google_bigquery_table" "export_history" {
   ])
 }
 
+resource "google_bigquery_table" "ai_interventions" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.analytics.dataset_id
+  table_id   = "ai_interventions"
+  labels     = var.labels
+
+  deletion_protection = true
+  description         = "Optional change-management interventions used by the Looker block to compare adoption before and after training, campaigns or licence actions."
+
+  time_partitioning {
+    type  = "DAY"
+    field = "start_date"
+  }
+
+  clustering = ["target_scope_type", "opportunity_type", "status"]
+
+  schema = jsonencode([
+    { name = "intervention_id", type = "STRING", mode = "REQUIRED", description = "Stable identifier for the intervention." },
+    { name = "name", type = "STRING", mode = "REQUIRED", description = "Human-readable intervention name." },
+    { name = "type", type = "STRING", mode = "NULLABLE", description = "Training, campaign, licence review, coaching or other intervention type." },
+    { name = "start_date", type = "DATE", mode = "REQUIRED" },
+    { name = "end_date", type = "DATE", mode = "NULLABLE" },
+    { name = "target_scope_type", type = "STRING", mode = "REQUIRED", description = "department, email_list or organisation." },
+    { name = "target_scope", type = "STRING", mode = "REQUIRED", description = "Department name, comma-separated email list or organisation label." },
+    { name = "owner", type = "STRING", mode = "NULLABLE" },
+    { name = "opportunity_type", type = "STRING", mode = "NULLABLE" },
+    { name = "follow_up_date", type = "DATE", mode = "NULLABLE" },
+    { name = "status", type = "STRING", mode = "NULLABLE", description = "planned, active, complete or cancelled." },
+    { name = "notes", type = "STRING", mode = "NULLABLE" },
+  ])
+}
+
+resource "google_bigquery_table" "ai_value_outcomes" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.analytics.dataset_id
+  table_id   = "ai_value_outcomes"
+  labels     = var.labels
+
+  deletion_protection = true
+  description         = "Optional validated business outcomes used to separate measured benefits from modelled productivity estimates."
+
+  time_partitioning {
+    type  = "DAY"
+    field = "outcome_date"
+  }
+
+  clustering = ["scope", "metric"]
+
+  schema = jsonencode([
+    { name = "outcome_date", type = "DATE", mode = "REQUIRED" },
+    { name = "scope", type = "STRING", mode = "REQUIRED", description = "Organisation, department, team or intervention scope." },
+    { name = "metric", type = "STRING", mode = "REQUIRED", description = "Validated outcome metric, for example cycle_time_saved, tickets_deflected or quality_score." },
+    { name = "value", type = "FLOAT", mode = "REQUIRED" },
+    { name = "unit", type = "STRING", mode = "NULLABLE" },
+    { name = "source", type = "STRING", mode = "NULLABLE", description = "Where the validated outcome came from, for example survey, workflow system or finance review." },
+  ])
+}
+
 resource "google_cloud_run_v2_job" "exporter" {
   project  = var.project_id
   name     = "gemini-analytics-exporter"

@@ -1,6 +1,11 @@
 connection: "@{connection_name}"
 label: "Gemini AI Adoption"
 
+access_grant: can_see_individuals {
+  user_attribute: gemini_individual_access
+  allowed_values: ["yes"]
+}
+
 # One model for the whole block, so an install adds a single entry to the
 # instance's model list. The explores read three independent sources, each
 # with its own refresh schedule:

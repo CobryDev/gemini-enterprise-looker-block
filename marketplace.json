@@ -3,7 +3,7 @@
   "category_label": "Models",
   "branding": {
     "image_uri": "https://marketplace-api.looker.com/block-icons/google-cloud.png",
-    "tagline": "One tabbed dashboard for AI adoption across Gemini Enterprise, Gemini for Workspace and Antigravity: activation, user cohorts, leaderboards, models, ROI and change-management target lists, plus Gemini Enterprise usage, agents and safety. Built on the BigQuery tables produced by the Gemini analytics pipeline."
+    "tagline": "Role-based AI adoption dashboards for Gemini Enterprise, Gemini for Workspace and Antigravity: executive decisions, change-management opportunities, product telemetry, value scenarios, governance and data health. Built on the BigQuery tables produced by the Gemini analytics pipeline."
   },
   "constants": {
     "connection_name": {
@@ -26,6 +26,18 @@
       "label": "Workspace audit export",
       "description": "none, separate_region or same_region. Use same_region when the Workspace audit dataset is in the same BigQuery location as the Gemini analytics dataset (or copied there): this turns on Gemini for Workspace adoption, the Workspace population and org units. Use separate_region if it lives elsewhere: only the Workspace Gemini tab uses it. Use none if you have no Workspace export."
     },
+    "employee_domains": {
+      "label": "Employee domains",
+      "description": "Optional comma-separated list of email domains that count as employees, for example example.com,example.co.uk. Leave blank to include all domains."
+    },
+    "excluded_org_units": {
+      "label": "Excluded org units",
+      "description": "Optional BigQuery regular expression for Workspace org-unit paths to exclude from employee adoption rates, for example (?i)external|guest."
+    },
+    "excluded_email_pattern": {
+      "label": "Excluded email pattern",
+      "description": "BigQuery regular expression for service accounts or non-human accounts to exclude from employee adoption rates. Defaults to common service-account and noreply patterns."
+    },
     "reporting_time_zone": {
       "label": "Reporting time zone",
       "description": "IANA time zone for hour-of-day charts, for example Europe/London or America/New_York. Defaults to UTC."
@@ -44,7 +56,7 @@
     },
     "gws_seat_cost_monthly": {
       "label": "Gemini for Workspace monthly seat cost",
-      "description": "Per Workspace user, if Gemini is billed separately. Leave 0 if it is bundled or you don't want it in the ROI tiles."
+      "description": "Per Workspace user, if Gemini is billed separately. Leave 0 if it is bundled or you don't want it in value tiles."
     },
     "loaded_hourly_rate": {
       "label": "Loaded hourly rate",
@@ -58,9 +70,29 @@
       "label": "Minutes saved per AI action",
       "description": "Comma-separated feature=minutes pairs used for the time-saved estimate, for example default=2,Deep Research=30,help_me_write=5. Features not listed use default."
     },
+    "time_saved_low_factor": {
+      "label": "Low scenario factor",
+      "description": "Multiplier applied to estimated hours saved for the low productivity-benefit scenario. Default 0.5."
+    },
+    "time_saved_high_factor": {
+      "label": "High scenario factor",
+      "description": "Multiplier applied to estimated hours saved for the high productivity-benefit scenario. Default 1.5."
+    },
+    "use_case_mapping": {
+      "label": "Use-case mapping",
+      "description": "Comma-separated feature=Use Case pairs for business-facing reporting, for example help_me_write=Drafting & Editing. Features not listed use the default value."
+    },
     "org_unit_depth": {
       "label": "Org-unit depth for departments",
       "description": "How many segments of the Workspace org-unit path make a department: 1 for /Sales, 2 for /EMEA/Sales. Default 1."
+    },
+    "interventions_table": {
+      "label": "Interventions table",
+      "description": "BigQuery table in the Gemini analytics dataset containing optional intervention records. Defaults to ai_interventions."
+    },
+    "value_outcomes_table": {
+      "label": "Value outcomes table",
+      "description": "BigQuery table in the Gemini analytics dataset containing optional validated outcome records. Defaults to ai_value_outcomes."
     }
   },
   "models": [

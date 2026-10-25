@@ -17,7 +17,7 @@ view: ai_activity_hourly {
       WITH ge AS (
         SELECT
           TIMESTAMP_TRUNC(event_ts, HOUR) AS event_hour,
-          user_email,
+          LOWER(user_email) AS user_email,
           'Gemini Enterprise' AS product,
           app_name AS surface,
           feature,
@@ -64,7 +64,7 @@ view: ai_activity_hourly {
       antigravity AS (
         SELECT
           TIMESTAMP_TRUNC(event_ts, HOUR) AS event_hour,
-          user_email,
+          LOWER(user_email) AS user_email,
           'Antigravity' AS product,
           COALESCE(client_name, 'Unknown') AS surface,
           COALESCE(experience, 'Unknown') AS feature,
@@ -94,7 +94,10 @@ view: ai_activity_hourly {
         ) AS pk,
         DATE(event_hour) AS event_date,
         unioned.*
-      FROM unioned ;;
+      FROM unioned
+      JOIN ${population_scope.SQL_TABLE_NAME} AS population_scope
+        ON population_scope.user_email = unioned.user_email
+      WHERE population_scope.in_scope ;;
   }
 
   dimension: pk {
@@ -127,6 +130,7 @@ view: ai_activity_hourly {
   dimension: user_email {
     label: "User"
     type: string
+    required_access_grants: [can_see_individuals]
     sql: ${TABLE}.user_email ;;
   }
 
@@ -151,6 +155,29 @@ view: ai_activity_hourly {
     description: "Gemini Enterprise feature, Workspace feature_source (help_me_write, take_notes_for_me...) or Antigravity experience."
     type: string
     sql: ${TABLE}.feature ;;
+  }
+
+  dimension: use_case {
+    label: "AI Use Case"
+    description: "Business-facing use-case group mapped from product and feature. Unclassified is explicit when the source event does not identify a meaningful feature."
+    type: string
+    sql: {% assign pairs = '@{use_case_mapping}' | split: ',' %}CASE LOWER(${TABLE}.feature)
+      {% for pair in pairs %}{% assign kv = pair | split: '=' %}{% assign key = kv[0] | strip | downcase %}{% if key != 'default' %}
+      WHEN '{{ key }}' THEN '{{ kv[1] | strip }}'{% endif %}{% endfor %}
+      ELSE {% for pair in pairs %}{% assign kv = pair | split: '=' %}{% assign key = kv[0] | strip | downcase %}{% if key == 'default' %}'{{ kv[1] | strip }}'{% endif %}{% endfor %}
+      END ;;
+  }
+
+  dimension: use_case_confidence {
+    label: "Use Case Confidence"
+    description: "High when a specific feature/source was mapped, Low when the event source is unspecified or otherwise unclassified."
+    type: string
+    sql: CASE
+      WHEN LOWER(${TABLE}.feature) IN ('unspecified', 'unknown') THEN 'Low'
+      WHEN ${use_case} = 'Unclassified' THEN 'Low'
+      WHEN ${TABLE}.product = 'Gemini Enterprise' THEN 'Medium'
+      ELSE 'High'
+    END ;;
   }
 
   dimension: minutes_saved_per_action {
@@ -303,11 +330,49 @@ view: ai_activity_hourly {
     sql: CASE WHEN ${TABLE}.ai_actions > 0 THEN CONCAT(${TABLE}.product, '|', ${TABLE}.feature) END ;;
   }
 
+  measure: use_cases_used {
+    label: "Use Cases Used"
+    description: "Distinct business-facing use-case groups with at least one AI action."
+    type: count_distinct
+    sql: CASE WHEN ${TABLE}.ai_actions > 0 THEN ${use_case} END ;;
+  }
+
+  measure: unclassified_actions {
+    label: "Unclassified AI Actions"
+    description: "AI actions where the source feature maps to Unclassified."
+    type: sum
+    sql: CASE WHEN ${use_case} = 'Unclassified' THEN ${TABLE}.ai_actions ELSE 0 END ;;
+  }
+
+  measure: unclassified_action_share {
+    label: "Unclassified Action Share"
+    description: "Share of AI actions that cannot be mapped to a business-facing use case."
+    type: number
+    sql: SAFE_DIVIDE(${unclassified_actions}, NULLIF(${ai_actions}, 0)) ;;
+    value_format_name: percent_0
+  }
+
   measure: hours_saved {
     label: "Estimated Hours Saved"
     description: "Value actions times the minutes in the time_saved_minutes constant, in hours. An assumption-based estimate, not a measurement."
     type: sum
     sql: ${TABLE}.value_actions * ${minutes_saved_per_action} / 60 ;;
+    value_format_name: decimal_0
+  }
+
+  measure: hours_saved_low {
+    label: "Estimated Hours Saved (Low)"
+    description: "Low scenario for estimated hours saved, using time_saved_low_factor."
+    type: number
+    sql: ${hours_saved} * @{time_saved_low_factor} ;;
+    value_format_name: decimal_0
+  }
+
+  measure: hours_saved_high {
+    label: "Estimated Hours Saved (High)"
+    description: "High scenario for estimated hours saved, using time_saved_high_factor."
+    type: number
+    sql: ${hours_saved} * @{time_saved_high_factor} ;;
     value_format_name: decimal_0
   }
 
@@ -325,5 +390,28 @@ view: ai_activity_hourly {
     sql: ${hours_saved} * @{loaded_hourly_rate} ;;
     value_format: "@{currency_symbol}#,##0"
     html: {% if @{loaded_hourly_rate} == 0 %}<span style="font-size:14px">Set the loaded hourly rate in Marketplace &gt; Manage</span>{% else %}{{ rendered_value }}{% endif %} ;;
+  }
+
+  measure: value_of_time_saved_low {
+    label: "Estimated Value of Time Saved (Low)"
+    type: number
+    sql: ${hours_saved_low} * @{loaded_hourly_rate} ;;
+    value_format: "@{currency_symbol}#,##0"
+    html: {% if @{loaded_hourly_rate} == 0 %}<span style="font-size:14px">Set the loaded hourly rate in Marketplace &gt; Manage</span>{% else %}{{ rendered_value }}{% endif %} ;;
+  }
+
+  measure: value_of_time_saved_high {
+    label: "Estimated Value of Time Saved (High)"
+    type: number
+    sql: ${hours_saved_high} * @{loaded_hourly_rate} ;;
+    value_format: "@{currency_symbol}#,##0"
+    html: {% if @{loaded_hourly_rate} == 0 %}<span style="font-size:14px">Set the loaded hourly rate in Marketplace &gt; Manage</span>{% else %}{{ rendered_value }}{% endif %} ;;
+  }
+
+  measure: tracking_since {
+    label: "Tracking Since"
+    description: "Earliest activity date in the selected data."
+    type: min
+    sql: ${TABLE}.event_date ;;
   }
 }
