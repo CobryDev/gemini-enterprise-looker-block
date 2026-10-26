@@ -1679,7 +1679,7 @@
       limit: 50
       listen:
         Department: user_org_unit.department
-      row: 80
+      row: 89
       col: 0
       width: 36
       height: 12
@@ -1706,7 +1706,7 @@
       limit: 50
       listen:
         Department: user_org_unit.department
-      row: 80
+      row: 89
       col: 36
       width: 36
       height: 12
@@ -1734,7 +1734,7 @@
       limit: 50
       listen:
         Department: user_org_unit.department
-      row: 92
+      row: 101
       col: 0
       width: 36
       height: 12
@@ -1760,7 +1760,7 @@
         ge_user_licenses.license_state: NO_LICENSE_ATTEMPTED_LOGIN
       sorts: [ge_user_licenses.last_login_date desc]
       limit: 50
-      row: 92
+      row: 101
       col: 36
       width: 36
       height: 12
@@ -3280,7 +3280,7 @@
       row: 51
       col: 0
       width: 72
-      height: 12
+      height: 18
       tab_name: people_coaching
       show_view_names: false
       show_row_numbers: false
@@ -3348,10 +3348,10 @@
         Date: ai_activity_hourly.event_date
         Product: ai_activity_hourly.product
         Department: user_org_unit.department
-      row: 63
+      row: 69
       col: 0
       width: 72
-      height: 7
+      height: 10
       tab_name: people_coaching
       show_view_names: false
       show_row_numbers: false
@@ -3572,7 +3572,7 @@
       listen:
         Date: ge_model_calls.event_date
         Department: user_org_unit.department
-      row: 70
+      row: 79
       col: 0
       width: 24
       height: 10
@@ -3735,7 +3735,7 @@
       listen:
         Date: ge_model_calls.event_date
         Department: user_org_unit.department
-      row: 70
+      row: 79
       col: 24
       width: 48
       height: 10
