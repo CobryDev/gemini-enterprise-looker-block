@@ -185,6 +185,26 @@ def test_connector_message_is_only_pattern_matched():
     assert "AS message" not in sql
 
 
+STATUS_MESSAGE_MATCH = re.compile(r"REGEXP_CONTAINS\(JSON_VALUE\(p\.status\.message\), r'[^']*'\)")
+
+
+def strip_status_message_matches(sql):
+    """Drop the pattern matches that turn the error message into fixed labels."""
+    sql = STATUS_MESSAGE_MATCH.sub("", strip_comments(sql))
+    return sql.replace("p.status.message IS NULL", "")
+
+
+def test_status_message_is_only_pattern_matched():
+    sql = strip_comments(load_transform_sql("ge_user_activity"))
+    total = len(re.findall(r"p\.status\.message\b", sql))
+    matched = len(STATUS_MESSAGE_MATCH.findall(sql))
+    null_checks = len(re.findall(r"p\.status\.message IS NULL", sql))
+    assert matched
+    assert total == matched + null_checks
+    assert "status_message" not in sql
+    assert "p.status.message" not in strip_status_message_matches(sql)
+
+
 def test_user_activity_paths_exist_in_real_payload_shapes():
     payloads = json.loads((FIXTURES / "user_activity_payloads.json").read_text())
     for path in payload_paths(load_transform_sql("ge_user_activity")):
@@ -196,7 +216,7 @@ def test_user_activity_never_reads_fixture_content():
     leaves = {leaf for payload in payloads for leaf in content_leaves(payload)}
     assert leaves, "fixture should carry content placeholders"
 
-    sql = load_transform_sql("ge_user_activity")
+    sql = strip_status_message_matches(load_transform_sql("ge_user_activity"))
     for path in payload_paths(sql, include_presence_checks=False):
         assert path.replace("[0]", "") not in leaves, f"ge_user_activity reads {path}"
 

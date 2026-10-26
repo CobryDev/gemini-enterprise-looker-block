@@ -123,6 +123,32 @@ USING (
         WHERE reason IS NOT NULL
       ) AS skipped_reasons,
       LAX_INT64(p.status.code) AS status_code,
+      -- The status message is only pattern matched into fixed labels, never copied.
+      CASE
+        WHEN IFNULL(LAX_INT64(p.status.code), 0) = 0 OR p.status.message IS NULL THEN NULL
+        WHEN REGEXP_CONTAINS(JSON_VALUE(p.status.message), r'(?i)billing overages')
+          THEN 'Billing overages not enabled'
+        WHEN REGEXP_CONTAINS(JSON_VALUE(p.status.message), r'(?i)free trial')
+          THEN 'Model not available on free trial'
+        WHEN REGEXP_CONTAINS(JSON_VALUE(p.status.message), r'(?i)no supported model is enabled')
+          THEN 'No model enabled for the app'
+        WHEN REGEXP_CONTAINS(JSON_VALUE(p.status.message), r'(?i)quota|rate limit|resource.exhausted')
+          THEN 'Quota or rate limit'
+        WHEN REGEXP_CONTAINS(JSON_VALUE(p.status.message), r'(?i)permission|forbidden')
+          THEN 'Permission denied'
+        WHEN REGEXP_CONTAINS(JSON_VALUE(p.status.message), r'(?i)deadline|timed out|timeout')
+          THEN 'Timed out'
+        WHEN REGEXP_CONTAINS(JSON_VALUE(p.status.message), r'(?i)internal error')
+          THEN 'Internal error'
+        ELSE 'Other'
+      END AS failure_cause,
+      CASE
+        WHEN IFNULL(LAX_INT64(p.status.code), 0) = 0 OR p.status.message IS NULL THEN NULL
+        WHEN REGEXP_CONTAINS(JSON_VALUE(p.status.message), r'(?i)\bclaude\b') THEN 'Claude'
+        WHEN REGEXP_CONTAINS(JSON_VALUE(p.status.message), r'(?i)gemini-4-argon') THEN 'Gemini 4 (Argon)'
+        WHEN REGEXP_CONTAINS(JSON_VALUE(p.status.message), r'(?i)gemini-[0-9.]+-pro') THEN 'Gemini Pro'
+        WHEN REGEXP_CONTAINS(JSON_VALUE(p.status.message), r'(?i)gemini-[0-9.]+-flash') THEN 'Gemini Flash'
+      END AS failure_model,
       ARRAY_LENGTH(JSON_QUERY_ARRAY(p.response.results)) AS result_count,
       REGEXP_EXTRACT(JSON_VALUE(p.request.servingConfig), r'servingConfigs/([^/]+)$')
         AS serving_config,
@@ -230,6 +256,8 @@ USING (
     skipped_reasons,
     is_blocked,
     status_code,
+    failure_cause,
+    failure_model,
     IF(method = 'Search', IFNULL(result_count, 0), NULL) AS search_result_count,
     serving_config,
     event_type,
@@ -254,6 +282,7 @@ WHEN NOT MATCHED THEN
     model_selection_mode, requested_model, data_store_selection_mode, data_store_ids,
     proposed_actions, executed_action, grounding_reference_count, grounding_domains,
     attachment_mime_types, answer_state, skipped_reasons, is_blocked, status_code,
+    failure_cause, failure_model,
     search_result_count, serving_config, event_type, page_type, feedback_type, feedback_reasons,
     device_class, time_zone, file_mime_type, file_byte_count, ingested_at
   )
@@ -264,6 +293,7 @@ WHEN NOT MATCHED THEN
     model_selection_mode, requested_model, data_store_selection_mode, data_store_ids,
     proposed_actions, executed_action, grounding_reference_count, grounding_domains,
     attachment_mime_types, answer_state, skipped_reasons, is_blocked, status_code,
+    failure_cause, failure_model,
     search_result_count, serving_config, event_type, page_type, feedback_type, feedback_reasons,
     device_class, time_zone, file_mime_type, file_byte_count, ingested_at
   )

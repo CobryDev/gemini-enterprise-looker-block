@@ -114,6 +114,8 @@ locals {
         { name = "skipped_reasons", type = "STRING", mode = "REPEATED" },
         { name = "is_blocked", type = "BOOLEAN", mode = "NULLABLE", description = "The answer was skipped for a policy or safety reason." },
         { name = "status_code", type = "INTEGER", mode = "NULLABLE" },
+        { name = "failure_cause", type = "STRING", mode = "NULLABLE", description = "Fixed category matched from the error message; the message itself is not stored." },
+        { name = "failure_model", type = "STRING", mode = "NULLABLE", description = "Model family named in the error message, from a fixed list." },
         { name = "search_result_count", type = "INTEGER", mode = "NULLABLE" },
         { name = "serving_config", type = "STRING", mode = "NULLABLE" },
         { name = "event_type", type = "STRING", mode = "NULLABLE" },
