@@ -23,7 +23,7 @@ Cloud Scheduler is part of the required production setup. It invokes the Cloud R
 
 ## Before you apply
 
-Have an exporter image ready. Terraform expects `exporter_image` to point at an existing image — either one published by this repo's `publish-image.yml` workflow or one you built yourself (see the root README, step 2). Pin a version tag rather than `latest` so applies are reproducible:
+Have an exporter image ready. Terraform expects `exporter_image` to point at an existing image: either one published by this repo's `publish-image.yml` workflow or one you built yourself (see the root README, step 2). Pin a version tag rather than `latest` so applies are reproducible:
 
 ```text
 europe-docker.pkg.dev/your-gcp-project-id/gemini-analytics/gemini-exporter:v0.2.0

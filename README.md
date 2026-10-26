@@ -7,7 +7,7 @@ The default setup is client-hosted: the client owns the GCP project, BigQuery da
 ## Quick start
 
 1. **Deploy the pipeline**: configure and apply Terraform (steps 2 to 5), with `enable_log_pipeline = true` for user-level analytics (step 8).
-2. **Install the block**: in Looker, **Marketplace → Install via Git URL**, then answer three prompts: connection, project and dataset (step 7). Every other prompt has a working default.
+2. **Install the block**: in Looker, go to **Marketplace > Install via Git URL** and answer three prompts: connection, project and dataset (step 7). Every other prompt has a working default.
 3. **Open Data Health** in the admin dashboard: it lists every data source the block reads, whether it has fresh rows, and what to do about anything missing.
 
 Everything else is optional: the Workspace export (step 1) adds Gemini for Workspace adoption, org units and the Workspace population; seat costs and an hourly rate turn on the value scenarios; intervention and outcome rows turn on before/after measurement.
@@ -34,7 +34,7 @@ Gemini Enterprise, Model Armor and Antigravity logs (optional, step 8)
   -> executive, change-management and admin dashboards
 ```
 
-Cloud Scheduler triggers the Cloud Run exporter every day for each Gemini Enterprise engine. The exporter merges its own staging data into `export_history` in the same run, so the history table is updated the moment an export succeeds — there is no separate scheduled merge to keep in sync.
+Cloud Scheduler triggers the Cloud Run exporter every day for each Gemini Enterprise engine. The exporter merges its own staging data into `export_history` in the same run, so the history table is updated the moment an export succeeds. There is no separate scheduled merge to keep in sync.
 
 > **Note:** You can run the Cloud Run job manually for testing, but production deployments should use Cloud Scheduler so the dashboards keep refreshing without operator work.
 
@@ -96,16 +96,16 @@ bq show --format=prettyjson your-gcp-project-id:workspace_audit | grep '"locatio
 bq show --format=prettyjson your-gcp-project-id:gemini_analytics | grep '"location"'
 ```
 
-- **Same location:** set the **Workspace audit export** install prompt to `same_region`.
-- **Different locations:** either set it to `separate_region`, so only the dashboard's Workspace Gemini tab uses the export, or copy the export into the Gemini location. To copy, set `workspace_audit_dataset_id` and `workspace_audit_location` in `terraform.tfvars`. Terraform then creates a daily BigQuery cross-region copy into `workspace_audit_copy`, and the `looker_workspace_settings` output gives the install values. A dataset copy in the BigQuery console does the same thing by hand. The copy moves each changed table in full every day, so expect cross-region egress charges on large tenants.
+- Same location: set the **Workspace audit export** install prompt to `same_region`.
+- Different locations: either set it to `separate_region`, so only the dashboard's Workspace Gemini tab uses the export, or copy the export into the Gemini location. To copy, set `workspace_audit_dataset_id` and `workspace_audit_location` in `terraform.tfvars`. Terraform then creates a daily BigQuery cross-region copy into `workspace_audit_copy`, and the `looker_workspace_settings` output gives the install values. A dataset copy in the BigQuery console does the same thing by hand. The copy moves each changed table in full every day, so expect cross-region egress charges on large tenants.
 
 ## 2. Get the exporter image
 
 Terraform deploys a Cloud Run job, and `exporter_image` must point at an existing container image. There are two ways to get one:
 
-**Option A — use a published image (fastest).** If you (or your deployment partner) publish the exporter through this repo's `publish-image.yml` GitHub Actions workflow, point `exporter_image` at that image and skip the build entirely. Pin a version tag rather than `latest` so Terraform deploys a known build.
+**Option A: use a published image (fastest).** If you (or your deployment partner) publish the exporter through this repo's `publish-image.yml` GitHub Actions workflow, point `exporter_image` at that image and skip the build entirely. Pin a version tag rather than `latest` so Terraform deploys a known build.
 
-**Option B — build it yourself.** Create an Artifact Registry repository and build with Cloud Build:
+**Option B: build it yourself.** Create an Artifact Registry repository and build with Cloud Build:
 
 ```sh
 gcloud auth login
@@ -156,7 +156,7 @@ engines = [
 ]
 ```
 
-Each engine maps to one Gemini Enterprise app. To track several apps, add one object per engine and stagger the schedules by at least one minute. Set `display_name` to a friendly app label — it is stored as `app_name` on every row in `export_history` and exposed as the **App** dimension and dashboard filter in Looker, so you can tell apps apart and slice or group by them. If omitted, `app_name` falls back to the raw `engine_id`.
+Each engine maps to one Gemini Enterprise app. To track several apps, add one object per engine and stagger the schedules by at least one minute. Set `display_name` to a friendly app label. It is stored as `app_name` on every row in `export_history` and exposed as the **App** dimension and dashboard filter in Looker, so you can tell apps apart and slice or group by them. If omitted, `app_name` falls back to the raw `engine_id`.
 
 ```hcl
 engines = [
@@ -183,7 +183,7 @@ Each engine exports to its own staging tables, and each run merges its own windo
 
 > **All engines in one deployment must live in the same location.** A Gemini Enterprise app's analytics export runs in the region of the app's data (an `eu` app exports in the EU, a `global` app exports in the US), and BigQuery cannot load or `UNION` data across regions. Because every engine merges into a single `export_history` table in `dataset_location`, mixing regions in one deployment fails. Terraform enforces this: a mixed-region `engines` list or a `dataset_location` that doesn't match the engine location fails validation before anything is created.
 
-To get unified analytics across engines, keep them in the same region. **If you have apps in two regions (for example EU and US), deploy this block twice** — once per region, each with its own project/datasets and its own `dataset_location` — and point a separate Looker connection at each. This keeps each region's data (including search query text and user emails) resident in its own region rather than copying personal data across jurisdictions. A single cross-region dashboard would require deliberately consolidating data into one region, which is a data-residency decision to make explicitly rather than a default of this pipeline.
+To get unified analytics across engines, keep them in the same region. **If you have apps in two regions (for example EU and US), deploy this block twice**, once per region, each with its own project, datasets and `dataset_location`, and point a separate Looker connection at each. This keeps each region's data (including search query text and user emails) resident in its own region rather than copying personal data across jurisdictions. A single cross-region dashboard would require deliberately consolidating data into one region, which is a data-residency decision to make explicitly rather than a default of this pipeline.
 
 ## 4. Deploy the infrastructure
 
@@ -254,8 +254,8 @@ Create or confirm a Looker BigQuery connection that can read:
 
 If you set `looker_service_account_email` in Terraform, the analytics dataset and job-user grants are already in place. Otherwise grant the Looker service account:
 
-- **BigQuery Data Viewer** on `gemini_analytics`
-- **BigQuery Job User** on the GCP project
+- BigQuery Data Viewer on `gemini_analytics`
+- BigQuery Job User on the GCP project
 
 Either way, grant **BigQuery Data Viewer** on the Workspace audit dataset manually if you use Workspace reporting (that dataset is created by the Admin console, not Terraform). The Workspace model also builds a persisted derived table, so the connection needs a PDT/scratch dataset configured (standard for Looker BigQuery connections).
 
@@ -265,11 +265,11 @@ In Looker, test the connection before installing the block.
 
 The block is drop-in installable on any Looker instance whose BigQuery connection can read the `gemini_analytics` dataset.
 
-**One-click install (recommended):** in Looker, open **Marketplace → gear menu → Install via Git URL**, paste this repo's Git URL and branch, and fill in the prompts:
+**One-click install (recommended):** in Looker, open **Marketplace**, choose **Install via Git URL** from the gear menu, paste this repo's Git URL and branch, and fill in the prompts:
 
-- **BigQuery Connection** — the connection that reads `gemini_analytics`
-- **BigQuery Project ID** — the project holding the dataset (e.g. `your-gcp-project-id`)
-- **Gemini analytics dataset** — prefilled `gemini_analytics`
+- BigQuery Connection: the connection that reads `gemini_analytics`
+- BigQuery Project ID: the project holding the dataset (e.g. `your-gcp-project-id`)
+- Gemini analytics dataset: prefilled `gemini_analytics`
 
 The remaining prompts are optional and have defaults:
 
@@ -393,9 +393,9 @@ If most rows are `unattributed`, check that the trace ID reaches both logs, and 
 
 The log pipeline fills the role-based dashboards. Cross-product views cover Gemini Enterprise, Gemini for Workspace (when the Workspace export is `same_region`) and Antigravity together:
 
-- **Gemini | Executive AI Adoption**: canonical activation, regular adoption, engagement, retention, licence spend to review, data trust and the top recommended actions.
-- **Gemini | AI Change Management**: opportunity queue, cohort movement, use-case adoption, authorised people/coaching lists, licence demand and intervention measurement.
-- **Gemini | Admin AI Telemetry**: Gemini Enterprise export telemetry, Workspace event diagnostics, agents and models, Antigravity, governance and data health.
+- Gemini | Executive AI Adoption: canonical activation, regular adoption, engagement, retention, licence spend to review, data trust and the top recommended actions.
+- Gemini | AI Change Management: opportunity queue, cohort movement, use-case adoption, authorised people/coaching lists, licence demand and intervention measurement.
+- Gemini | Admin AI Telemetry: Gemini Enterprise export telemetry, Workspace event diagnostics, agents and models, Antigravity, governance and data health.
 
 Cohorts count AI-active days in the trailing 28 days across every product: a Gemini Enterprise prompt or search, an active Workspace Gemini event (generate, converse, summarise), or an Antigravity request. Non-AI is everyone in the population (Workspace users seen in the audit log, licensed Gemini Enterprise users) with none. Time saved is an estimate: AI actions times the **Minutes saved per AI action** setting, which you should agree with the client before presenting it.
 
@@ -413,13 +413,13 @@ Use this checklist before handing the dashboard to users:
 4. `gemini_analytics.export_history` contains recent rows.
 5. The Looker BigQuery connection tests successfully.
 6. LookML validation passes.
-7. **Gemini | Admin AI Telemetry** → **Data Health** shows no red rows for the sources you set up.
+7. The **Data Health** tab of **Gemini | Admin AI Telemetry** shows no red rows for the sources you set up.
 8. The three dashboards load with the default date filter.
 9. If the log pipeline is on: `gemini-transform-logs` logs `transform_logs_completed`, and `ge_user_activity` has rows from the last hour.
 
 ## Troubleshooting
 
-Start with **Gemini | Admin AI Telemetry** → **Data Health**: it names the missing or stale source and the fix.
+Start with the **Data Health** tab of **Gemini | Admin AI Telemetry**. It names the missing or stale source and the fix.
 
 ### Gemini for Workspace tiles are empty on the AI adoption tabs
 
@@ -431,7 +431,7 @@ Confirm the **Workspace audit export** install setting isn't `none`, the Workspa
 
 ### The Gemini Enterprise Analytics tab is empty
 
-Check the Cloud Run job logs first. A healthy run logs `export_started`, `export_completed`, and `merge_completed`. If `merge_skipped_empty_staging` appears, the export produced no rows — usually a brand-new engine with no usage yet.
+Check the Cloud Run job logs first. A healthy run logs `export_started`, `export_completed`, and `merge_completed`. If `merge_skipped_empty_staging` appears, the export produced no rows, which usually means a brand-new engine with no usage yet.
 
 ### The exporter fails with permission errors
 
@@ -453,14 +453,14 @@ Check that `ge_user_activity` has rows. If it doesn't, look for entries in Logs 
 
 ```text
 gemini-enterprise-looker-block/
-├── .github/workflows    # CI (terraform, ruff, pytest, LookML checks) + image publish
-├── apps/exporter        # Cloud Run exporter app (export + merge)
-├── infra/terraform      # Client-hosted GCP infrastructure
-├── looker               # LookML views, explores, the model and the dashboard
-├── scripts              # CI helper scripts (LookML parse check)
-├── manifest.lkml        # Looker project manifest (constants) — project root
-├── marketplace.json     # Looker Marketplace listing + install prompts
-└── LICENSE              # MIT license (required for Marketplace blocks)
+|-- .github/workflows    # CI (terraform, ruff, pytest, LookML checks) + image publish
+|-- apps/exporter        # Cloud Run exporter app (export + merge)
+|-- infra/terraform      # Client-hosted GCP infrastructure
+|-- looker               # LookML views, explores, the model and the dashboards
+|-- scripts              # CI helper scripts (LookML parse check)
+|-- manifest.lkml        # Looker project manifest (constants), at the project root
+|-- marketplace.json     # Looker Marketplace listing + install prompts
+`-- LICENSE              # MIT license (required for Marketplace blocks)
 ```
 
 The repo root doubles as the Looker project root: Looker reads `manifest.lkml` and `marketplace.json` here and discovers the LookML under `looker/`. Non-LookML files (Terraform, Python) are ignored by Looker.

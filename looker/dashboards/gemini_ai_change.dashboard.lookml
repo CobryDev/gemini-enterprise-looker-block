@@ -23,9 +23,9 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Change management</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Change management</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Opportunities</div>
-            <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Where adoption is struggling, who owns the next step, and what to do.</div>
+            <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Where adoption is struggling and who owns the next step.</div>
           </div>
           <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Admin</a></div>
         </div>
@@ -199,7 +199,7 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Change management</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Change management</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Adoption & cohorts</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Who uses AI habitually. Cohorts count AI-active days in the last 28 days; movement compares complete weeks.</div>
           </div>
@@ -211,7 +211,7 @@
       height: 5
       tab_name: adoption_cohorts
     - name: newly_active_kpi
-      title: Newly active · last week
+      title: Newly active | last week
       type: single_value
       model: gemini_enterprise
       explore: ai_user_cohort_weekly
@@ -233,7 +233,7 @@
       custom_color_enabled: true
       custom_color: '#1A73E8'
     - name: moved_up_kpi
-      title: Moved up · last week
+      title: Moved up | last week
       type: single_value
       model: gemini_enterprise
       explore: ai_user_cohort_weekly
@@ -255,7 +255,7 @@
       custom_color_enabled: true
       custom_color: '#188038'
     - name: moved_down_kpi
-      title: Moved down · last week
+      title: Moved down | last week
       type: single_value
       model: gemini_enterprise
       explore: ai_user_cohort_weekly
@@ -277,7 +277,7 @@
       custom_color_enabled: true
       custom_color: '#D93025'
     - name: unchanged_kpi
-      title: No change · last week
+      title: No change | last week
       type: single_value
       model: gemini_enterprise
       explore: ai_user_cohort_weekly
@@ -438,7 +438,7 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Change management</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Change management</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Use cases</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">What people use AI for. Hands-on actions only; automated runs and suggestions are shown separately.</div>
           </div>
@@ -690,9 +690,9 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Change management</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Change management</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">People & coaching</div>
-            <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Named people for authorised coaching follow-up. Activity volume is not a productivity score.</div>
+            <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Named people for authorised coaching follow-up. Use activity counts to find people to support, and never to rate their productivity.</div>
           </div>
           <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Admin</a></div>
         </div>
@@ -702,7 +702,7 @@
       height: 5
       tab_name: people_coaching
     - name: potential_champions
-      title: Potential Champions
+      title: Potential champions
       type: looker_grid
       model: gemini_enterprise
       explore: ai_user_profile
@@ -729,7 +729,7 @@
       size_to_fit: true
       minimum_column_width: 80
     - name: ready_to_move_up
-      title: Ready to Move Up | casual users
+      title: Ready to move up | casual users
       type: looker_grid
       model: gemini_enterprise
       explore: ai_user_profile
@@ -756,7 +756,7 @@
       size_to_fit: true
       minimum_column_width: 80
     - name: moved_down
-      title: At Risk | moved down a cohort
+      title: At risk | moved down a cohort
       type: looker_grid
       model: gemini_enterprise
       explore: ai_user_cohort_weekly
@@ -784,7 +784,7 @@
       size_to_fit: true
       minimum_column_width: 80
     - name: licence_request_list
-      title: Users Asking for a Licence
+      title: People asking for a licence
       type: looker_grid
       model: gemini_enterprise
       explore: ge_user_licenses
@@ -816,9 +816,9 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Change management</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Change management</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Interventions</div>
-            <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Did training, campaigns and coaching work? Before/after comparisons are directional, not proof.</div>
+            <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Did training, campaigns and coaching work? Before and after comparisons show direction only, because other changes happen at the same time.</div>
           </div>
           <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Admin</a></div>
         </div>

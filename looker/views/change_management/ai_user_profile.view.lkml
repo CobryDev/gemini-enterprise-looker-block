@@ -405,7 +405,7 @@ view: ai_user_profile {
     type: number
     sql: SAFE_DIVIDE(${gws_active_workspace_users}, NULLIF(${workspace_users}, 0)) ;;
     value_format_name: percent_0
-    html: {{ rendered_value }} &middot; {{ gws_active_workspace_users._rendered_value }} of {{ workspace_users._rendered_value }} ;;
+    html: {{ rendered_value }} ({{ gws_active_workspace_users._rendered_value }} of {{ workspace_users._rendered_value }}) ;;
   }
 
   measure: ge_licensed_users {
@@ -427,7 +427,7 @@ view: ai_user_profile {
     type: number
     sql: SAFE_DIVIDE(${ge_active_licensed_users}, NULLIF(${ge_licensed_users}, 0)) ;;
     value_format_name: percent_0
-    html: {{ rendered_value }} &middot; {{ ge_active_licensed_users._rendered_value }} of {{ ge_licensed_users._rendered_value }} ;;
+    html: {{ rendered_value }} ({{ ge_active_licensed_users._rendered_value }} of {{ ge_licensed_users._rendered_value }}) ;;
   }
 
   measure: ge_active_workspace_users {
@@ -450,7 +450,7 @@ view: ai_user_profile {
     type: number
     sql: SAFE_DIVIDE(${ai_active_users}, NULLIF(${people}, 0)) ;;
     value_format_name: percent_0
-    html: {{ rendered_value }} &middot; {{ ai_active_users._rendered_value }} of {{ people._rendered_value }} ;;
+    html: {{ rendered_value }} ({{ ai_active_users._rendered_value }} of {{ people._rendered_value }}) ;;
   }
 
   measure: power_users {
@@ -496,7 +496,7 @@ view: ai_user_profile {
     type: number
     sql: SAFE_DIVIDE(${power_users} + ${normal_users}, NULLIF(${people}, 0)) ;;
     value_format_name: percent_0
-    html: {{ rendered_value }} &middot; {{ normal_users._rendered_value }} normal + {{ power_users._rendered_value }} power ;;
+    html: {{ rendered_value }} ({{ normal_users._rendered_value }} normal, {{ power_users._rendered_value }} power) ;;
   }
 
   measure: regular_adoption_rate {
@@ -505,7 +505,7 @@ view: ai_user_profile {
     type: number
     sql: SAFE_DIVIDE(${power_users} + ${normal_users}, NULLIF(${people}, 0)) ;;
     value_format_name: percent_0
-    html: {{ rendered_value }} &middot; {{ normal_users._rendered_value }} normal + {{ power_users._rendered_value }} power ;;
+    html: {{ rendered_value }} ({{ normal_users._rendered_value }} normal, {{ power_users._rendered_value }} power) ;;
   }
 
   measure: ai_engagement_days_per_active_user {
@@ -522,7 +522,7 @@ view: ai_user_profile {
     type: number
     sql: SAFE_DIVIDE(${retained_ai_users}, NULLIF(${previous_ai_active_users}, 0)) ;;
     value_format_name: percent_0
-    html: {{ rendered_value }} &middot; {{ retained_ai_users._rendered_value }} of {{ previous_ai_active_users._rendered_value }} returned ;;
+    html: {{ rendered_value }} ({{ retained_ai_users._rendered_value }} of {{ previous_ai_active_users._rendered_value }} returned) ;;
   }
 
   measure: top_user_action_share {
@@ -637,7 +637,7 @@ view: ai_user_profile {
     type: number
     sql: SAFE_DIVIDE(${regular_users}, NULLIF(${ai_active_users}, 0)) ;;
     value_format_name: percent_0
-    html: {{ rendered_value }} &middot; {{ regular_users._rendered_value }} of {{ ai_active_users._rendered_value }} ;;
+    html: {{ rendered_value }} ({{ regular_users._rendered_value }} of {{ ai_active_users._rendered_value }}) ;;
   }
 
   measure: adoption_card {
@@ -688,7 +688,7 @@ view: ai_user_profile {
     sql: ${ai_activation_rate} ;;
     value_format_name: percent_0
     description: "Executive headline. Include ai_activation_rate, regular_among_active_rate, ai_active_users, people, non_ai_users and ai_retention_rate in the tile query."
-    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#E8F0FE;border-radius:12px;padding:18px 22px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#174EA6;">The main story · last 28 days</div><div style="font-size:24px;font-weight:600;color:#202124;margin:8px 0 10px;">{% assign act = ai_activation_rate._value | times: 1.0 %}{% assign hab = regular_among_active_rate._value | times: 1.0 %}{% if act < 0.5 and hab >= 0.7 %}AI use is habitual among adopters. The opportunity is reaching {{ non_ai_users._rendered_value }} non-users.{% elsif act >= 0.5 and hab >= 0.7 %}AI use is broad and habitual. The opportunity is deeper use and measured value.{% elsif act >= 0.5 %}Many people have tried AI, but few use it regularly. The opportunity is building habits.{% else %}AI adoption is early. {{ non_ai_users._rendered_value }} eligible people have not started yet.{% endif %}</div><div style="font-size:14px;color:#3c4043;">{{ ai_active_users._rendered_value }} of {{ people._rendered_value }} eligible people active <span style="color:#9aa0a6;">·</span> {{ regular_among_active_rate._rendered_value }} of them use it regularly <span style="color:#9aa0a6;">·</span> {{ ai_retention_rate._rendered_value }} retention</div></div> ;;
+    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#E8F0FE;border-radius:12px;padding:18px 22px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#174EA6;">The main story: last 28 days</div><div style="font-size:24px;font-weight:600;color:#202124;margin:8px 0 10px;">{% assign act = ai_activation_rate._value | times: 1.0 %}{% assign hab = regular_among_active_rate._value | times: 1.0 %}{% if act < 0.5 and hab >= 0.7 %}AI use is habitual among adopters. The opportunity is reaching {{ non_ai_users._rendered_value }} non-users.{% elsif act >= 0.5 and hab >= 0.7 %}AI use is broad and habitual. The opportunity is deeper use and measured value.{% elsif act >= 0.5 %}Many people have tried AI, but few use it regularly. The opportunity is building habits.{% else %}AI adoption is early. {{ non_ai_users._rendered_value }} eligible people have not started yet.{% endif %}</div><div style="font-size:14px;color:#3c4043;">{{ ai_active_users._rendered_value }} of {{ people._rendered_value }} eligible people are active. {{ regular_among_active_rate._rendered_value }} of them use it regularly, and {{ ai_retention_rate._rendered_value }} came back from the previous 28 days.</div></div> ;;
   }
 
   measure: concentration_card {

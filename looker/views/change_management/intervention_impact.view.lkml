@@ -121,7 +121,7 @@ view: intervention_impact {
   dimension: caution {
     label: "Caution"
     type: string
-    sql: 'Comparison, not proof of causation' ;;
+    sql: 'Shows direction only. Other changes can affect it.' ;;
   }
 
   measure: people {

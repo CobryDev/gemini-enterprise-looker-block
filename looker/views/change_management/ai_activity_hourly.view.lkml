@@ -537,7 +537,7 @@ view: ai_activity_hourly {
     type: number
     sql: SAFE_DIVIDE(${hours_saved}, NULLIF(${window_days}, 0)) * 30.4 ;;
     value_format_name: decimal_0
-    html: <div style="font-size:40px;font-weight:700;line-height:1.1">{{ rendered_value }} h</div><div style="font-size:13px;color:#5f6368">range {{ hours_saved_low_per_month._rendered_value }}–{{ hours_saved_high_per_month._rendered_value }} h · active actions only</div> ;;
+    html: <div style="font-size:40px;font-weight:700;line-height:1.1">{{ rendered_value }} h</div><div style="font-size:13px;color:#5f6368">Range {{ hours_saved_low_per_month._rendered_value }} to {{ hours_saved_high_per_month._rendered_value }} h, hands-on actions only</div> ;;
   }
 
   measure: hours_saved_low_per_month {
@@ -559,7 +559,7 @@ view: ai_activity_hourly {
     type: number
     sql: SAFE_DIVIDE(${automation_hours_saved}, NULLIF(${window_days}, 0)) * 30.4 ;;
     value_format_name: decimal_0
-    html: <div style="font-size:40px;font-weight:700;line-height:1.1;color:#5f6368">{{ rendered_value }} h</div><div style="font-size:13px;color:#5f6368">{{ automation_runs_per_month._rendered_value }} automated runs a month · not in the headline</div> ;;
+    html: <div style="font-size:40px;font-weight:700;line-height:1.1;color:#5f6368">{{ rendered_value }} h</div><div style="font-size:13px;color:#5f6368">{{ automation_runs_per_month._rendered_value }} automated runs a month, excluded from the headline</div> ;;
   }
 
   measure: automation_runs_per_month {
@@ -607,7 +607,7 @@ view: ai_activity_hourly {
     type: number
     sql: ${hours_saved_per_month} * @{loaded_hourly_rate} ;;
     value_format: "\"@{currency_symbol}\"#,##0"
-    html: {% if @{loaded_hourly_rate} == 0 %}<span style="font-size:14px">Set the loaded hourly rate in Marketplace &gt; Manage</span>{% else %}<div style="font-size:40px;font-weight:700;line-height:1.1">{{ rendered_value }}</div><div style="font-size:13px;color:#5f6368">range {{ value_low_per_month._rendered_value }}–{{ value_high_per_month._rendered_value }} · at @{currency_symbol}@{loaded_hourly_rate}/h</div>{% endif %} ;;
+    html: {% if @{loaded_hourly_rate} == 0 %}<span style="font-size:14px">Set the loaded hourly rate in Marketplace &gt; Manage</span>{% else %}<div style="font-size:40px;font-weight:700;line-height:1.1">{{ rendered_value }}</div><div style="font-size:13px;color:#5f6368">Range {{ value_low_per_month._rendered_value }} to {{ value_high_per_month._rendered_value }} at @{currency_symbol}@{loaded_hourly_rate} an hour</div>{% endif %} ;;
   }
 
   measure: value_low_per_month {

@@ -2,7 +2,7 @@
 
 This is a drop-in Looker block. If your BigQuery project already has the
 `gemini_analytics` dataset (created by the Terraform pipeline), you can install
-it in a couple of minutes — no LookML editing required.
+it in a couple of minutes without editing any LookML.
 
 For the full export-to-dashboard walkthrough, start with the root `README.md`.
 
@@ -19,9 +19,9 @@ Confirm these are ready before installing the block:
 
 Grant the Looker service account (Terraform does the first and third for you if you set `looker_service_account_email`):
 
-- **BigQuery Data Viewer** on `gemini_analytics`.
-- **BigQuery Data Viewer** on the Workspace audit dataset, if using Workspace Gemini reporting.
-- **BigQuery Job User** on the GCP project.
+- BigQuery Data Viewer on `gemini_analytics`.
+- BigQuery Data Viewer on the Workspace audit dataset, if using Workspace Gemini reporting.
+- BigQuery Job User on the GCP project.
 
 > The AI adoption tabs join the Workspace audit export to the Gemini Enterprise
 > tables, which BigQuery only allows within one location. If the export is
@@ -34,16 +34,16 @@ You also need the `develop`, `manage_models`, and `deploy` Looker permissions to
 
 ## Install (recommended): one click from Git
 
-1. In Looker, go to **Marketplace** (the grid icon) → gear menu → **Install via Git URL**.
+1. In Looker, go to **Marketplace** (the grid icon), open the gear menu and choose **Install via Git URL**.
 2. Paste this repository's Git URL and the branch (for example `main`).
 3. Looker reads `marketplace.json` and prompts you for:
-   - **BigQuery Connection** — pick the connection that can read `gemini_analytics`.
-   - **BigQuery Project ID** — the GCP project that holds the dataset (e.g. `your-gcp-project-id`).
-   - **Gemini analytics dataset** — prefilled with `gemini_analytics`; leave it unless you renamed it.
-   - **Workspace audit dataset** — prefilled with `workspace_audit`; set it to your Workspace export dataset name.
-   - **Workspace audit export**: `none` (default), `separate_region` or `same_region`. `same_region` adds Gemini for Workspace adoption, the Workspace population and org units to the AI adoption tabs.
+   - BigQuery Connection: pick the connection that can read `gemini_analytics`.
+   - BigQuery Project ID: the GCP project that holds the dataset (e.g. `your-gcp-project-id`).
+   - Gemini analytics dataset: prefilled with `gemini_analytics`; leave it unless you renamed it.
+   - Workspace audit dataset: prefilled with `workspace_audit`; set it to your Workspace export dataset name.
+   - Workspace audit export: `none` (default), `separate_region` or `same_region`. `same_region` adds Gemini for Workspace adoption, the Workspace population and org units to the AI adoption tabs.
    - Optional, all with defaults: reporting time zone, Power and Normal user thresholds, seat costs, loaded hourly rate, currency symbol, minutes saved per AI action, and org-unit depth for departments.
-4. Click **Install**, then open **Gemini | Admin AI Telemetry** → **Data Health** to see which sources the block can read. Looker creates a read-only `marketplace_gemini_enterprise_looker_block` project with one model, its explores and three role-based dashboards.
+4. Click **Install**, then open the **Data Health** tab of **Gemini | Admin AI Telemetry** to see which sources the block can read. Looker creates a read-only `marketplace_gemini_enterprise_looker_block` project with one model, its explores and three role-based dashboards.
 
 To change any value later, use **Manage** on the block's Marketplace listing.
 
@@ -55,7 +55,7 @@ To change any value later, use **Manage** on the block's Marketplace listing.
 
 If you would rather manage the files yourself instead of through the Marketplace:
 
-1. **Develop → Manage LookML Projects → New LookML Project**, "Set up from Git", and point at this repo. The repo root is the project root (`manifest.lkml` lives there; the LookML lives under `looker/`).
+1. Go to **Develop > Manage LookML Projects > New LookML Project**, choose "Set up from Git" and point at this repo. The repo root is the project root (`manifest.lkml` lives there; the LookML lives under `looker/`).
 2. Open `manifest.lkml` and set the constant values for your instance:
 
 ```lkml
@@ -82,10 +82,10 @@ A source that isn't set up only breaks the explores and tiles that read it.
 
 The Explore menu shows four explores under **Gemini AI Adoption**. Everything else is a single-purpose table that a dashboard already shows in full, so it stays hidden. Technical fields (raw IDs, API method names, request settings) are hidden too. Hidden explores and fields still work in the dashboards and drills, and developers can open them by URL.
 
-- **AI Activity**: start here. Every AI action across Gemini Enterprise, Gemini for Workspace and Antigravity, by person, department, product, feature, use case, day and local hour, with estimated time saved. Needs the log pipeline; Workspace rows also need the Workspace audit export.
-- **People and Activation**: one row per person, with their cohort, product mix, activation, retention, top model and licence state. Use it for activation rates, licence spend and coaching lists.
-- **Gemini Enterprise Activity**: every Gemini Enterprise interaction by feature, agent, model, grounding source and app. Needs the log pipeline.
-- **Gemini Enterprise Seats**: daily active users against seats claimed and purchased, from Google's analytics export. Works without the log pipeline.
+- AI Activity: start here. Every AI action across Gemini Enterprise, Gemini for Workspace and Antigravity, by person, department, product, feature, use case, day and local hour, with estimated time saved. Needs the log pipeline; Workspace rows also need the Workspace audit export.
+- People and Activation: one row per person, with their cohort, product mix, activation, retention, top model and licence state. Use it for activation rates, licence spend and coaching lists.
+- Gemini Enterprise Activity: every Gemini Enterprise interaction by feature, agent, model, grounding source and app. Needs the log pipeline.
+- Gemini Enterprise Seats: daily active users against seats claimed and purchased, from Google's analytics export. Works without the log pipeline.
 
 AI Activity and Gemini Enterprise Activity include a **Person** section (cohort, product mix, licence, department, org unit), so any chart can be split by cohort or department.
 
@@ -115,18 +115,18 @@ To change it, edit the `CASE` in `apps/exporter/src/gemini_exporter/sql/logs/ge_
 
 The block installs three role-based dashboards instead of one large dashboard:
 
-- **Gemini | Executive AI Adoption** (`gemini_ai_executive.dashboard.lookml`): a concise decision view with canonical activation, regular adoption, engagement, retention, licence spend to review, a data-trust indicator and the top recommended actions.
-- **Gemini | AI Change Management** (`gemini_ai_change.dashboard.lookml`): an operational view for opportunity queues, cohort movement, use-case adoption, authorised people/coaching lists and intervention measurement.
-- **Gemini | Admin AI Telemetry** (`gemini_ai_admin.dashboard.lookml`): product telemetry, Workspace Gemini events, agents, models, Antigravity, governance, setup health and definitions.
+- Gemini | Executive AI Adoption (`gemini_ai_executive.dashboard.lookml`): a concise decision view with canonical activation, regular adoption, engagement, retention, licence spend to review, a data-trust indicator and the top recommended actions.
+- Gemini | AI Change Management (`gemini_ai_change.dashboard.lookml`): an operational view for opportunity queues, cohort movement, use-case adoption, authorised people/coaching lists and intervention measurement.
+- Gemini | Admin AI Telemetry (`gemini_ai_admin.dashboard.lookml`): product telemetry, Workspace Gemini events, agents, models, Antigravity, governance, setup health and definitions.
 
 The old `gemini_ai_adoption` dashboard has been removed. Existing bookmarks to it should be replaced with one of the three role-based dashboards.
 
 Headline definitions are now canonical across the dashboards:
 
-- **Activation:** eligible people with at least one AI-active day in the last 28 days, divided by eligible people in scope.
-- **Regular adoption:** eligible people with at least `normal_user_min_days` AI-active days in the last 28 days, divided by eligible people in scope.
-- **Engagement:** distinct AI-active days per active user.
-- **Retention:** people active in the previous 28-day window who returned in the current 28-day window.
+- Activation: eligible people with at least one AI-active day in the last 28 days, divided by eligible people in scope.
+- Regular adoption: eligible people with at least `normal_user_min_days` AI-active days in the last 28 days, divided by eligible people in scope.
+- Engagement: distinct AI-active days per active user.
+- Retention: people active in the previous 28-day window who returned in the current 28-day window.
 
 Product-specific telemetry keeps its own label and denominator. For example, **Daily Active / Seats Claimed** is the Gemini Enterprise Google export metric, while **Active Share of Workspace Gemini Events** is an event share, not a people activation rate.
 
@@ -186,7 +186,7 @@ To let a change team log interventions without BigQuery access, keep the list in
 3. Run **Validate LookML**.
 4. Open the dashboard and check each tab for the sources you set up, using the default 90-day filter.
 
-If a tab is empty, test the underlying Explore first. An empty Workspace Gemini tab or Workspace tiles usually mean **Workspace audit export** is `none`, or the Workspace Admin export has not produced Gemini events yet; **Setup Health** shows which. An empty Gemini Enterprise Analytics tab usually means the exporter has not run successfully — check the Cloud Run job logs for `merge_completed`. Note that the Agents tile stays empty until agents are used on the engine.
+If a tab is empty, test the underlying Explore first. An empty Workspace Gemini tab or Workspace tiles usually mean **Workspace audit export** is `none`, or the Workspace Admin export has not produced Gemini events yet; **Setup Health** shows which. An empty Gemini Enterprise Analytics tab usually means the exporter has not run successfully, so check the Cloud Run job logs for `merge_completed`. Note that the Agents tile stays empty until agents are used on the engine.
 
 ## Caveats
 

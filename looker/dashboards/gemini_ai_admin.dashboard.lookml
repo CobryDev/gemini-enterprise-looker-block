@@ -23,7 +23,7 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Admin</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Admin</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Gemini Enterprise</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Product telemetry from the Gemini Enterprise analytics export, plus agents, models and tools.</div>
           </div>
@@ -155,7 +155,7 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Admin</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Admin</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Workspace Gemini</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Raw Workspace audit events for the selected dates, not limited to eligible people. Hands-on, automated and proactive are counted separately.</div>
           </div>
@@ -346,14 +346,14 @@
       type: text
       title_text: ''
       subtitle_text: ''
-      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;padding:2px 4px;"><span style="font-size:15px;font-weight:600;color:#202124;">Agents, models and tools</span><span style="font-size:13px;color:#5f6368;"> · technical diagnostics for routing and token use</span></div>
+      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;padding:2px 4px;"><span style="font-size:15px;font-weight:600;color:#202124;">Agents, models and tools</span><span style="font-size:13px;color:#5f6368;margin-left:8px;">Technical diagnostics for routing and token use</span></div>
       row: 20
       col: 0
       width: 72
       height: 2
       tab_name: ge_analytics
     - name: prompts_by_model
-      title: Prompts by Model
+      title: Prompts by model
       type: looker_bar
       model: gemini_enterprise
       explore: ge_user_activity
@@ -460,7 +460,7 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Admin</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Admin</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Antigravity</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Antigravity coding-agent usage, once telemetry is configured and people use it.</div>
           </div>
@@ -506,7 +506,7 @@
       custom_color_enabled: true
       custom_color: '#202124'
     - name: ag_by_experience
-      title: Requests by Experience
+      title: Requests by experience
       type: looker_bar
       model: gemini_enterprise
       explore: antigravity_usage
@@ -532,9 +532,9 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Admin</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Admin</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Governance</div>
-            <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Safety screening and admin changes. No flags means none were recorded, not zero risk.</div>
+            <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Safety screening and admin changes. Zero flags means the configured sources recorded none.</div>
           </div>
           <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Admin</a></div>
         </div>
@@ -561,7 +561,7 @@
       custom_color_enabled: true
       custom_color: '#202124'
     - name: safety_by_category
-      title: Flags by Category
+      title: Flags by category
       type: looker_bar
       model: gemini_enterprise
       explore: ge_safety_events
@@ -612,7 +612,7 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Admin</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Admin</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Data health</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Source freshness, population scope, install settings, definitions and methodology changes.</div>
           </div>
@@ -764,7 +764,7 @@
             <tr style="text-align:left;border-bottom:1px solid #dadce0"><th style="padding:4px 8px">Date</th><th style="padding:4px 8px">Change</th><th style="padding:4px 8px">Effect on figures</th></tr>
             <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">Cohort movement separates Newly active (Non-AI or new, now active) from Moved up (already active, now a higher cohort).</td><td style="padding:4px 8px">Moved up falls. People starting to use AI are counted as Newly active instead.</td></tr>
             <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">Workspace admin tab counts automated Flow runs separately. Hands-on share and Engaged users exclude them.</td><td style="padding:4px 8px">Hands-on share and Engaged users fall where Flows run.</td></tr>
-            <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">People in the top-level org unit or with no org unit are one data-quality item in the opportunity queue, not a department.</td><td style="padding:4px 8px">The "(Top level)" group no longer appears as a training target.</td></tr>
+            <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">People in the top-level org unit, or with no org unit, now appear as one data-quality item in the opportunity queue.</td><td style="padding:4px 8px">The "(Top level)" group no longer appears as a training target.</td></tr>
             <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">Time benefit headline counts active actions only. Automated runs moved to a separate, lower-confidence estimate. Figures shown per month.</td><td style="padding:4px 8px">Headline hours fall where workflows are used. Totals over long windows no longer look larger simply because the window is longer.</td></tr>
             <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">Events split into Active, Automated and Proactive. AI actions, AI-active days, cohorts and adoption rates count Active only.</td><td style="padding:4px 8px">AI action counts fall sharply where workflows run. People-based rates usually move little.</td></tr>
             <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">Weekly trends show complete weeks only.</td><td style="padding:4px 8px">The current week no longer appears as a drop.</td></tr>

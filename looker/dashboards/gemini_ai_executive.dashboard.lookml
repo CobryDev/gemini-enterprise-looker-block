@@ -19,7 +19,7 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Executive</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Executive</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Overview</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Is AI adoption healthy, and what needs a decision?</div>
           </div>
@@ -182,7 +182,7 @@
       legend_position: none
       note_state: collapsed
       note_display: hover
-      note_text: Eligible people with no AI-active day in the last 28 days. (Top level) means people sit in the root org unit, which is a directory gap rather than a team.
+      note_text: Eligible people with no AI-active day in the last 28 days. (Top level) means people sit in the root org unit. Fix that in the Workspace directory.
       listen:
         Department: user_org_unit.department
       show_view_names: false
@@ -235,9 +235,9 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Executive</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Executive</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Business value</div>
-            <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Estimated time benefit, not realised ROI. Hands-on actions × minutes saved per feature; automation is a separate, lower-confidence line.</div>
+            <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Estimated time saved, before any validated ROI. Hands-on actions times the minutes saved per feature. Automation is a separate, lower-confidence line.</div>
           </div>
           <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Admin</a></div>
         </div>
@@ -425,7 +425,7 @@
       body_text: |-
         <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
           <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption · Executive</div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Executive</div>
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Risks & decisions</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">The decisions that need an owner, and whether the data is ready to report.</div>
           </div>
