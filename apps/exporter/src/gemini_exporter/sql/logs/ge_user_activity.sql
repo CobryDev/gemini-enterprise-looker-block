@@ -274,6 +274,8 @@ USING (
 ) AS source
 ON target.insert_id = source.insert_id
   AND target.event_date >= DATE_SUB(DATE(@window_start), INTERVAL 1 DAY)
+WHEN MATCHED AND target.failure_cause IS NULL AND source.failure_cause IS NOT NULL THEN
+  UPDATE SET failure_cause = source.failure_cause, failure_model = source.failure_model
 WHEN NOT MATCHED THEN
   INSERT (
     insert_id, event_ts, event_date, project_id, location, engine_id, app_name, user_email,
