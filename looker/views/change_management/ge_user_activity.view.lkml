@@ -150,9 +150,9 @@ view: ge_user_activity {
 
   dimension: model_label {
     label: "Model (Readable)"
-    description: "Model that produced the answer, or (not recorded) when the log has none."
+    description: "Model that produced the answer. Failed request means the prompt returned an error, so no model was logged; (not recorded) means it succeeded without one."
     type: string
-    sql: IFNULL(${TABLE}.model, '(not recorded)') ;;
+    sql: COALESCE(${TABLE}.model, IF(IFNULL(${TABLE}.status_code, 0) != 0, 'Failed request', '(not recorded)')) ;;
   }
 
   dimension: model_series {
@@ -307,6 +307,39 @@ view: ge_user_activity {
     sql: IFNULL(${TABLE}.status_code, 0) != 0 ;;
   }
 
+  dimension: outcome {
+    label: "Outcome"
+    description: "Answered, Failed (the request returned an error, so no answer), Blocked (skipped for a policy or safety reason) or No answer recorded."
+    type: string
+    sql: CASE
+      WHEN IFNULL(${TABLE}.status_code, 0) != 0 THEN 'Failed'
+      WHEN ${TABLE}.is_blocked THEN 'Blocked'
+      WHEN ${TABLE}.answer_state = 'SUCCEEDED' THEN 'Answered'
+      ELSE 'No answer recorded'
+    END ;;
+  }
+
+  dimension: failure_reason {
+    label: "Failure Reason"
+    description: "Why a request failed, from its error code. Not enabled for this project usually means a model or feature the plan or billing setup doesn't allow, such as Claude without billing overages or a model unavailable on a trial."
+    type: string
+    sql: CASE IFNULL(${TABLE}.status_code, 0)
+      WHEN 0 THEN NULL
+      WHEN 1 THEN 'Cancelled'
+      WHEN 3 THEN 'Invalid request'
+      WHEN 4 THEN 'Timed out'
+      WHEN 5 THEN 'Not found'
+      WHEN 7 THEN 'Permission denied'
+      WHEN 8 THEN 'Quota or rate limit'
+      WHEN 9 THEN 'Not enabled for this project'
+      WHEN 10 THEN 'Aborted'
+      WHEN 13 THEN 'Internal error'
+      WHEN 14 THEN 'Service unavailable'
+      WHEN 16 THEN 'Not signed in'
+      ELSE CONCAT('Error code ', CAST(${TABLE}.status_code AS STRING))
+    END ;;
+  }
+
   dimension: search_result_count {
     hidden: yes
     type: number
@@ -449,6 +482,29 @@ view: ge_user_activity {
     type: number
     sql: SAFE_DIVIDE(${prompts}, NULLIF(${prompting_users}, 0)) ;;
     value_format_name: decimal_1
+  }
+
+  measure: failed_prompts {
+    label: "Failed Prompts"
+    description: "Prompts that returned an error, so the person got no answer."
+    type: count
+    filters: [is_user_prompt: "yes", is_error: "yes"]
+    drill_fields: [event_time_time, user_email, failure_reason, agent_name]
+  }
+
+  measure: prompt_failure_rate {
+    label: "Prompt Failure Rate"
+    description: "Failed prompts divided by all prompts."
+    type: number
+    sql: SAFE_DIVIDE(${failed_prompts}, NULLIF(${prompts}, 0)) ;;
+    value_format_name: percent_1
+  }
+
+  measure: people_with_failed_prompts {
+    label: "People With Failed Prompts"
+    description: "Distinct people who had at least one prompt fail."
+    type: count_distinct
+    sql: CASE WHEN ${is_user_prompt} AND ${is_error} THEN ${user_email} END ;;
   }
 
   measure: blocked_prompts {
