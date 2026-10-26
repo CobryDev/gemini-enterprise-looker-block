@@ -14,7 +14,7 @@ view: ge_trace_context {
         COALESCE(ANY_VALUE(NULLIF(event_type, '')), 'Unattributed') AS event_type,
         COALESCE(ANY_VALUE(NULLIF(invocation_mode, '')), 'Unattributed') AS invocation_mode,
         COALESCE(ANY_VALUE(NULLIF(agent_display_name, '')), ANY_VALUE(NULLIF(agent_id, '')), 'Main assistant') AS agent_label
-      FROM ${ge_user_activity.SQL_TABLE_NAME}
+      FROM (SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email) FROM `@{gemini_project}.@{gemini_dataset}.ge_user_activity` AS source LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity ON person_identity.source_email = LOWER(source.user_email) AND source.event_ts >= person_identity.valid_from AND source.event_ts < person_identity.valid_to)
       WHERE trace_id IS NOT NULL
       GROUP BY trace_id ;;
   }

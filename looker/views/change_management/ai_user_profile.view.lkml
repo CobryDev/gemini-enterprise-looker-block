@@ -56,7 +56,7 @@ view: ai_user_profile {
             AND REGEXP_CONTAINS(LOWER(model), r'pro|ultra|thinking')
             AND NOT REGEXP_CONTAINS(LOWER(model), r'image|imagen|veo')
           ) AS auto_advanced_prompts_28d
-        FROM ${ge_user_activity.SQL_TABLE_NAME}
+        FROM (SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email) FROM `@{gemini_project}.@{gemini_dataset}.ge_user_activity` AS source LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity ON person_identity.source_email = LOWER(source.user_email) AND source.event_ts >= person_identity.valid_from AND source.event_ts < person_identity.valid_to)
         WHERE is_user_prompt
           AND model IS NOT NULL
           AND user_email IS NOT NULL
@@ -70,7 +70,7 @@ view: ai_user_profile {
           SUM(IFNULL(input_tokens, 0) + IFNULL(output_tokens, 0)) AS total_tokens_28d,
           SUM(IFNULL(reasoning_tokens, 0)) AS reasoning_tokens_28d,
           COUNT(*) AS model_calls_28d
-        FROM ${ge_model_calls.SQL_TABLE_NAME}
+        FROM (SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email) FROM `@{gemini_project}.@{gemini_dataset}.ge_model_calls` AS source LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity ON person_identity.source_email = LOWER(source.user_email) AND source.event_ts >= person_identity.valid_from AND source.event_ts < person_identity.valid_to)
         WHERE user_email IS NOT NULL
           AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 27 DAY)
         GROUP BY user_email
@@ -81,7 +81,7 @@ view: ai_user_profile {
           LOWER(user_email) AS user_email,
           license_state,
           DATE(create_time) AS licence_assigned_date
-        FROM ${ge_user_licenses.SQL_TABLE_NAME}
+        FROM (SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email) FROM `@{gemini_project}.@{gemini_dataset}.ge_user_licenses` AS source LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity ON person_identity.source_email = LOWER(source.user_email) AND TIMESTAMP(source.snapshot_date) >= person_identity.valid_from AND TIMESTAMP(source.snapshot_date) < person_identity.valid_to)
         WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM `@{gemini_project}.@{gemini_dataset}.ge_user_licenses`)
           AND user_email IS NOT NULL
         QUALIFY ROW_NUMBER() OVER (

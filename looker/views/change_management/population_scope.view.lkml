@@ -7,18 +7,18 @@ view: population_scope {
     sql:
       WITH candidates AS (
         SELECT DISTINCT LOWER(user_email) AS user_email
-        FROM ${ge_user_activity.SQL_TABLE_NAME}
+        FROM (SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email) FROM `@{gemini_project}.@{gemini_dataset}.ge_user_activity` AS source LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity ON person_identity.source_email = LOWER(source.user_email) AND source.event_ts >= person_identity.valid_from AND source.event_ts < person_identity.valid_to)
         WHERE user_email IS NOT NULL
           AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)
 
         UNION DISTINCT
         SELECT DISTINCT LOWER(user_email) AS user_email
-        FROM ${ge_user_licenses.SQL_TABLE_NAME}
+        FROM (SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email) FROM `@{gemini_project}.@{gemini_dataset}.ge_user_licenses` AS source LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity ON person_identity.source_email = LOWER(source.user_email) AND TIMESTAMP(source.snapshot_date) >= person_identity.valid_from AND TIMESTAMP(source.snapshot_date) < person_identity.valid_to)
         WHERE user_email IS NOT NULL
 
         UNION DISTINCT
         SELECT DISTINCT LOWER(user_email) AS user_email
-        FROM ${antigravity_usage.SQL_TABLE_NAME}
+        FROM (SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email) FROM `@{gemini_project}.@{gemini_dataset}.antigravity_usage` AS source LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity ON person_identity.source_email = LOWER(source.user_email) AND source.event_ts >= person_identity.valid_from AND source.event_ts < person_identity.valid_to)
         WHERE user_email IS NOT NULL
           AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)
 

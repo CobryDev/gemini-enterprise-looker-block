@@ -36,7 +36,7 @@ view: ai_opportunities {
 
       latest_licence_requests AS (
         SELECT COUNT(DISTINCT LOWER(user_email)) AS requesters
-        FROM ${ge_user_licenses.SQL_TABLE_NAME}
+        FROM (SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email) FROM `@{gemini_project}.@{gemini_dataset}.ge_user_licenses` AS source LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity ON person_identity.source_email = LOWER(source.user_email) AND TIMESTAMP(source.snapshot_date) >= person_identity.valid_from AND TIMESTAMP(source.snapshot_date) < person_identity.valid_to)
         WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM `@{gemini_project}.@{gemini_dataset}.ge_user_licenses`)
           AND license_state = 'NO_LICENSE_ATTEMPTED_LOGIN'
           AND user_email IS NOT NULL
