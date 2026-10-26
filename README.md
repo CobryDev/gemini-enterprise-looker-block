@@ -290,7 +290,7 @@ Click **Install** and the model, explores and dashboards are ready. To change a 
 
 See `looker/README.md` for the alternative "plain Git project" install and required Looker permissions (`develop`, `manage_models`, `deploy`).
 
-After installing, open **Gemini | Admin AI Telemetry** and start on **Data Health**. The block installs one model and three role-based dashboards: **Gemini | Executive AI Adoption**, **Gemini | AI Change Management** and **Gemini | Admin AI Telemetry**. Without the log pipeline, the admin dashboard's Gemini Enterprise export telemetry already works: seats, active users and retention, searches and answers, feedback, agents, top queries and documents. Workspace Gemini works once the Workspace export is set up. Step 8 fills the cross-product executive and change-management views.
+After installing, open **Gemini | Admin AI Telemetry** and start on **Data Health**. The block installs one model and three role-based dashboards: **Gemini | Executive AI Adoption**, **Gemini | AI Change Management** and **Gemini | Admin AI Telemetry**. Without the log pipeline, the admin dashboard's Gemini Enterprise export telemetry already works: seats, active users and retention, searches and answers, feedback and agents. Workspace Gemini works once the Workspace export is set up. Step 8 fills the cross-product executive and change-management views.
 
 The **Gemini Enterprise App** filter lets multi-app deployments slice every Gemini Enterprise tile per app.
 

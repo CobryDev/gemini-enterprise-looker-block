@@ -1,9 +1,10 @@
 # Explores over the redacted log tables and the AI adoption PDTs.
 #
-# Visible explores are the ones a non-analyst can use without knowing the
-# pipeline: each answers a plain question and joins the person's AI cohort
-# and department. The rest feed dashboard tiles only and stay hidden; hidden
-# explores still run dashboard queries and filter suggestions.
+# Only the self-service starting points are visible: AI Activity (every
+# action), People (one row per person) and the Gemini Enterprise detail.
+# Everything else is a single-purpose table the dashboards already show in
+# full, so it stays hidden; hidden explores still run dashboard tiles, drills
+# and filter suggestions.
 
 # ---------------------------------------------------------------- visible
 
@@ -37,19 +38,6 @@ explore: ai_user_profile {
     view_label: "Person"
     sql_on: ${user_org_unit.user_email} = ${ai_user_profile.user_email} ;;
     relationship: one_to_one
-  }
-}
-
-explore: ai_user_cohort_weekly {
-  group_label: "Gemini AI Adoption"
-  label: "Cohorts Over Time"
-  description: "Each person's AI cohort week by week, and whether they moved up or down."
-  persist_with: gemini_change_management_datagroup
-
-  join: user_org_unit {
-    view_label: "Person"
-    sql_on: ${user_org_unit.user_email} = ${ai_user_cohort_weekly.user_email} ;;
-    relationship: many_to_one
   }
 }
 
@@ -91,8 +79,23 @@ explore: ge_user_activity {
   }
 }
 
+# ---------------------------------------------------------------- hidden
+
+explore: ai_user_cohort_weekly {
+  hidden: yes
+  label: "Cohorts Over Time"
+  description: "Each person's AI cohort week by week, and whether they moved up or down."
+  persist_with: gemini_change_management_datagroup
+
+  join: user_org_unit {
+    view_label: "Person"
+    sql_on: ${user_org_unit.user_email} = ${ai_user_cohort_weekly.user_email} ;;
+    relationship: many_to_one
+  }
+}
+
 explore: antigravity_usage {
-  group_label: "Gemini AI Adoption"
+  hidden: yes
   label: "Antigravity Activity"
   description: "Antigravity requests by person, client, model and experience."
   persist_with: gemini_change_management_datagroup
@@ -112,7 +115,7 @@ explore: antigravity_usage {
 }
 
 explore: ge_safety_events {
-  group_label: "Gemini AI Adoption"
+  hidden: yes
   label: "Safety and Model Armor"
   description: "Prompts and responses Model Armor screened or flagged, by person and category."
   persist_with: gemini_change_management_datagroup
@@ -127,20 +130,6 @@ explore: ge_safety_events {
   join: user_org_unit {
     view_label: "Person"
     sql_on: ${user_org_unit.user_email} = ${ge_safety_events.user_email} ;;
-    relationship: many_to_one
-  }
-}
-
-# ---------------------------------------------------------------- hidden
-
-explore: ai_user_retention {
-  hidden: yes
-  label: "AI Retention"
-  description: "Monthly retention by first AI month, per product or across all AI."
-  persist_with: gemini_change_management_datagroup
-
-  join: user_org_unit {
-    sql_on: ${user_org_unit.user_email} = ${ai_user_retention.user_email} ;;
     relationship: many_to_one
   }
 }
@@ -174,28 +163,28 @@ explore: data_state {
 }
 
 explore: ai_opportunities {
-  group_label: "Gemini AI Adoption"
+  hidden: yes
   label: "AI Opportunities"
   description: "Prioritised queue of adoption, licence, access and data-quality opportunities with recommended next steps."
   persist_with: gemini_change_management_datagroup
 }
 
 explore: ai_interventions {
-  group_label: "Gemini AI Adoption"
+  hidden: yes
   label: "AI Interventions"
   description: "Optional training, campaign, coaching and licence-review interventions."
   persist_with: gemini_change_management_datagroup
 }
 
 explore: intervention_impact {
-  group_label: "Gemini AI Adoption"
+  hidden: yes
   label: "Intervention Impact"
   description: "Before/after intervention comparison against a simple comparison group. Directional, not causal proof."
   persist_with: gemini_change_management_datagroup
 }
 
 explore: ai_value_outcomes {
-  group_label: "Gemini AI Adoption"
+  hidden: yes
   label: "Validated Value Outcomes"
   description: "Optional externally validated business outcomes loaded into the analytics dataset."
   persist_with: gemini_change_management_datagroup
@@ -206,42 +195,6 @@ explore: population_scope {
   label: "Population Scope"
   description: "People included or excluded from employee adoption metrics."
   persist_with: gemini_change_management_datagroup
-}
-
-# Gemini Enterprise-only segments (Dormant, Never used) for the licence
-# nudge lists; everywhere else uses the cross-product AI cohort.
-explore: ge_user_profile {
-  hidden: yes
-  label: "Gemini Enterprise Users and Segments"
-  description: "One row per licensed or active person, with Gemini Enterprise segment, 28-day engagement and licence state."
-  persist_with: gemini_change_management_datagroup
-
-  join: user_org_unit {
-    sql_on: ${user_org_unit.user_email} = ${ge_user_profile.user_email} ;;
-    relationship: one_to_one
-  }
-
-  join: ai_user_profile {
-    sql_on: ${ai_user_profile.user_email} = ${ge_user_profile.user_email} ;;
-    relationship: one_to_one
-  }
-}
-
-explore: ge_user_daily {
-  hidden: yes
-  label: "Daily Active Users"
-  description: "One row per user per app per day. Use for DAU, WAU, MAU, stickiness and prompts per user."
-  persist_with: gemini_change_management_datagroup
-
-  join: ge_user_profile {
-    sql_on: ${ge_user_profile.user_email} = ${ge_user_daily.user_email} ;;
-    relationship: many_to_one
-  }
-
-  join: user_org_unit {
-    sql_on: ${user_org_unit.user_email} = ${ge_user_daily.user_email} ;;
-    relationship: many_to_one
-  }
 }
 
 explore: ge_tool_calls {
@@ -264,18 +217,6 @@ explore: ge_model_calls {
 
   join: user_org_unit {
     sql_on: ${user_org_unit.user_email} = ${ge_model_calls.user_email} ;;
-    relationship: many_to_one
-  }
-}
-
-explore: ge_connector_activity {
-  hidden: yes
-  label: "Connector Errors"
-  description: "Connector tool failures by connector, category and user."
-  persist_with: gemini_change_management_datagroup
-
-  join: user_org_unit {
-    sql_on: ${user_org_unit.user_email} = ${ge_connector_activity.user_email} ;;
     relationship: many_to_one
   }
 }

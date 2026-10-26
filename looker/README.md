@@ -72,36 +72,24 @@ The block uses these constants in SQL table references, so the same LookML point
 
 The block installs one model, `gemini_enterprise` (label **Gemini AI Adoption**), so it adds a single entry to the instance's model list. Its explores read three sources, each with its own refresh datagroup:
 
-- The Gemini Enterprise analytics export: adoption, active users and retention, activity and engagement, seats, agents, search queries and documents, all built on the full-fidelity `export_history` table. Always present once the exporter runs.
-- The redacted log tables (`ge_*`, `antigravity_usage`) that the exporter builds when the Terraform log pipeline is on, plus the cross-product AI adoption layer: `ai_activity_hourly` (every AI action across Gemini Enterprise, Gemini for Workspace and Antigravity), `ai_user_profile` (current cohort, product mix and activation per person), `ai_user_cohort_weekly` (cohort per person per week), `ai_user_retention` and the Setup Health views. These need a PDT/scratch dataset: the AI adoption tables rebuild daily over the last 400 days, and the Gemini Enterprise rollups rebuild hourly.
+- The Gemini Enterprise analytics export: adoption, active users and retention, activity and engagement, seats and agents, all built on the full-fidelity `export_history` table. Always present once the exporter runs.
+- The redacted log tables (`ge_*`, `antigravity_usage`) that the exporter builds when the Terraform log pipeline is on, plus the cross-product AI adoption layer: `ai_activity_hourly` (every AI action across Gemini Enterprise, Gemini for Workspace and Antigravity), `ai_user_profile` (current cohort, product mix and activation per person), `ai_user_cohort_weekly` (cohort per person per week), the population scope, opportunity and intervention tables, and the Setup Health views. These need a PDT/scratch dataset: the AI adoption tables rebuild daily over the last 400 days, and the Gemini Enterprise rollups rebuild hourly.
 - Workspace Gemini activity from the Workspace Admin BigQuery export `activity` table, persisted daily as a PDT.
 
 A source that isn't set up only breaks the explores and tiles that read it.
 
 ## Explores
 
-The Explore menu shows only the explores a business user needs, grouped under two headings. The rest feed the dashboard and stay hidden. Technical fields (raw IDs, API method names, request settings) are hidden too. Hidden explores and fields still work in the dashboard, and developers can open them by URL.
+The Explore menu shows four explores under **Gemini AI Adoption**. Everything else is a single-purpose table that a dashboard already shows in full, so it stays hidden. Technical fields (raw IDs, API method names, request settings) are hidden too. Hidden explores and fields still work in the dashboards and drills, and developers can open them by URL.
 
-**Gemini AI Adoption** (needs the log pipeline; Workspace tiles also need the Workspace audit export):
+- **AI Activity**: start here. Every AI action across Gemini Enterprise, Gemini for Workspace and Antigravity, by person, department, product, feature, use case, day and local hour, with estimated time saved. Needs the log pipeline; Workspace rows also need the Workspace audit export.
+- **People and Activation**: one row per person, with their cohort, product mix, activation, retention, top model and licence state. Use it for activation rates, licence spend and coaching lists.
+- **Gemini Enterprise Activity**: every Gemini Enterprise interaction by feature, agent, model, grounding source and app. Needs the log pipeline.
+- **Gemini Enterprise Seats**: daily active users against seats claimed and purchased, from Google's analytics export. Works without the log pipeline.
 
-- **AI Activity**: start here. Every AI action across Gemini Enterprise, Gemini for Workspace and Antigravity, by person, product, feature, day and local hour, with users of both products, stickiness and estimated time saved.
-- **People and Activation**: one row per person, with their cohort, product mix, activation, top model and licence state. Use it for activation rates, licence spend and target lists.
-- **Cohorts Over Time**: each person's Power, Normal, Casual or Non-AI cohort per week, and how people move between cohorts.
-- **Gemini Enterprise Activity**: every Gemini Enterprise interaction by feature, agent, model and app.
-- **Antigravity Activity** and **Safety and Model Armor**.
-- **Workspace Gemini Activity**: Gemini in Gmail, Docs, Meet and the other Workspace apps.
+AI Activity and Gemini Enterprise Activity include a **Person** section (cohort, product mix, licence, department, org unit), so any chart can be split by cohort or department.
 
-The per-person explores include a **Person** section (cohort, product mix, licence, department, org unit), so any chart can be split by cohort or department.
-
-**Gemini Enterprise App Totals** (the analytics export only, no per-person data):
-
-- **Adoption and Seats**: daily active users against seats claimed and purchased, per app.
-- **Active Users and Retention**: DAU, WAU and MAU, with retention, growth and churn by product surface.
-- **Search and Assistant Activity**: searches, clicks, Assistant answers, feedback and page visits by device.
-- **Agents**: sessions and active users per agent. Rows appear once agents are used.
-- **Search Queries**: what people search for. Rows appear only above Google's privacy threshold.
-
-Hidden explores: AI Retention, Setup Health, Users and Segments, Daily Active Users, Tools and Skills, Model Calls and Tokens, Connector Errors, Licences, Admin Changes, Seats and Documents.
+Hidden explores: Cohorts Over Time, Antigravity Activity, Safety and Model Armor, Workspace Gemini Activity, Active Users and Retention, Search and Assistant Activity, Agents, Seats, AI Opportunities, AI Interventions, Intervention Impact, Validated Value Outcomes, Tools and Skills, Model Calls and Tokens, Licences, Admin Changes, Setup Health, Data State, Population Scope and Export History (raw).
 
 ### Feature taxonomy
 
@@ -168,7 +156,7 @@ Load these tables when you want the Change Management dashboard to compare adopt
 3. Run **Validate LookML**.
 4. Open the dashboard and check each tab for the sources you set up, using the default 90-day filter.
 
-If a tab is empty, test the underlying Explore first. An empty Workspace Gemini tab or Workspace tiles usually mean **Workspace audit export** is `none`, or the Workspace Admin export has not produced Gemini events yet; **Setup Health** shows which. An empty Gemini Enterprise Analytics tab usually means the exporter has not run successfully — check the Cloud Run job logs for `merge_completed`. Note that the **Search Queries** and **Agents** explores (and the dashboard's top-documents tile) stay empty until the engine has enough usage — Google suppresses query/document rows below a k-anonymity threshold, and agent rows only appear once agents are used.
+If a tab is empty, test the underlying Explore first. An empty Workspace Gemini tab or Workspace tiles usually mean **Workspace audit export** is `none`, or the Workspace Admin export has not produced Gemini events yet; **Setup Health** shows which. An empty Gemini Enterprise Analytics tab usually means the exporter has not run successfully — check the Cloud Run job logs for `merge_completed`. Note that the Agents tile stays empty until agents are used on the engine.
 
 ## Caveats
 
