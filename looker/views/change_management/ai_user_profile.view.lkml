@@ -651,7 +651,7 @@ view: ai_user_profile {
     description: "Licensed users times the ge_seat_cost_monthly constant."
     type: number
     sql: ${ge_licensed_users} * @{ge_seat_cost_monthly} ;;
-    value_format: "@{currency_symbol}#,##0"
+    value_format: "\"@{currency_symbol}\"#,##0"
   }
 
   measure: monthly_gws_spend {
@@ -659,14 +659,14 @@ view: ai_user_profile {
     description: "Workspace users times the gws_seat_cost_monthly constant."
     type: number
     sql: ${workspace_users} * @{gws_seat_cost_monthly} ;;
-    value_format: "@{currency_symbol}#,##0"
+    value_format: "\"@{currency_symbol}\"#,##0"
   }
 
   measure: monthly_ai_spend {
     label: "Monthly AI Spend"
     type: number
     sql: ${monthly_ge_spend} + ${monthly_gws_spend} ;;
-    value_format: "@{currency_symbol}#,##0"
+    value_format: "\"@{currency_symbol}\"#,##0"
     html: {% if @{ge_seat_cost_monthly} == 0 and @{gws_seat_cost_monthly} == 0 %}<span style="font-size:14px">Set seat costs in Marketplace &gt; Manage</span>{% else %}{{ rendered_value }}{% endif %} ;;
   }
 
@@ -674,7 +674,7 @@ view: ai_user_profile {
     label: "Monthly Cost per AI Active User"
     type: number
     sql: SAFE_DIVIDE(${monthly_ai_spend}, NULLIF(${ai_active_users}, 0)) ;;
-    value_format: "@{currency_symbol}#,##0.00"
+    value_format: "\"@{currency_symbol}\"#,##0.00"
     html: {% if @{ge_seat_cost_monthly} == 0 and @{gws_seat_cost_monthly} == 0 %}<span style="font-size:14px">Set seat costs in Marketplace &gt; Manage</span>{% else %}{{ rendered_value }}{% endif %} ;;
   }
 
@@ -682,7 +682,7 @@ view: ai_user_profile {
     label: "Monthly Licence Spend to Review"
     type: number
     sql: ${idle_ge_licences} * @{ge_seat_cost_monthly} ;;
-    value_format: "@{currency_symbol}#,##0"
+    value_format: "\"@{currency_symbol}\"#,##0"
     html: {% if @{ge_seat_cost_monthly} == 0 %}<span style="font-size:14px">Set the Gemini Enterprise seat cost in Marketplace &gt; Manage</span>{% else %}{{ rendered_value }}{% endif %} ;;
   }
 

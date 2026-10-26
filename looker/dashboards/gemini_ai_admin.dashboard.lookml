@@ -9,16 +9,12 @@
     label: "Gemini Enterprise"
   - name: workspace
     label: "Workspace Gemini"
-  - name: agents_models
-    label: "Agents & Models"
   - name: antigravity
     label: "Antigravity"
   - name: governance
     label: "Governance"
   - name: data_health
     label: "Data Health"
-  - name: definitions
-    label: "Definitions"
   elements:
   - name: header_admin
     type: text
@@ -218,11 +214,11 @@
     title_text: ""
     subtitle_text: ""
     body_text: "<h2>Agents & Models</h2><p>Technical diagnostic measures for model routing, agents, tools and tokens.</p>"
-    row: 0
+    row: 23
     col: 0
     width: 72
     height: 4
-    tab_name: agents_models
+    tab_name: ge_analytics
 
   - name: prompts_by_model
     title: "Prompts by Model"
@@ -235,11 +231,11 @@
     listen:
       Date: ge_user_activity.event_date
       App: ge_user_activity.app_name
-    row: 4
+    row: 27
     col: 0
     width: 36
     height: 10
-    tab_name: agents_models
+    tab_name: ge_analytics
 
   - name: tools_called
     title: "Tools the Assistant Calls"
@@ -251,11 +247,11 @@
     limit: 20
     listen:
       Date: ge_tool_calls.event_date
-    row: 4
+    row: 27
     col: 36
     width: 36
     height: 10
-    tab_name: agents_models
+    tab_name: ge_analytics
 
   - name: tokens_by_agent
     title: "Tokens by Agent"
@@ -267,11 +263,11 @@
     limit: 20
     listen:
       Date: ge_model_calls.event_date
-    row: 14
+    row: 37
     col: 0
     width: 36
     height: 10
-    tab_name: agents_models
+    tab_name: ge_analytics
 
   - name: hourly_actions
     title: "AI Actions by Local Hour"
@@ -285,11 +281,11 @@
       Date: ai_activity_hourly.event_date
       Product: ai_activity_hourly.product
       Department: user_org_unit.department
-    row: 14
+    row: 37
     col: 36
     width: 36
     height: 10
-    tab_name: agents_models
+    tab_name: ge_analytics
 
   - name: ag_header
     type: text
@@ -484,11 +480,11 @@
         <p><strong>Google export metric:</strong> Daily Active / Seats Claimed is product telemetry from the Gemini Enterprise export and has a different denominator from employee activation.</p>
         <p><strong>Estimated value:</strong> value actions multiplied by configured minutes-saved assumptions. It is not a validated financial return.</p>
       </div>
-    row: 0
+    row: 26
     col: 0
     width: 72
     height: 20
-    tab_name: definitions
+    tab_name: data_health
 
   filters:
   - name: Date

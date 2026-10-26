@@ -388,7 +388,7 @@ view: ai_activity_hourly {
     description: "Estimated hours saved times the loaded_hourly_rate constant."
     type: number
     sql: ${hours_saved} * @{loaded_hourly_rate} ;;
-    value_format: "@{currency_symbol}#,##0"
+    value_format: "\"@{currency_symbol}\"#,##0"
     html: {% if @{loaded_hourly_rate} == 0 %}<span style="font-size:14px">Set the loaded hourly rate in Marketplace &gt; Manage</span>{% else %}{{ rendered_value }}{% endif %} ;;
   }
 
@@ -396,7 +396,7 @@ view: ai_activity_hourly {
     label: "Estimated Value of Time Saved (Low)"
     type: number
     sql: ${hours_saved_low} * @{loaded_hourly_rate} ;;
-    value_format: "@{currency_symbol}#,##0"
+    value_format: "\"@{currency_symbol}\"#,##0"
     html: {% if @{loaded_hourly_rate} == 0 %}<span style="font-size:14px">Set the loaded hourly rate in Marketplace &gt; Manage</span>{% else %}{{ rendered_value }}{% endif %} ;;
   }
 
@@ -404,7 +404,7 @@ view: ai_activity_hourly {
     label: "Estimated Value of Time Saved (High)"
     type: number
     sql: ${hours_saved_high} * @{loaded_hourly_rate} ;;
-    value_format: "@{currency_symbol}#,##0"
+    value_format: "\"@{currency_symbol}\"#,##0"
     html: {% if @{loaded_hourly_rate} == 0 %}<span style="font-size:14px">Set the loaded hourly rate in Marketplace &gt; Manage</span>{% else %}{{ rendered_value }}{% endif %} ;;
   }
 

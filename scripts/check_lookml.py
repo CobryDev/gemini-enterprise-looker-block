@@ -111,6 +111,12 @@ def check_dashboard_files() -> list[str]:
             if not (isinstance(data, list) and data and "dashboard" in data[0]):
                 raise ValueError("expected a YAML list starting with '- dashboard:'")
             dashboard = data[0]
+            tabs = {t["name"] for t in dashboard.get("tabs", [])}
+            if len(tabs) > 5:
+                raise ValueError(f"{len(tabs)} tabs; Looker allows at most 5")
+            for element in dashboard.get("elements", []):
+                if tabs and element.get("tab_name") not in tabs:
+                    raise ValueError(f"element {element.get('name', '?')} has unknown tab_name {element.get('tab_name')}")
             names = set()
             for element in dashboard.get("elements", []):
                 required = ("name", "type") if element.get("type") == "text" else ("name", "title", "type", "model", "explore")

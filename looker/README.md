@@ -15,7 +15,7 @@ Confirm these are ready before installing the block:
 - The Workspace audit export dataset (we use `workspace_audit` as the example name) has an `activity` table, if you want Workspace Gemini reporting. Set the `workspace_dataset` constant to your actual dataset name.
 - Your Looker instance has a BigQuery connection with a PDT/scratch dataset configured (the AI adoption and Workspace explores build persisted derived tables).
 - The Looker service account can read the datasets and run BigQuery jobs.
-- For individual-level coaching views, create a Looker user attribute named `gemini_individual_access` and set it to `yes` only for authorised change managers and administrators.
+- For individual-level coaching views, create a Looker user attribute named `gemini_individual_access` and set it to `yes` only for authorised change managers and administrators. Set **User Access** to **View** (or **None**), never **Edit**: Looker rejects an access grant on a user-editable attribute, and the whole model fails to load.
 
 Grant the Looker service account (Terraform does the first and third for you if you set `looker_service_account_email`):
 
