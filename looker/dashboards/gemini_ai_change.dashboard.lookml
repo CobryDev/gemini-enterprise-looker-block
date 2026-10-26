@@ -214,7 +214,7 @@
     type: text
     title_text: ""
     subtitle_text: ""
-    body_text: "<h2>Use Cases</h2><p>Feature telemetry is grouped into a business-facing taxonomy. Unclassified activity is explicit so gaps in event mapping are visible.</p>"
+    body_text: "<h2>Use Cases</h2><p>Feature telemetry is grouped into a business-facing taxonomy. Unclassified activity is explicit so gaps in event mapping are visible. Use cases count active actions only: automated workflow runs and proactive suggestions are shown separately as passive events.</p>"
     row: 0
     col: 0
     width: 72
@@ -269,6 +269,67 @@
     col: 54
     width: 18
     height: 7
+    tab_name: use_cases
+
+  - name: passive_share
+    title: "Passive Share of AI Events"
+    note_display: hover
+    note_text: "Automated workflow and agent runs plus proactive suggestions, as a share of all Gemini events. These are excluded from adoption metrics."
+    type: single_value
+    model: gemini_enterprise
+    explore: ai_activity_hourly
+    fields: [ai_activity_hourly.passive_event_share]
+    listen:
+      Date: ai_activity_hourly.event_date
+      Product: ai_activity_hourly.product
+      Department: user_org_unit.department
+    row: 11
+    col: 36
+    width: 18
+    height: 5
+    tab_name: use_cases
+
+  - name: automation_users
+    title: "People Using Automation"
+    type: single_value
+    model: gemini_enterprise
+    explore: ai_activity_hourly
+    fields: [ai_activity_hourly.automation_users]
+    listen:
+      Date: ai_activity_hourly.event_date
+      Product: ai_activity_hourly.product
+      Department: user_org_unit.department
+    row: 11
+    col: 54
+    width: 18
+    height: 5
+    tab_name: use_cases
+
+  - name: interaction_mode_trend
+    title: "Weekly AI Events | active vs passive"
+    note_display: hover
+    note_text: "Active: a person asked Gemini. Automated: workflows and scheduled or triggered agents. Proactive: suggestions Gemini made unprompted."
+    type: looker_column
+    model: gemini_enterprise
+    explore: ai_activity_hourly
+    fields: [ai_activity_hourly.event_week, ai_activity_hourly.interaction_mode, ai_activity_hourly.ai_events]
+    pivots: [ai_activity_hourly.interaction_mode]
+    fill_fields: [ai_activity_hourly.event_week]
+    sorts: ["ai_activity_hourly.event_week", "ai_activity_hourly.interaction_mode"]
+    limit: 26
+    stacking: normal
+    series_colors:
+      Active: "#1a73e8"
+      Automated: "#9aa0a6"
+      Proactive: "#dadce0"
+    listen:
+      Date: ai_activity_hourly.event_date
+      Product: ai_activity_hourly.product
+      Department: user_org_unit.department
+    row: 27
+    col: 0
+    width: 72
+    height: 10
     tab_name: use_cases
 
   - name: use_case_trend

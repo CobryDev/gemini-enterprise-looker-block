@@ -1,10 +1,14 @@
 view: ai_activity_hourly {
   label: "AI Activity"
-  # One row per user, product, surface, feature and UTC hour across Gemini
-  # Enterprise, Gemini for Workspace and Antigravity, over the last 400 days.
-  #   AI actions     what counts as using AI: a Gemini Enterprise prompt or
-  #                  search, an active Workspace Gemini event (generate,
-  #                  converse, summarise), or an Antigravity request
+  # One row per user, product, surface, feature, interaction mode and UTC hour
+  # across Gemini Enterprise, Gemini for Workspace and Antigravity, over the
+  # last 400 days.
+  #   Interaction    Active: a person asked Gemini for something.
+  #   mode           Automated: a workflow or scheduled/triggered agent ran on
+  #                  their behalf. Proactive: Gemini offered output nobody
+  #                  asked for (Workspace "inactive" events).
+  #   AI actions     what counts as using AI: Active events only, so
+  #                  automation and suggestions never inflate adoption
   #   Value actions  what the time-saved estimate multiplies: AI actions plus
   #                  scheduled agent runs and executed actions for Gemini
   #                  Enterprise; agent tasks (trajectories) for Antigravity
@@ -21,6 +25,7 @@ view: ai_activity_hourly {
           'Gemini Enterprise' AS product,
           app_name AS surface,
           feature,
+          IF(invocation_mode IN ('Scheduled', 'Triggered'), 'Automated', 'Active') AS interaction_mode,
           COUNT(*) AS events,
           COUNTIF(is_user_prompt OR is_user_search) AS ai_actions,
           COUNTIF(
@@ -34,7 +39,7 @@ view: ai_activity_hourly {
         WHERE user_email IS NOT NULL
           AND feature NOT IN ('Assistant grounding', 'Navigation', 'Other')
           AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)
-        GROUP BY 1, 2, 3, 4, 5
+        GROUP BY 1, 2, 3, 4, 5, 6
       ),
 
       gws AS (
@@ -47,9 +52,17 @@ view: ai_activity_hourly {
           IF(IFNULL(gemini_for_workspace.feature_source, 'feature_source_unspecified') IN ('feature_source_unspecified', 'unspecified'),
             CONCAT(gemini_for_workspace.app_name, '_unspecified'),
             gemini_for_workspace.feature_source) AS feature,
+          CASE
+            WHEN NOT STARTS_WITH(IFNULL(gemini_for_workspace.event_category, ''), 'active') THEN 'Proactive'
+            WHEN gemini_for_workspace.app_name = 'workflows'
+              AND IFNULL(gemini_for_workspace.feature_source, '') != 'workflows_creation' THEN 'Automated'
+            ELSE 'Active'
+          END AS interaction_mode,
           COUNT(*) AS events,
-          COUNTIF(STARTS_WITH(gemini_for_workspace.event_category, 'active')) AS ai_actions,
-          COUNTIF(STARTS_WITH(gemini_for_workspace.event_category, 'active')) AS value_actions,
+          COUNTIF(STARTS_WITH(IFNULL(gemini_for_workspace.event_category, ''), 'active')
+            AND NOT (gemini_for_workspace.app_name = 'workflows'
+              AND IFNULL(gemini_for_workspace.feature_source, '') != 'workflows_creation')) AS ai_actions,
+          COUNTIF(STARTS_WITH(IFNULL(gemini_for_workspace.event_category, ''), 'active')) AS value_actions,
           CAST(0 AS INT64) AS prompts,
           CAST(0 AS INT64) AS tokens
         FROM `@{gemini_project}.@{workspace_dataset}.activity`
@@ -57,7 +70,7 @@ view: ai_activity_hourly {
           AND email IS NOT NULL
           AND time_usec >= UNIX_MICROS(TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)))
           AND _PARTITIONTIME >= TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY))
-        GROUP BY 1, 2, 3, 4, 5
+        GROUP BY 1, 2, 3, 4, 5, 6
         {% else %}
         SELECT * FROM ge WHERE FALSE
         {% endif %}
@@ -70,6 +83,7 @@ view: ai_activity_hourly {
           'Antigravity' AS product,
           COALESCE(client_name, 'Unknown') AS surface,
           COALESCE(experience, 'Unknown') AS feature,
+          'Active' AS interaction_mode,
           COUNT(*) AS events,
           COUNT(*) AS ai_actions,
           COUNT(DISTINCT trajectory_id) AS value_actions,
@@ -78,7 +92,7 @@ view: ai_activity_hourly {
         FROM `@{gemini_project}.@{gemini_dataset}.antigravity_usage`
         WHERE user_email IS NOT NULL
           AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)
-        GROUP BY 1, 2, 3, 4, 5
+        GROUP BY 1, 2, 3, 4, 5, 6
       ),
 
       unioned AS (
@@ -91,7 +105,7 @@ view: ai_activity_hourly {
 
       SELECT
         CONCAT(
-          unioned.user_email, '|', unioned.product, '|', IFNULL(unioned.surface, ''), '|', IFNULL(unioned.feature, ''), '|',
+          unioned.user_email, '|', unioned.product, '|', IFNULL(unioned.surface, ''), '|', IFNULL(unioned.feature, ''), '|', unioned.interaction_mode, '|',
           FORMAT_TIMESTAMP('%Y%m%d%H', unioned.event_hour)
         ) AS pk,
         DATE(unioned.event_hour) AS event_date,
@@ -164,6 +178,20 @@ view: ai_activity_hourly {
     sql: ${TABLE}.feature ;;
   }
 
+  dimension: interaction_mode {
+    label: "Interaction Mode"
+    description: "Active: a person asked Gemini for something. Automated: a workflow or scheduled/triggered agent ran on their behalf. Proactive: Gemini offered output nobody asked for, such as suggestions or automatic meeting-note extracts. Only Active counts towards adoption."
+    type: string
+    sql: ${TABLE}.interaction_mode ;;
+  }
+
+  dimension: interaction_type {
+    label: "Active or Passive"
+    description: "Active (a person asked) or Passive (Automated or Proactive)."
+    type: string
+    sql: IF(${TABLE}.interaction_mode = 'Active', 'Active', 'Passive') ;;
+  }
+
   dimension: use_case {
     label: "AI Use Case"
     description: "Business-facing use-case group mapped from product and feature. Unclassified is explicit when the source event does not identify a meaningful feature."
@@ -195,10 +223,48 @@ view: ai_activity_hourly {
 
   measure: ai_actions {
     label: "AI Actions"
-    description: "Gemini Enterprise prompts and searches, active Workspace Gemini events and Antigravity requests."
+    description: "Things a person asked Gemini to do: Gemini Enterprise prompts and searches, active Workspace Gemini events (excluding workflow runs) and Antigravity requests. Excludes automated and proactive events."
     type: sum
     sql: ${TABLE}.ai_actions ;;
     drill_fields: [user_email, product, feature, ai_actions]
+  }
+
+  measure: ai_events {
+    label: "All AI Events"
+    description: "Every Gemini event, active and passive. Split by Interaction Mode to see how much is automation or proactive suggestions."
+    type: sum
+    sql: ${TABLE}.events ;;
+  }
+
+  measure: automated_events {
+    label: "Automated AI Events"
+    description: "Workflow steps and runs, and scheduled or triggered agent runs. One workflow run can log several events."
+    type: sum
+    sql: ${TABLE}.events ;;
+    filters: [interaction_mode: "Automated"]
+  }
+
+  measure: proactive_events {
+    label: "Proactive AI Events"
+    description: "Suggestions and output Gemini produced without being asked."
+    type: sum
+    sql: ${TABLE}.events ;;
+    filters: [interaction_mode: "Proactive"]
+  }
+
+  measure: passive_event_share {
+    label: "Passive Share of AI Events"
+    description: "Automated plus proactive events as a share of all AI events."
+    type: number
+    sql: SAFE_DIVIDE(${automated_events} + ${proactive_events}, NULLIF(${ai_events}, 0)) ;;
+    value_format_name: percent_0
+  }
+
+  measure: automation_users {
+    label: "People Using Automation"
+    description: "People with at least one automated workflow or agent run."
+    type: count_distinct
+    sql: CASE WHEN ${TABLE}.interaction_mode = 'Automated' AND ${TABLE}.events > 0 THEN ${TABLE}.user_email END ;;
   }
 
   measure: value_actions {

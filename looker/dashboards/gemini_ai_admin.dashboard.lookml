@@ -473,6 +473,7 @@
     body_text: |-
       <div style="font-family:'Google Sans',Arial,sans-serif;line-height:1.55;">
         <h2>Definitions</h2>
+        <p><strong>Active vs passive:</strong> an active action is something a person asked Gemini to do. Passive events are automated (workflow and scheduled or triggered agent runs) or proactive (suggestions Gemini made unprompted). AI-active days, cohorts and every adoption rate count active actions only. Time saved also counts automated runs, once per run.</p>
         <p><strong>Activation:</strong> eligible people with at least one AI-active day in the last 28 days, divided by eligible people in scope.</p>
         <p><strong>Regular adoption:</strong> eligible people with at least the Normal user threshold of AI-active days (default 4) in the last 28 days, divided by eligible people in scope.</p>
         <p><strong>Engagement:</strong> distinct AI-active days per active user.</p>
