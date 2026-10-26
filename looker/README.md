@@ -143,6 +143,8 @@ The layout uses the 72-column `granular` grid. Outcome tiles come first, explana
 
 Employee adoption rates use the optional Marketplace constants `employee_domains`, `excluded_org_units` and `excluded_email_pattern`. Use them to remove external users, guests and service accounts from the denominator. The Data Health tab shows excluded people by reason.
 
+People are identified by email address. When an admin renames an account, the block reads the rename from the Workspace audit log and counts every address the person has used as their current one, so history and cohorts carry over. This needs `workspace_export = same_region`. If an address change doesn't appear as a rename (for example, it happened before the audit export started), add it to the `person_email_overrides` constant as comma-separated pairs of old address, an equals sign and the current address.
+
 Individual user fields are protected by the `can_see_individuals` access grant, driven by the `gemini_individual_access` user attribute. Give that attribute the value `yes` only to roles allowed to use coaching and administration lists.
 
 ### Intervention and value tracking

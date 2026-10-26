@@ -14,7 +14,7 @@ view: ge_trace_context {
         COALESCE(ANY_VALUE(NULLIF(event_type, '')), 'Unattributed') AS event_type,
         COALESCE(ANY_VALUE(NULLIF(invocation_mode, '')), 'Unattributed') AS invocation_mode,
         COALESCE(ANY_VALUE(NULLIF(agent_display_name, '')), ANY_VALUE(NULLIF(agent_id, '')), 'Main assistant') AS agent_label
-      FROM `@{gemini_project}.@{gemini_dataset}.ge_user_activity`
+      FROM ${ge_user_activity.SQL_TABLE_NAME}
       WHERE trace_id IS NOT NULL
       GROUP BY trace_id ;;
   }

@@ -7,18 +7,18 @@ view: population_scope {
     sql:
       WITH candidates AS (
         SELECT DISTINCT LOWER(user_email) AS user_email
-        FROM `@{gemini_project}.@{gemini_dataset}.ge_user_activity`
+        FROM ${ge_user_activity.SQL_TABLE_NAME}
         WHERE user_email IS NOT NULL
           AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)
 
         UNION DISTINCT
         SELECT DISTINCT LOWER(user_email) AS user_email
-        FROM `@{gemini_project}.@{gemini_dataset}.ge_user_licenses`
+        FROM ${ge_user_licenses.SQL_TABLE_NAME}
         WHERE user_email IS NOT NULL
 
         UNION DISTINCT
         SELECT DISTINCT LOWER(user_email) AS user_email
-        FROM `@{gemini_project}.@{gemini_dataset}.antigravity_usage`
+        FROM ${antigravity_usage.SQL_TABLE_NAME}
         WHERE user_email IS NOT NULL
           AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)
 

@@ -56,6 +56,15 @@ constant: excluded_email_pattern {
   export: override_optional
 }
 
+# Renamed accounts are merged automatically from Workspace rename events (needs
+# workspace_export = same_region). For addresses the audit log can't link,
+# list comma-separated pairs of old address, an equals sign and the current
+# address.
+constant: person_email_overrides {
+  value: ""
+  export: override_optional
+}
+
 # IANA time zone for hour-of-day and day-of-week charts.
 constant: reporting_time_zone {
   value: "UTC"

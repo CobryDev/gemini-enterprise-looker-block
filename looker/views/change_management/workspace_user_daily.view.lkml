@@ -17,8 +17,8 @@ view: workspace_user_daily {
       {% if '@{workspace_export}' == 'same_region' %}
       WITH events AS (
         SELECT
-          time_usec,
-          LOWER(email) AS user_email,
+          activity.time_usec,
+          COALESCE(person_identity.person_email, LOWER(activity.email)) AS user_email,
           domain_name,
           -- org_unit_name_path is the path as an array whose first element is
           -- the organisation itself: [org, 'Sales', 'EMEA'] becomes /Sales/EMEA.
@@ -26,10 +26,14 @@ view: workspace_user_daily {
             SELECT part FROM UNNEST(org_unit_name_path) AS part WITH OFFSET AS depth
             WHERE depth > 0 ORDER BY depth
           ), '/'))) AS org_unit
-        FROM `@{gemini_project}.@{workspace_dataset}.activity`
-        WHERE email IS NOT NULL
-          AND time_usec >= UNIX_MICROS(TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)))
-          AND _PARTITIONTIME >= TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY))
+        FROM `@{gemini_project}.@{workspace_dataset}.activity` AS activity
+        LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity
+          ON person_identity.source_email = LOWER(activity.email)
+          AND TIMESTAMP_MICROS(activity.time_usec) >= person_identity.valid_from
+          AND TIMESTAMP_MICROS(activity.time_usec) < person_identity.valid_to
+        WHERE activity.email IS NOT NULL
+          AND activity.time_usec >= UNIX_MICROS(TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)))
+          AND activity._PARTITIONTIME >= TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY))
       ),
 
       daily AS (

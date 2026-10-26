@@ -5,7 +5,16 @@ view: ge_safety_events {
   # with no category when the content passed). GEMINI_ENTERPRISE rows are
   # answers Gemini Enterprise skipped for a policy reason. Count distinct
   # event_id for interactions; count rows for category matches.
-  sql_table_name: `@{gemini_project}.@{gemini_dataset}.ge_safety_events` ;;
+  # user_email is the person's current address; see person_identity.
+  derived_table: {
+    sql:
+      SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email)
+      FROM `@{gemini_project}.@{gemini_dataset}.ge_safety_events` AS source
+      LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity
+        ON person_identity.source_email = LOWER(source.user_email)
+        AND source.event_ts >= person_identity.valid_from
+        AND source.event_ts < person_identity.valid_to ;;
+  }
 
   dimension: row_key {
     primary_key: yes

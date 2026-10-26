@@ -2,7 +2,16 @@ view: ge_model_calls {
   label: "Model Calls"
   # One row per model inference from the gen_ai inference log: token counts
   # and tool-call counts, attributed to a user through the trace.
-  sql_table_name: `@{gemini_project}.@{gemini_dataset}.ge_model_calls` ;;
+  # user_email is the person's current address; see person_identity.
+  derived_table: {
+    sql:
+      SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email)
+      FROM `@{gemini_project}.@{gemini_dataset}.ge_model_calls` AS source
+      LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity
+        ON person_identity.source_email = LOWER(source.user_email)
+        AND source.event_ts >= person_identity.valid_from
+        AND source.event_ts < person_identity.valid_to ;;
+  }
 
   dimension: insert_id {
     primary_key: yes

@@ -57,7 +57,7 @@ view: ai_user_cohort_weekly {
       licensed_week AS (
         SELECT DISTINCT weeks.week_end, LOWER(licenses.user_email) AS user_email
         FROM weeks
-        JOIN `@{gemini_project}.@{gemini_dataset}.ge_user_licenses` AS licenses
+        JOIN ${ge_user_licenses.SQL_TABLE_NAME} AS licenses
           ON licenses.snapshot_date BETWEEN DATE_SUB(weeks.week_end, INTERVAL 6 DAY) AND weeks.week_end
         WHERE licenses.license_state = 'ASSIGNED'
           AND licenses.user_email IS NOT NULL

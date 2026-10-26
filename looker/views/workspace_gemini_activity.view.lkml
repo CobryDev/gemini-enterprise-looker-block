@@ -16,10 +16,10 @@ view: workspace_gemini_activity {
     sql:
       {% if '@{workspace_export}' != 'none' %}
       SELECT
-        ROW_NUMBER() OVER (ORDER BY time_usec, email) AS pk,
-        TIMESTAMP_MICROS(time_usec) AS event_ts,
-        DATE(TIMESTAMP_MICROS(time_usec)) AS event_date,
-        LOWER(email) AS email,
+        ROW_NUMBER() OVER (ORDER BY activity.time_usec, activity.email) AS pk,
+        TIMESTAMP_MICROS(activity.time_usec) AS event_ts,
+        DATE(TIMESTAMP_MICROS(activity.time_usec)) AS event_date,
+        {% if '@{workspace_export}' == 'same_region' %}COALESCE(person_identity.person_email, LOWER(activity.email)){% else %}LOWER(activity.email){% endif %} AS email,
         domain_name,
         -- The export stores the org-unit path as an array that starts with
         -- the organisation itself: [org, 'Sales', 'EMEA'] becomes /Sales/EMEA.
@@ -37,8 +37,14 @@ view: workspace_gemini_activity {
           WHEN gemini_for_workspace.app_name = 'workflows' AND IFNULL(gemini_for_workspace.feature_source, '') != 'workflows_creation' THEN 'Automated'
           ELSE 'Active'
         END AS interaction_mode
-      FROM `@{gemini_project}.@{workspace_dataset}.activity`
-      WHERE gemini_for_workspace.app_name IS NOT NULL
+      FROM `@{gemini_project}.@{workspace_dataset}.activity` AS activity
+      {% if '@{workspace_export}' == 'same_region' %}
+      LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity
+        ON person_identity.source_email = LOWER(activity.email)
+        AND TIMESTAMP_MICROS(activity.time_usec) >= person_identity.valid_from
+        AND TIMESTAMP_MICROS(activity.time_usec) < person_identity.valid_to
+      {% endif %}
+      WHERE activity.gemini_for_workspace.app_name IS NOT NULL
       {% else %}
       SELECT
         CAST(NULL AS INT64) AS pk,

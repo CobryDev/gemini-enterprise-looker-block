@@ -2,7 +2,16 @@ view: antigravity_usage {
   label: "Antigravity"
   # One row per Antigravity inference, from metadata-only
   # InferenceResponseLog entries. Prompts are never logged here.
-  sql_table_name: `@{gemini_project}.@{gemini_dataset}.antigravity_usage` ;;
+  # user_email is the person's current address; see person_identity.
+  derived_table: {
+    sql:
+      SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email)
+      FROM `@{gemini_project}.@{gemini_dataset}.antigravity_usage` AS source
+      LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity
+        ON person_identity.source_email = LOWER(source.user_email)
+        AND source.event_ts >= person_identity.valid_from
+        AND source.event_ts < person_identity.valid_to ;;
+  }
 
   dimension: insert_id {
     primary_key: yes

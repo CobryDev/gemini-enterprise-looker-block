@@ -3,7 +3,16 @@ view: ge_user_licenses {
   # Daily snapshot of per-user licence assignment and last login from the
   # Gemini Enterprise userLicenses API. Filter Is Latest Snapshot = Yes for
   # current state; use Snapshot Date for licence growth over time.
-  sql_table_name: `@{gemini_project}.@{gemini_dataset}.ge_user_licenses` ;;
+  # user_email is the person's current address; see person_identity.
+  derived_table: {
+    sql:
+      SELECT source.* REPLACE (COALESCE(person_identity.person_email, LOWER(source.user_email)) AS user_email)
+      FROM `@{gemini_project}.@{gemini_dataset}.ge_user_licenses` AS source
+      LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity
+        ON person_identity.source_email = LOWER(source.user_email)
+        AND TIMESTAMP(source.snapshot_date) >= person_identity.valid_from
+        AND TIMESTAMP(source.snapshot_date) < person_identity.valid_to ;;
+  }
 
   dimension: pk {
     primary_key: yes

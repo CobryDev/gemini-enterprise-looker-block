@@ -35,7 +35,7 @@ view: ai_activity_hourly {
           ) AS value_actions,
           COUNTIF(is_user_prompt) AS prompts,
           CAST(0 AS INT64) AS tokens
-        FROM `@{gemini_project}.@{gemini_dataset}.ge_user_activity`
+        FROM ${ge_user_activity.SQL_TABLE_NAME}
         WHERE user_email IS NOT NULL
           AND feature NOT IN ('Assistant grounding', 'Navigation', 'Other')
           AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)
@@ -45,8 +45,8 @@ view: ai_activity_hourly {
       gws AS (
         {% if '@{workspace_export}' == 'same_region' %}
         SELECT
-          TIMESTAMP_TRUNC(TIMESTAMP_MICROS(time_usec), HOUR) AS event_hour,
-          LOWER(email) AS user_email,
+          TIMESTAMP_TRUNC(TIMESTAMP_MICROS(activity.time_usec), HOUR) AS event_hour,
+          COALESCE(person_identity.person_email, LOWER(activity.email)) AS user_email,
           'Gemini for Workspace' AS product,
           gemini_for_workspace.app_name AS surface,
           IF(IFNULL(gemini_for_workspace.feature_source, 'feature_source_unspecified') IN ('feature_source_unspecified', 'unspecified'),
@@ -65,11 +65,15 @@ view: ai_activity_hourly {
           COUNTIF(STARTS_WITH(IFNULL(gemini_for_workspace.event_category, ''), 'active')) AS value_actions,
           CAST(0 AS INT64) AS prompts,
           CAST(0 AS INT64) AS tokens
-        FROM `@{gemini_project}.@{workspace_dataset}.activity`
-        WHERE gemini_for_workspace.app_name IS NOT NULL
-          AND email IS NOT NULL
-          AND time_usec >= UNIX_MICROS(TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)))
-          AND _PARTITIONTIME >= TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY))
+        FROM `@{gemini_project}.@{workspace_dataset}.activity` AS activity
+        LEFT JOIN ${person_identity.SQL_TABLE_NAME} AS person_identity
+          ON person_identity.source_email = LOWER(activity.email)
+          AND TIMESTAMP_MICROS(activity.time_usec) >= person_identity.valid_from
+          AND TIMESTAMP_MICROS(activity.time_usec) < person_identity.valid_to
+        WHERE activity.gemini_for_workspace.app_name IS NOT NULL
+          AND activity.email IS NOT NULL
+          AND activity.time_usec >= UNIX_MICROS(TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)))
+          AND activity._PARTITIONTIME >= TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY))
         GROUP BY 1, 2, 3, 4, 5, 6
         {% else %}
         SELECT * FROM ge WHERE FALSE
@@ -89,7 +93,7 @@ view: ai_activity_hourly {
           COUNT(DISTINCT trajectory_id) AS value_actions,
           CAST(0 AS INT64) AS prompts,
           SUM(IFNULL(total_tokens, 0)) AS tokens
-        FROM `@{gemini_project}.@{gemini_dataset}.antigravity_usage`
+        FROM ${antigravity_usage.SQL_TABLE_NAME}
         WHERE user_email IS NOT NULL
           AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 400 DAY)
         GROUP BY 1, 2, 3, 4, 5, 6

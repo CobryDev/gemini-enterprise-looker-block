@@ -36,7 +36,7 @@ view: ai_opportunities {
 
       latest_licence_requests AS (
         SELECT COUNT(DISTINCT LOWER(user_email)) AS requesters
-        FROM `@{gemini_project}.@{gemini_dataset}.ge_user_licenses`
+        FROM ${ge_user_licenses.SQL_TABLE_NAME}
         WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM `@{gemini_project}.@{gemini_dataset}.ge_user_licenses`)
           AND license_state = 'NO_LICENSE_ATTEMPTED_LOGIN'
           AND user_email IS NOT NULL

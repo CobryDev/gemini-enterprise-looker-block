@@ -217,7 +217,8 @@ view: setup_settings {
         STRUCT(16, 'Excluded email pattern', '@{excluded_email_pattern}'),
         STRUCT(17, 'Org-unit depth for departments', '@{org_unit_depth}'),
         STRUCT(18, 'Interventions table', '@{interventions_table}'),
-        STRUCT(19, 'Value outcomes table', '@{value_outcomes_table}')
+        STRUCT(19, 'Value outcomes table', '@{value_outcomes_table}'),
+        STRUCT(20, 'Email overrides (old=current)', '@{person_email_overrides}')
       ]) ;;
   }
 
