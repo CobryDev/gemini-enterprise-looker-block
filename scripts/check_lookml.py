@@ -89,8 +89,10 @@ def dashboard_field_refs(dashboard: dict):
         refs += [sort.split()[0] for sort in element.get("sorts", [])]
         refs += list((element.get("filters") or {}).keys())
         refs += list((element.get("listen") or {}).values())
+        local = {calc.get("table_calculation") for calc in element.get("dynamic_fields") or []}
         for ref in refs:
-            yield model, explore, ref, element["name"]
+            if ref not in local:
+                yield model, explore, ref, element["name"]
 
 
 def check_dashboard_fields(explore_fields: dict[tuple[str, str], set[str]], dashboard: dict) -> None:

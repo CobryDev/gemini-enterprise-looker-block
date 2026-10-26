@@ -319,20 +319,16 @@
       y_axis_gridlines: false
       legend_position: center
       series_colors:
-        Power|FIELD|1 - ai_user_profile.people: '#174EA6'
-        Power - ai_user_profile.people: '#174EA6'
-        Normal|FIELD|2 - ai_user_profile.people: '#1A73E8'
-        Normal - ai_user_profile.people: '#1A73E8'
-        Casual|FIELD|3 - ai_user_profile.people: '#8AB4F8'
-        Casual - ai_user_profile.people: '#8AB4F8'
-        Non-AI|FIELD|4 - ai_user_profile.people: '#DADCE0'
-        Non-AI - ai_user_profile.people: '#DADCE0'
+        Power: '#174EA6'
+        Normal: '#1A73E8'
+        Casual: '#8AB4F8'
+        Non-AI: '#DADCE0'
       listen:
         Department: user_org_unit.department
       row: 10
       col: 0
       width: 24
-      height: 9
+      height: 10
       tab_name: adoption_cohorts
       advanced_vis_config: |-
         {
@@ -365,7 +361,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -382,19 +381,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -463,28 +465,16 @@
       y_axis_gridlines: false
       legend_position: center
       series_colors:
-        Power|FIELD|1 - ai_user_profile.people: '#174EA6'
-        Power - ai_user_profile.people: '#174EA6'
-        Normal|FIELD|2 - ai_user_profile.people: '#1A73E8'
-        Normal - ai_user_profile.people: '#1A73E8'
-        Casual|FIELD|3 - ai_user_profile.people: '#8AB4F8'
-        Casual - ai_user_profile.people: '#8AB4F8'
-        Non-AI|FIELD|4 - ai_user_profile.people: '#DADCE0'
-        Non-AI - ai_user_profile.people: '#DADCE0'
-        Power|FIELD|1 - ai_user_cohort_weekly.people: '#174EA6'
-        Power - ai_user_cohort_weekly.people: '#174EA6'
-        Normal|FIELD|2 - ai_user_cohort_weekly.people: '#1A73E8'
-        Normal - ai_user_cohort_weekly.people: '#1A73E8'
-        Casual|FIELD|3 - ai_user_cohort_weekly.people: '#8AB4F8'
-        Casual - ai_user_cohort_weekly.people: '#8AB4F8'
-        Non-AI|FIELD|4 - ai_user_cohort_weekly.people: '#DADCE0'
-        Non-AI - ai_user_cohort_weekly.people: '#DADCE0'
+        Power: '#174EA6'
+        Normal: '#1A73E8'
+        Casual: '#8AB4F8'
+        Non-AI: '#DADCE0'
       listen:
         Department: user_org_unit.department
       row: 10
       col: 24
       width: 24
-      height: 9
+      height: 10
       tab_name: adoption_cohorts
       filters:
         ai_user_cohort_weekly.week_end_date: 12 weeks
@@ -524,7 +514,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -541,19 +534,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -608,6 +604,7 @@
       note_state: collapsed
       note_display: hover
       note_text: 'Share of eligible people in each cohort at the end of each of the last 12 complete weeks. Cohorts count AI-active days in the trailing 28 days: Power 12 or more, Normal 4 or more, Casual 1 to 3, Non-AI none (thresholds are install settings).'
+      show_y_axis_labels: false
     - name: cohort_movement
       title: Cohort movement | last 12 complete weeks
       type: looker_column
@@ -629,10 +626,10 @@
         ai_user_cohort_weekly.moved_down: Moved down
       listen:
         Department: user_org_unit.department
-      row: 19
+      row: 20
       col: 0
       width: 36
-      height: 10
+      height: 13
       tab_name: adoption_cohorts
       filters:
         ai_user_cohort_weekly.week_end_date: 12 weeks
@@ -671,7 +668,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -688,7 +688,8 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0,
             "plotLines": [
@@ -701,14 +702,16 @@
             ]
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -763,6 +766,7 @@
       note_state: collapsed
       note_display: hover
       note_text: People who changed cohort compared with the week before. Newly active were Non-AI or new; Moved up went to a higher cohort; Moved down (below the line) went lower, including lapsing to Non-AI.
+      show_y_axis_labels: false
     - name: cohort_by_department
       title: Cohort mix by department | eligible people, last 28 days
       type: looker_bar
@@ -771,27 +775,23 @@
       fields: [user_org_unit.department, ai_user_profile.cohort, ai_user_profile.people]
       pivots: [ai_user_profile.cohort]
       sorts: [ai_user_profile.cohort, ai_user_profile.people desc 0]
-      limit: 20
+      limit: 15
       stacking: percent
       show_view_names: false
       x_axis_gridlines: false
       y_axis_gridlines: false
       legend_position: center
       series_colors:
-        Power|FIELD|1 - ai_user_profile.people: '#174EA6'
-        Power - ai_user_profile.people: '#174EA6'
-        Normal|FIELD|2 - ai_user_profile.people: '#1A73E8'
-        Normal - ai_user_profile.people: '#1A73E8'
-        Casual|FIELD|3 - ai_user_profile.people: '#8AB4F8'
-        Casual - ai_user_profile.people: '#8AB4F8'
-        Non-AI|FIELD|4 - ai_user_profile.people: '#DADCE0'
-        Non-AI - ai_user_profile.people: '#DADCE0'
+        Power: '#174EA6'
+        Normal: '#1A73E8'
+        Casual: '#8AB4F8'
+        Non-AI: '#DADCE0'
       listen:
         Department: user_org_unit.department
-      row: 19
+      row: 20
       col: 36
       width: 36
-      height: 10
+      height: 13
       tab_name: adoption_cohorts
       show_x_axis_label: false
       show_value_labels: false
@@ -826,7 +826,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -843,19 +846,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -910,6 +916,7 @@
       note_state: collapsed
       note_display: hover
       note_text: 'Share of each department''s eligible people in each cohort today. Cohorts count AI-active days in the trailing 28 days: Power 12 or more, Normal 4 or more, Casual 1 to 3, Non-AI none (thresholds are install settings).'
+      show_y_axis_labels: false
     - name: use_cases_header
       type: text
       title_text: ''
@@ -989,7 +996,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -1006,19 +1016,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -1131,7 +1144,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -1148,19 +1164,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -1306,9 +1325,9 @@
       limit: 26
       stacking: normal
       series_colors:
-        Active - ai_activity_hourly.ai_events: '#1A73E8'
-        Automated - ai_activity_hourly.ai_events: '#9AA0A6'
-        Proactive - ai_activity_hourly.ai_events: '#DADCE0'
+        Active: '#1A73E8'
+        Automated: '#9AA0A6'
+        Proactive: '#DADCE0'
       listen:
         Date: ai_activity_hourly.event_date
         Product: ai_activity_hourly.product
@@ -1355,7 +1374,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -1372,19 +1394,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -1436,6 +1461,7 @@
             }
           }
         }
+      show_y_axis_labels: false
     - name: use_case_trend
       title: Weekly actions by use case | top 3 and other, complete weeks
       type: looker_column
@@ -1461,11 +1487,12 @@
         collection_id: google
         custom:
           id: use-case-top3
-          label: Use case top 3
+          label: use-case-top3
           type: discrete
-          colors: ['#174EA6', '#1A73E8', '#8AB4F8', '#DADCE0']
+          colors: ['#174EA6', '#1A73E8', '#8AB4F8', '#9AA0A6']
+        options: {}
       series_colors:
-        Other|FIELD|4 - ai_activity_hourly.ai_actions: '#DADCE0'
+        Other: '#9AA0A6'
       show_view_names: false
       x_axis_gridlines: false
       y_axis_gridlines: false
@@ -1503,7 +1530,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -1520,19 +1550,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -1587,6 +1620,7 @@
       note_state: collapsed
       note_display: hover
       note_text: Hands-on AI actions per complete week, for the three use cases with the most actions in the last 90 days. Everything else is grouped as Other.
+      show_y_axis_labels: false
     - name: feature_mapping
       title: Feature to use-case mapping | detail
       type: looker_grid
@@ -1645,7 +1679,7 @@
       limit: 50
       listen:
         Department: user_org_unit.department
-      row: 61
+      row: 75
       col: 0
       width: 36
       height: 12
@@ -1672,7 +1706,7 @@
       limit: 50
       listen:
         Department: user_org_unit.department
-      row: 61
+      row: 75
       col: 36
       width: 36
       height: 12
@@ -1700,7 +1734,7 @@
       limit: 50
       listen:
         Department: user_org_unit.department
-      row: 73
+      row: 87
       col: 0
       width: 36
       height: 12
@@ -1726,7 +1760,7 @@
         ge_user_licenses.license_state: NO_LICENSE_ATTEMPTED_LOGIN
       sorts: [ge_user_licenses.last_login_date desc]
       limit: 50
-      row: 73
+      row: 87
       col: 36
       width: 36
       height: 12
@@ -1872,28 +1906,16 @@
       y_axis_gridlines: false
       legend_position: center
       series_colors:
-        Power|FIELD|1 - ai_user_profile.people: '#174EA6'
-        Power - ai_user_profile.people: '#174EA6'
-        Normal|FIELD|2 - ai_user_profile.people: '#1A73E8'
-        Normal - ai_user_profile.people: '#1A73E8'
-        Casual|FIELD|3 - ai_user_profile.people: '#8AB4F8'
-        Casual - ai_user_profile.people: '#8AB4F8'
-        Non-AI|FIELD|4 - ai_user_profile.people: '#DADCE0'
-        Non-AI - ai_user_profile.people: '#DADCE0'
-        Power|FIELD|1 - ai_user_cohort_weekly.people: '#174EA6'
-        Power - ai_user_cohort_weekly.people: '#174EA6'
-        Normal|FIELD|2 - ai_user_cohort_weekly.people: '#1A73E8'
-        Normal - ai_user_cohort_weekly.people: '#1A73E8'
-        Casual|FIELD|3 - ai_user_cohort_weekly.people: '#8AB4F8'
-        Casual - ai_user_cohort_weekly.people: '#8AB4F8'
-        Non-AI|FIELD|4 - ai_user_cohort_weekly.people: '#DADCE0'
-        Non-AI - ai_user_cohort_weekly.people: '#DADCE0'
+        Power: '#174EA6'
+        Normal: '#1A73E8'
+        Casual: '#8AB4F8'
+        Non-AI: '#DADCE0'
       listen:
         Department: user_org_unit.department
-      row: 29
+      row: 33
       col: 0
       width: 72
-      height: 8
+      height: 10
       tab_name: adoption_cohorts
       x_axis_gridlines: false
       show_x_axis_label: false
@@ -1931,7 +1953,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -1948,19 +1973,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -2015,6 +2043,7 @@
       note_state: collapsed
       note_display: hover
       note_text: 'Weekly cohort share for up to 52 weeks. Early weeks can undercount because their 28-day window reaches back before activity history starts. Cohorts count AI-active days in the trailing 28 days: Power 12 or more, Normal 4 or more, Casual 1 to 3, Non-AI none (thresholds are install settings).'
+      show_y_axis_labels: false
     - name: interventions_state
       title: ''
       title_hidden: true
@@ -2032,11 +2061,11 @@
       height: 6
       tab_name: interventions
     - name: department_bubble
-      title: Department adoption map | activation vs regular use
+      title: Department adoption map | activation vs AI days per active person
       type: looker_scatter
       model: gemini_enterprise
       explore: ai_user_profile
-      fields: [user_org_unit.department, ai_user_profile.ai_activation_rate, ai_user_profile.regular_among_active_rate, ai_user_profile.people]
+      fields: [user_org_unit.department, ai_user_profile.ai_engagement_days_per_active_user, ai_user_profile.ai_activation_rate, ai_user_profile.people]
       sorts: [ai_user_profile.people desc]
       limit: 30
       listen:
@@ -2044,20 +2073,19 @@
       row: 10
       col: 48
       width: 24
-      height: 9
+      height: 10
       tab_name: adoption_cohorts
       series_colors:
-        ai_user_profile.people: '#1A73E8'
-      x_axis_label: Activation
-      y_axis_label: Regular among active
+        ai_user_profile.ai_engagement_days_per_active_user: '#1A73E8'
+      x_axis_label: Activation (28d)
       note_state: collapsed
       note_display: hover
-      note_text: 'Each bubble is a department, sized by eligible people. Across: share of people active in the last 28 days. Up: share of those active people who use AI on 4 or more days. Guide lines mark 50% and 70%.'
+      note_text: 'Each bubble is a department, sized by eligible people. Across is activation: the share of eligible people with at least one AI-active day in the last 28 days. Up is the average number of AI-active days per active person. The dashed line marks 50% activation, so departments to its left need help getting started, and low bubbles on the right have started but not built a habit.'
       show_view_names: false
       x_axis_gridlines: false
       y_axis_gridlines: false
-      legend_position: center
-      show_x_axis_label: false
+      legend_position: none
+      show_x_axis_label: true
       advanced_vis_config: |-
         {
           "chart": {
@@ -2070,8 +2098,7 @@
               8,
               8,
               8
-            ],
-            "type": "scatter"
+            ]
           },
           "title": {
             "style": {
@@ -2092,7 +2119,7 @@
             "lineColor": "#DADCE0",
             "tickColor": "#DADCE0",
             "title": {
-              "text": "Activation",
+              "text": "Activation (28d)",
               "style": {
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
@@ -2102,17 +2129,10 @@
             "plotLines": [
               {
                 "value": 0.5,
-                "color": "#BDC1C6",
+                "color": "#9AA0A6",
+                "dashStyle": "Dash",
                 "width": 1,
-                "dashStyle": "ShortDash",
-                "label": {
-                  "text": "Broad",
-                  "style": {
-                    "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-                    "color": "#5F6368",
-                    "fontSize": "10px"
-                  }
-                }
+                "zIndex": 3
               }
             ]
           },
@@ -2127,39 +2147,26 @@
               }
             },
             "title": {
-              "text": "Regular among active",
+              "text": "AI days per active person",
               "style": {
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
               }
             },
-            "plotLines": [
-              {
-                "value": 0.7,
-                "color": "#BDC1C6",
-                "width": 1,
-                "dashStyle": "ShortDash",
-                "label": {
-                  "text": "Habitual",
-                  "style": {
-                    "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-                    "color": "#5F6368",
-                    "fontSize": "10px"
-                  }
-                }
-              }
-            ]
+            "min": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -2179,10 +2186,6 @@
                   "fontWeight": "600",
                   "textOutline": "none"
                 }
-              },
-              "marker": {
-                "enabled": true,
-                "radius": 4
               }
             },
             "column": {
@@ -2215,17 +2218,18 @@
             },
             "scatter": {
               "marker": {
-                "radius": 4,
                 "symbol": "circle",
-                "lineWidth": 0
-              },
-              "jitter": {
-                "x": 0.08,
-                "y": 0
+                "lineWidth": 1,
+                "lineColor": "#FFFFFF",
+                "fillOpacity": 0.7
               }
             }
           }
         }
+      hidden_fields: [user_org_unit.department]
+      size_by_field: ai_user_profile.people
+      show_value_labels: false
+      show_y_axis_labels: true
     - name: median_days
       title: Median AI days
       type: single_value
@@ -2345,22 +2349,10 @@
       limit: 100
       stacking: normal
       series_colors:
-        Power|FIELD|1 - ai_user_profile.people: '#174EA6'
-        Power - ai_user_profile.people: '#174EA6'
-        Normal|FIELD|2 - ai_user_profile.people: '#1A73E8'
-        Normal - ai_user_profile.people: '#1A73E8'
-        Casual|FIELD|3 - ai_user_profile.people: '#8AB4F8'
-        Casual - ai_user_profile.people: '#8AB4F8'
-        Non-AI|FIELD|4 - ai_user_profile.people: '#DADCE0'
-        Non-AI - ai_user_profile.people: '#DADCE0'
-        Power|FIELD|1 - ai_user_cohort_weekly.people: '#174EA6'
-        Power - ai_user_cohort_weekly.people: '#174EA6'
-        Normal|FIELD|2 - ai_user_cohort_weekly.people: '#1A73E8'
-        Normal - ai_user_cohort_weekly.people: '#1A73E8'
-        Casual|FIELD|3 - ai_user_cohort_weekly.people: '#8AB4F8'
-        Casual - ai_user_cohort_weekly.people: '#8AB4F8'
-        Non-AI|FIELD|4 - ai_user_cohort_weekly.people: '#DADCE0'
-        Non-AI - ai_user_cohort_weekly.people: '#DADCE0'
+        Power: '#174EA6'
+        Normal: '#1A73E8'
+        Casual: '#8AB4F8'
+        Non-AI: '#DADCE0'
       listen:
         Department: user_org_unit.department
       row: 10
@@ -2405,7 +2397,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -2422,19 +2417,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -2489,15 +2487,16 @@
       note_state: collapsed
       note_display: hover
       note_text: How many eligible people used AI on each number of days in the last 28, coloured by cohort. A tall bar at 0 means many people haven't started; bars further right mean habitual use.
+      show_y_axis_labels: false
     - name: people_scatter
-      title: People map | days vs actions
+      title: People map | AI days vs AI actions, last 28 days
       type: looker_scatter
       model: gemini_enterprise
       explore: ai_user_profile
-      fields: [ai_user_profile.user_email, ai_user_profile.cohort, ai_user_profile.ai_days_28d_value, ai_user_profile.ai_actions_28d_value]
-      sorts: [ai_user_profile.ai_actions_28d_value desc]
+      fields: [ai_user_profile.ai_days_28d, ai_user_profile.user_email, ai_user_profile.cohort, ai_user_profile.ai_actions_28d_value, power, normal, casual]
+      sorts: [ai_user_profile.ai_days_28d]
       limit: 500
-      hidden_fields: [ai_user_profile.user_email]
+      hidden_fields: [ai_user_profile.user_email, ai_user_profile.cohort, ai_user_profile.ai_actions_28d_value]
       listen:
         Department: user_org_unit.department
       row: 10
@@ -2506,15 +2505,14 @@
       height: 10
       tab_name: people_coaching
       series_colors:
-        Power - ai_user_profile.ai_actions_28d_value: '#174EA6'
-        Normal - ai_user_profile.ai_actions_28d_value: '#1A73E8'
-        Casual - ai_user_profile.ai_actions_28d_value: '#8AB4F8'
-        Non-AI - ai_user_profile.ai_actions_28d_value: '#DADCE0'
+        power: '#174EA6'
+        normal: '#1A73E8'
+        casual: '#8AB4F8'
       show_view_names: false
       x_axis_gridlines: false
       y_axis_gridlines: false
       legend_position: center
-      show_x_axis_label: false
+      show_x_axis_label: true
       advanced_vis_config: |-
         {
           "chart": {
@@ -2527,8 +2525,7 @@
               8,
               8,
               8
-            ],
-            "type": "scatter"
+            ]
           },
           "title": {
             "style": {
@@ -2549,7 +2546,7 @@
             "lineColor": "#DADCE0",
             "tickColor": "#DADCE0",
             "title": {
-              "text": "AI-active days",
+              "text": "AI-active days (28d)",
               "style": {
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
@@ -2568,7 +2565,7 @@
               }
             },
             "title": {
-              "text": "Hands-on actions",
+              "text": "AI actions (28d, log scale)",
               "style": {
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
@@ -2579,14 +2576,16 @@
             "min": 1
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -2645,10 +2644,6 @@
                 "radius": 4,
                 "symbol": "circle",
                 "lineWidth": 0
-              },
-              "jitter": {
-                "x": 0.08,
-                "y": 0
               }
             }
           }
@@ -2657,7 +2652,41 @@
         ai_user_profile.ai_actions_28d: '>0'
       note_state: collapsed
       note_display: hover
-      note_text: 'Each dot is a person with at least one hands-on action in the last 28 days. Across: days they used AI. Up: hands-on actions (log scale). Colour is their cohort.'
+      note_text: Each dot is one person with at least one AI action in the last 28 days, coloured by cohort. Across is AI-active days and up is AI actions on a log scale, so the heaviest users don't flatten everyone else. High and left means many actions on a few days; low and right means AI is part of most days but used lightly.
+      dynamic_fields:
+        - category: table_calculation
+          expression: if(${ai_user_profile.cohort}="Power", ${ai_user_profile.ai_actions_28d_value}, null)
+          label: Power
+          value_format: null
+          value_format_name: decimal_0
+          _kind_hint: measure
+          table_calculation: power
+          _type_hint: number
+        - category: table_calculation
+          expression: if(${ai_user_profile.cohort}="Normal", ${ai_user_profile.ai_actions_28d_value}, null)
+          label: Normal
+          value_format: null
+          value_format_name: decimal_0
+          _kind_hint: measure
+          table_calculation: normal
+          _type_hint: number
+        - category: table_calculation
+          expression: if(${ai_user_profile.cohort}="Casual", ${ai_user_profile.ai_actions_28d_value}, null)
+          label: Casual
+          value_format: null
+          value_format_name: decimal_0
+          _kind_hint: measure
+          table_calculation: casual
+          _type_hint: number
+      show_null_points: false
+      y_axes:
+        - label: AI actions (28d, log scale)
+          orientation: left
+          showLabels: true
+          showValues: true
+          type: log
+      x_axis_label: AI-active days (28d)
+      show_y_axis_labels: true
     - name: department_action_boxplot
       title: Action distribution | by department
       type: looker_boxplot
@@ -2701,7 +2730,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -2718,11 +2750,15 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             }
           },
           "legend": {
-            "enabled": false
+            "enabled": false,
+            "layout": "horizontal",
+            "align": "center",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -2748,6 +2784,7 @@
       note_state: collapsed
       note_display: hover
       note_text: Spread of hands-on AI actions per person in the last 28 days, by department. The box covers the middle half of people, the line inside is the median, and the whiskers show the lowest and highest.
+      show_y_axis_labels: false
     - name: who_uses_what
       title: Who uses what? | top people by use case
       type: looker_bar
@@ -2758,7 +2795,7 @@
       filters:
         ai_activity_hourly.ai_actions: '>0'
       sorts: [ai_activity_hourly.ai_actions desc 0]
-      limit: 25
+      limit: 15
       listen:
         Date: ai_activity_hourly.event_date
         Product: ai_activity_hourly.product
@@ -2766,18 +2803,11 @@
       row: 20
       col: 0
       width: 36
-      height: 12
+      height: 14
       tab_name: people_coaching
       stacking: normal
       series_colors:
-        Research & Retrieval|FIELD|1 - ai_activity_hourly.ai_actions: '#174EA6'
-        Summarisation|FIELD|2 - ai_activity_hourly.ai_actions: '#1A73E8'
-        In-app Assistant|FIELD|3 - ai_activity_hourly.ai_actions: '#8AB4F8'
-        Other|FIELD|4 - ai_activity_hourly.ai_actions: '#9AA0A6'
-        Research & Retrieval - ai_activity_hourly.ai_actions: '#174EA6'
-        Summarisation - ai_activity_hourly.ai_actions: '#1A73E8'
-        In-app Assistant - ai_activity_hourly.ai_actions: '#8AB4F8'
-        Other - ai_activity_hourly.ai_actions: '#9AA0A6'
+        Other: '#9AA0A6'
       show_view_names: false
       x_axis_gridlines: false
       y_axis_gridlines: false
@@ -2815,7 +2845,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -2832,19 +2865,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -2899,6 +2935,15 @@
       note_state: collapsed
       note_display: hover
       note_text: The 25 people with the most hands-on AI actions in the selected dates, split by use case. Shows what each heavy user relies on AI for.
+      show_y_axis_labels: false
+      color_application:
+        collection_id: google
+        custom:
+          id: use-case-top3
+          label: use-case-top3
+          type: discrete
+          colors: ['#174EA6', '#1A73E8', '#8AB4F8', '#9AA0A6']
+        options: {}
     - name: user_model_mix
       title: Model choice by person | top GE users
       type: looker_bar
@@ -2909,14 +2954,14 @@
       filters:
         ge_user_activity.prompts: '>0'
       sorts: [ge_user_activity.prompts desc 0]
-      limit: 25
+      limit: 15
       listen:
         Date: ge_user_activity.event_date
         Department: user_org_unit.department
       row: 20
       col: 36
       width: 36
-      height: 12
+      height: 14
       tab_name: people_coaching
       stacking: percent
       show_view_names: false
@@ -2956,7 +3001,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -2973,19 +3021,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -3040,6 +3091,18 @@
       note_state: collapsed
       note_display: hover
       note_text: Share of each person's Gemini Enterprise prompts handled by each model in the selected dates, for the 25 people who prompted most. (not recorded) means the log carried no model.
+      show_y_axis_labels: false
+      series_colors:
+        (not recorded): '#DADCE0'
+        Unattributed: '#DADCE0'
+      color_application:
+        collection_id: google
+        custom:
+          id: gemini-series
+          label: gemini-series
+          type: discrete
+          colors: ['#174EA6', '#1A73E8', '#8AB4F8', '#5F6368', '#9AA0A6', '#C6DAFC', '#DADCE0', '#0B3D91']
+        options: {}
     - name: department_model_mix
       title: Model choice by department | prompt mix
       type: looker_bar
@@ -3054,10 +3117,10 @@
       listen:
         Date: ge_user_activity.event_date
         Department: user_org_unit.department
-      row: 32
+      row: 34
       col: 0
       width: 36
-      height: 10
+      height: 12
       tab_name: people_coaching
       stacking: percent
       show_view_names: false
@@ -3097,7 +3160,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -3114,19 +3180,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -3181,25 +3250,37 @@
       note_state: collapsed
       note_display: hover
       note_text: Share of each department's Gemini Enterprise prompts handled by each model in the selected dates.
+      show_y_axis_labels: false
+      series_colors:
+        (not recorded): '#DADCE0'
+        Unattributed: '#DADCE0'
+      color_application:
+        collection_id: google
+        custom:
+          id: gemini-series
+          label: gemini-series
+          type: discrete
+          colors: ['#174EA6', '#1A73E8', '#8AB4F8', '#5F6368', '#9AA0A6', '#C6DAFC', '#DADCE0', '#0B3D91']
+        options: {}
     - name: user_hour_heatmap
       title: When do people use AI? | top people by hour
       type: looker_grid
       model: gemini_enterprise
       explore: ai_activity_hourly
-      fields: [ai_activity_hourly.user_email, ai_activity_hourly.event_local_hour_of_day, ai_activity_hourly.ai_actions]
+      fields: [ai_activity_hourly.user_email, ai_activity_hourly.event_local_hour_of_day, ai_activity_hourly.ai_actions, actions]
       pivots: [ai_activity_hourly.event_local_hour_of_day]
       filters:
         ai_activity_hourly.ai_actions: '>0'
       sorts: [ai_activity_hourly.ai_actions desc 0, ai_activity_hourly.event_local_hour_of_day]
-      limit: 25
+      limit: 15
       listen:
         Date: ai_activity_hourly.event_date
         Product: ai_activity_hourly.product
         Department: user_org_unit.department
-      row: 32
-      col: 36
-      width: 36
-      height: 10
+      row: 46
+      col: 0
+      width: 72
+      height: 12
       tab_name: people_coaching
       show_view_names: false
       show_row_numbers: false
@@ -3207,34 +3288,120 @@
       header_background_color: '#F8F9FA'
       truncate_text: true
       series_cell_visualizations:
-        ai_activity_hourly.ai_actions:
-          is_active: true
+        actions:
+          is_active: false
+      dynamic_fields:
+        - category: table_calculation
+          expression: coalesce(${ai_activity_hourly.ai_actions}, 0)
+          label: Actions
+          value_format: null
+          value_format_name: decimal_0
+          _kind_hint: measure
+          table_calculation: actions
+          _type_hint: number
+      hidden_fields: [ai_activity_hourly.ai_actions]
+      header_text_alignment: center
+      header_font_size: '11'
+      rows_font_size: '11'
+      size_to_fit: true
+      series_labels:
+        actions: ' '
+      series_column_widths:
+        ai_activity_hourly.user_email: 220
+      enable_conditional_formatting: true
+      conditional_formatting:
+        - type: along a scale...
+          value: null
+          background_color: null
+          font_color: null
+          color_application:
+            collection_id: google
+            custom:
+              id: gemini-heat
+              label: Gemini heat
+              type: continuous
+              stops:
+                - color: '#FFFFFF'
+                  offset: 0
+                - color: '#1A73E8'
+                  offset: 100
+            options:
+              steps: 5
+          bold: false
+          italic: false
+          strikethrough: false
+          fields: [actions]
+      conditional_formatting_include_totals: false
+      conditional_formatting_include_nulls: false
     - name: day_hour_heatmap
       title: When does work happen? | day and local hour
       type: looker_grid
       model: gemini_enterprise
       explore: ai_activity_hourly
-      fields: [ai_activity_hourly.event_local_day_of_week_index, ai_activity_hourly.event_local_day_of_week, ai_activity_hourly.event_local_hour_of_day, ai_activity_hourly.ai_actions]
+      fields: [ai_activity_hourly.event_local_day_of_week_index, ai_activity_hourly.event_local_day_of_week, ai_activity_hourly.event_local_hour_of_day, ai_activity_hourly.ai_actions, actions]
       pivots: [ai_activity_hourly.event_local_hour_of_day]
       sorts: [ai_activity_hourly.event_local_day_of_week_index, ai_activity_hourly.event_local_hour_of_day]
       limit: 7
-      hidden_fields: [ai_activity_hourly.event_local_day_of_week_index]
+      hidden_fields: [ai_activity_hourly.event_local_day_of_week_index, ai_activity_hourly.ai_actions]
       listen:
         Date: ai_activity_hourly.event_date
         Product: ai_activity_hourly.product
         Department: user_org_unit.department
-      row: 42
+      row: 58
       col: 0
-      width: 36
-      height: 10
+      width: 72
+      height: 7
       tab_name: people_coaching
       show_view_names: false
       show_row_numbers: false
       table_theme: white
       header_background_color: '#F8F9FA'
       series_cell_visualizations:
-        ai_activity_hourly.ai_actions:
-          is_active: true
+        actions:
+          is_active: false
+      dynamic_fields:
+        - category: table_calculation
+          expression: coalesce(${ai_activity_hourly.ai_actions}, 0)
+          label: Actions
+          value_format: null
+          value_format_name: decimal_0
+          _kind_hint: measure
+          table_calculation: actions
+          _type_hint: number
+      header_text_alignment: center
+      header_font_size: '11'
+      rows_font_size: '11'
+      truncate_text: true
+      size_to_fit: true
+      series_labels:
+        actions: ' '
+      series_column_widths:
+        ai_activity_hourly.event_local_day_of_week: 110
+      enable_conditional_formatting: true
+      conditional_formatting:
+        - type: along a scale...
+          value: null
+          background_color: null
+          font_color: null
+          color_application:
+            collection_id: google
+            custom:
+              id: gemini-heat
+              label: Gemini heat
+              type: continuous
+              stops:
+                - color: '#FFFFFF'
+                  offset: 0
+                - color: '#1A73E8'
+                  offset: 100
+            options:
+              steps: 5
+          bold: false
+          italic: false
+          strikethrough: false
+          fields: [actions]
+      conditional_formatting_include_totals: false
+      conditional_formatting_include_nulls: false
     - name: tokens_by_person
       title: Tokens by person | stacked by agent
       type: looker_bar
@@ -3243,14 +3410,14 @@
       fields: [ge_model_calls.user_email, ge_trace_context.agent_label, ge_model_calls.total_tokens]
       pivots: [ge_trace_context.agent_label]
       sorts: [ge_model_calls.total_tokens desc 0]
-      limit: 25
+      limit: 15
       listen:
         Date: ge_model_calls.event_date
         Department: user_org_unit.department
-      row: 42
+      row: 34
       col: 36
       width: 36
-      height: 10
+      height: 12
       tab_name: people_coaching
       stacking: normal
       show_view_names: false
@@ -3290,7 +3457,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -3307,19 +3477,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -3374,6 +3547,18 @@
       note_state: collapsed
       note_display: hover
       note_text: Input plus output tokens from Gemini Enterprise model calls in the selected dates, for the 25 heaviest users, split by the agent that made the call. Workspace Gemini doesn't report tokens.
+      show_y_axis_labels: false
+      series_colors:
+        (not recorded): '#DADCE0'
+        Unattributed: '#DADCE0'
+      color_application:
+        collection_id: google
+        custom:
+          id: gemini-series
+          label: gemini-series
+          type: discrete
+          colors: ['#174EA6', '#1A73E8', '#8AB4F8', '#5F6368', '#9AA0A6', '#C6DAFC', '#DADCE0', '#0B3D91']
+        options: {}
     - name: tokens_by_context
       title: Tokens by workflow/event | Gemini Enterprise
       type: looker_pie
@@ -3385,10 +3570,10 @@
       listen:
         Date: ge_model_calls.event_date
         Department: user_org_unit.department
-      row: 52
+      row: 65
       col: 0
       width: 24
-      height: 9
+      height: 10
       tab_name: people_coaching
       show_view_names: false
       x_axis_gridlines: false
@@ -3426,7 +3611,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -3443,18 +3631,21 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             }
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -3508,36 +3699,44 @@
               "innerSize": "60%",
               "borderWidth": 0,
               "dataLabels": {
-                "enabled": true,
-                "distance": 12,
-                "style": {
-                  "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-                  "fontWeight": "600",
-                  "textOutline": "none"
-                }
-              }
+                "enabled": false
+              },
+              "showInLegend": true
             }
           }
         }
       note_state: collapsed
       note_display: hover
       note_text: Gemini Enterprise tokens in the selected dates by the feature, workflow or event that started the call. Unattributed means the call couldn't be matched to an interaction.
-    - name: tokens_by_app_context
-      title: Tokens by app and workflow/event
-      type: looker_bar
+      value_labels: legend
+      label_type: labPer
+      show_y_axis_labels: false
+      series_colors:
+        Unattributed: '#DADCE0'
+      color_application:
+        collection_id: google
+        custom:
+          id: gemini-series
+          label: gemini-series
+          type: discrete
+          colors: ['#174EA6', '#1A73E8', '#8AB4F8', '#5F6368', '#9AA0A6', '#C6DAFC', '#DADCE0', '#0B3D91']
+        options: {}
+    - name: tokens_by_day_context
+      title: Daily tokens by workflow or event | Gemini Enterprise
+      type: looker_column
       model: gemini_enterprise
       explore: ge_model_calls
-      fields: [ge_model_calls.app_name, ge_trace_context.token_context, ge_model_calls.total_tokens]
+      fields: [ge_model_calls.event_date, ge_trace_context.token_context, ge_model_calls.total_tokens]
       pivots: [ge_trace_context.token_context]
-      sorts: [ge_model_calls.total_tokens desc 0]
-      limit: 20
+      sorts: [ge_trace_context.token_context, ge_model_calls.event_date]
+      limit: 90
       listen:
         Date: ge_model_calls.event_date
         Department: user_org_unit.department
-      row: 52
+      row: 65
       col: 24
       width: 48
-      height: 9
+      height: 10
       tab_name: people_coaching
       stacking: normal
       show_view_names: false
@@ -3577,7 +3776,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -3594,19 +3796,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -3660,7 +3865,20 @@
         }
       note_state: collapsed
       note_display: hover
-      note_text: Gemini Enterprise tokens in the selected dates per app, split by the feature, workflow or event that started the call.
+      note_text: Gemini Enterprise model tokens per day, stacked by the feature that made the call. Where no feature is recorded, the event type or invocation mode is used instead. Unattributed means the model call could not be matched to an activity record.
+      column_limit: 8
+      show_y_axis_labels: false
+      series_colors:
+        (not recorded): '#DADCE0'
+        Unattributed: '#DADCE0'
+      color_application:
+        collection_id: google
+        custom:
+          id: gemini-series
+          label: gemini-series
+          type: discrete
+          colors: ['#174EA6', '#1A73E8', '#8AB4F8', '#5F6368', '#9AA0A6', '#C6DAFC', '#DADCE0', '#0B3D91']
+        options: {}
   filters:
     - name: Date
       title: Date

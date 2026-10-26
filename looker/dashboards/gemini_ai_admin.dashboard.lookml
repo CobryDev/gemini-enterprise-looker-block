@@ -166,7 +166,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -183,18 +186,21 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             }
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -250,6 +256,7 @@
       note_state: collapsed
       note_display: hover
       note_text: Google's own count of distinct people who used Gemini Enterprise in the 7 days to each report, one point per complete week. Google publishes it roughly weekly, so days without a figure are skipped. This is product telemetry and counts anyone signed in, not just eligible employees.
+      show_y_axis_labels: false
     - name: ge_seats_trend
       title: ''
       title_hidden: true
@@ -380,9 +387,9 @@
       y_axis_gridlines: false
       legend_position: center
       series_colors:
-        Active - workspace_gemini_activity.events: '#1A73E8'
-        Automated - workspace_gemini_activity.events: '#9AA0A6'
-        Proactive - workspace_gemini_activity.events: '#DADCE0'
+        Active: '#1A73E8'
+        Automated: '#9AA0A6'
+        Proactive: '#DADCE0'
       listen:
         Date: workspace_gemini_activity.event_date
       row: 23
@@ -424,7 +431,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -441,19 +451,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -508,6 +521,7 @@
       note_state: collapsed
       note_display: hover
       note_text: 'Workspace Gemini audit events in the selected dates, per app. Hands-on: a person asked Gemini. Automated: Workspace Flow runs. Proactive: suggestions Gemini showed unprompted.'
+      show_y_axis_labels: false
     - name: ws_funnel
       title: Shown vs used | top surfaced feature
       type: looker_funnel
@@ -582,7 +596,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -599,18 +616,21 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             }
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -662,6 +682,7 @@
             }
           }
         }
+      show_y_axis_labels: false
     - name: ws_features
       title: Most-used features | hands-on
       type: looker_grid
@@ -702,7 +723,7 @@
       row: 20
       col: 0
       width: 72
-      height: 2
+      height: 3
       tab_name: ge_analytics
     - name: prompts_by_model
       title: Prompts by model
@@ -711,14 +732,14 @@
       explore: ge_user_activity
       fields: [ge_user_activity.model_label, ge_user_activity.prompts]
       sorts: [ge_user_activity.prompts desc]
-      limit: 20
+      limit: 10
       listen:
         Date: ge_user_activity.event_date
         App: ge_user_activity.app_name
-      row: 22
+      row: 23
       col: 0
-      width: 24
-      height: 10
+      width: 36
+      height: 12
       tab_name: ge_analytics
       series_colors:
         ge_user_activity.prompts: '#1A73E8'
@@ -761,7 +782,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -778,19 +802,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -852,15 +879,15 @@
       explore: ge_tool_calls
       fields: [ge_tool_calls.tool_label, ge_tool_calls.tool_calls]
       sorts: [ge_tool_calls.tool_calls desc]
-      limit: 15
+      limit: 10
       show_view_names: false
       legend_position: none
       listen:
         Date: ge_tool_calls.event_date
-      row: 22
-      col: 48
-      width: 24
-      height: 10
+      row: 35
+      col: 0
+      width: 36
+      height: 12
       tab_name: ge_analytics
       series_colors:
         ge_tool_calls.tool_calls: '#1A73E8'
@@ -901,7 +928,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -918,19 +948,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -994,25 +1027,27 @@
       sorts: [ge_model_calls.total_tokens desc 0]
       limit: 15
       show_view_names: false
-      legend_position: none
+      legend_position: center
       listen:
         Date: ge_model_calls.event_date
-      row: 32
-      col: 0
+      row: 35
+      col: 36
       width: 36
-      height: 10
+      height: 12
       tab_name: ge_analytics
       series_colors:
-        Flash - ge_model_calls.total_tokens: '#1A73E8'
-        Thinking - ge_model_calls.total_tokens: '#174EA6'
-        Pro - ge_model_calls.total_tokens: '#174EA6'
-        Ultra - ge_model_calls.total_tokens: '#174EA6'
-        Other - ge_model_calls.total_tokens: '#9AA0A6'
-        Unattributed - ge_model_calls.total_tokens: '#DADCE0'
+        Flash: '#1A73E8'
+        Pro: '#174EA6'
+        Thinking: '#8AB4F8'
+        Flash-Lite: '#C6DAFC'
+        Ultra: '#0B3D91'
+        Image and video: '#5F6368'
+        Other: '#9AA0A6'
+        Unattributed: '#DADCE0'
       x_axis_gridlines: false
       y_axis_gridlines: false
       show_x_axis_label: false
-      show_value_labels: true
+      show_value_labels: false
       show_y_axis_labels: false
       show_y_axis_ticks: false
       pivots: [ge_trace_context.model_family]
@@ -1048,7 +1083,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -1065,19 +1103,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -1144,10 +1185,10 @@
         Date: ai_activity_hourly.event_date
         Product: ai_activity_hourly.product
         Department: user_org_unit.department
-      row: 32
-      col: 36
-      width: 36
-      height: 10
+      row: 47
+      col: 0
+      width: 72
+      height: 9
       tab_name: ge_analytics
       series_colors:
         ai_activity_hourly.ai_actions: '#8AB4F8'
@@ -1188,7 +1229,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -1205,19 +1249,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -1272,6 +1319,7 @@
       note_state: collapsed
       note_display: hover
       note_text: Hands-on AI actions in the selected dates by hour of day, in the reporting time zone. Shows when people work with AI.
+      show_y_axis_labels: false
     - name: ag_header
       type: text
       title_text: ''
@@ -1376,7 +1424,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -1393,19 +1444,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -1460,6 +1514,7 @@
       note_state: collapsed
       note_display: hover
       note_text: Antigravity inference requests in the selected dates by surface, for example agent or autocomplete.
+      show_y_axis_labels: false
     - name: governance_header
       type: text
       title_text: ''
@@ -1547,7 +1602,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -1564,19 +1622,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -1631,6 +1692,7 @@
       note_state: collapsed
       note_display: hover
       note_text: Safety screening matches in the selected dates by category. Zero means the configured sources recorded none.
+      show_y_axis_labels: false
     - name: admin_changes
       title: Recent admin changes
       type: looker_grid
@@ -1891,7 +1953,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -1908,19 +1973,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -2013,19 +2081,19 @@
       explore: ge_model_calls
       fields: [ge_trace_context.model, ge_model_calls.input_tokens, ge_model_calls.output_tokens, ge_model_calls.reasoning_tokens]
       sorts: [ge_model_calls.total_tokens desc]
-      limit: 15
+      limit: 10
       listen:
         Date: ge_model_calls.event_date
-      row: 22
-      col: 24
-      width: 24
-      height: 10
+      row: 23
+      col: 36
+      width: 36
+      height: 12
       tab_name: ge_analytics
       stacking: normal
       series_colors:
-        ge_model_calls.input_tokens: '#8AB4F8'
-        ge_model_calls.output_tokens: '#1A73E8'
-        ge_model_calls.reasoning_tokens: '#174EA6'
+        ge_model_calls.input_tokens: '#1A73E8'
+        ge_model_calls.output_tokens: '#174EA6'
+        ge_model_calls.reasoning_tokens: '#9AA0A6'
       show_view_names: false
       x_axis_gridlines: false
       y_axis_gridlines: false
@@ -2063,7 +2131,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -2080,19 +2151,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -2147,6 +2221,7 @@
       note_state: collapsed
       note_display: hover
       note_text: Gemini Enterprise tokens in the selected dates by model. Input is what was sent to the model, output is the reply, and reasoning is thinking tokens. Unattributed means the call couldn't be matched to a model.
+      show_y_axis_labels: false
   filters:
     - name: Date
       title: Date

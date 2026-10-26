@@ -200,7 +200,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -217,18 +220,21 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             }
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -362,7 +368,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -379,19 +388,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -578,8 +590,7 @@
         ai_activity_hourly.hours_saved: '>0'
       sorts: [ai_activity_hourly.hours_saved desc]
       limit: 10
-      show_value_labels: true
-      label_density: 25
+      show_value_labels: false
       x_axis_gridlines: false
       y_axis_gridlines: false
       show_view_names: false
@@ -597,7 +608,7 @@
       tab_name: business_value
       show_x_axis_label: false
       show_y_axis_labels: false
-      show_y_axis_ticks: false
+      show_y_axis_ticks: true
       advanced_vis_config: |-
         {
           "chart": {
@@ -625,11 +636,17 @@
               "style": {
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
-                "fontSize": "11px"
-              }
+                "fontSize": "11px",
+                "textOverflow": "none",
+                "whiteSpace": "nowrap"
+              },
+              "rotation": -35
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -646,18 +663,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
-            }
+              },
+              "text": null
+            },
+            "gridLineWidth": 1
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -775,7 +796,10 @@
               }
             },
             "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0"
+            "tickColor": "#DADCE0",
+            "title": {
+              "text": null
+            }
           },
           "yAxis": {
             "gridLineColor": "#E8EAED",
@@ -792,19 +816,22 @@
                 "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
                 "color": "#5F6368",
                 "fontSize": "12px"
-              }
+              },
+              "text": null
             },
             "gridLineWidth": 0
           },
           "legend": {
-            "align": "left",
+            "align": "center",
             "verticalAlign": "top",
             "itemStyle": {
               "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
               "fontWeight": "500",
               "color": "#3C4043"
             },
-            "symbolRadius": 6
+            "symbolRadius": 6,
+            "layout": "horizontal",
+            "itemDistance": 16
           },
           "tooltip": {
             "backgroundColor": "#FFFFFF",
@@ -859,6 +886,7 @@
       note_state: collapsed
       note_display: hover
       note_text: Estimated hours saved per complete week. Hands-on is people asking Gemini. Automation is workflow and scheduled agent runs, a lower-confidence estimate shown separately.
+      show_y_axis_labels: false
     - name: credit_assumptions
       title: Credit assumptions | minutes saved per action, selected dates
       note_display: hover

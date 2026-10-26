@@ -41,14 +41,14 @@ view: ge_trace_context {
 
   dimension: model {
     type: string
-    sql: ${TABLE}.model ;;
+    sql: COALESCE(${TABLE}.model, 'Unattributed') ;;
   }
 
   dimension: model_family {
     label: "Model Family"
     type: string
     sql: CASE
-      WHEN ${TABLE}.model = 'Unattributed' THEN 'Unattributed'
+      WHEN ${TABLE}.model IS NULL OR ${TABLE}.model = 'Unattributed' THEN 'Unattributed'
       WHEN REGEXP_CONTAINS(LOWER(${TABLE}.model), r'image|imagen|veo') THEN 'Image and video'
       WHEN REGEXP_CONTAINS(LOWER(${TABLE}.model), r'thinking') THEN 'Thinking'
       WHEN REGEXP_CONTAINS(LOWER(${TABLE}.model), r'ultra') THEN 'Ultra'
@@ -83,13 +83,13 @@ view: ge_trace_context {
     sql: CASE
       WHEN ${TABLE}.feature != 'Unattributed' THEN ${TABLE}.feature
       WHEN ${TABLE}.event_type != 'Unattributed' THEN ${TABLE}.event_type
-      ELSE ${TABLE}.invocation_mode
+      ELSE COALESCE(${TABLE}.invocation_mode, 'Unattributed')
     END ;;
   }
 
   dimension: agent_label {
     label: "Agent"
     type: string
-    sql: ${TABLE}.agent_label ;;
+    sql: COALESCE(${TABLE}.agent_label, 'Unattributed') ;;
   }
 }
