@@ -149,6 +149,34 @@ Terraform creates two optional tables:
 
 Load these tables when you want the Change Management dashboard to compare adoption before and after an intervention or to report validated outcomes separately from estimated productivity benefits. Intervention impact is labelled as comparison, not proof of causation.
 
+#### Log an intervention
+
+Each row in `ai_interventions` is one action someone owns. The opportunity queue shows the owner, status and follow-up date of any intervention whose `opportunity_type` matches the queue row. For department opportunities, `target_scope` must also name the same department.
+
+| Column | What to put in it |
+| --- | --- |
+| `intervention_id` | Any stable ID, for example `2026-11-sales-session`. |
+| `name` | A short description, for example `Sales team prompt session`. |
+| `type` | `training`, `campaign`, `coaching`, `licence_review` or `other`. |
+| `start_date`, `end_date` | When the action runs. |
+| `target_scope_type`, `target_scope` | `department` and the department name, `email_list` and comma-separated emails, or `organisation` and any label. |
+| `owner` | The person accountable. |
+| `opportunity_type` | The code from the queue: `build_repeat_usage`, `review_idle_licences`, `expand_department_adoption`, `assign_departments`, `workspace_to_enterprise`, `address_access_friction` or `improve_classification`. |
+| `follow_up_date` | When to re-measure. The dashboard shows it as the deadline and flags it as overdue once it passes. |
+| `status` | `planned`, `active`, `complete` or `cancelled`. Cancelled interventions drop off the queue. |
+| `outcome`, `outcome_notes` | After the follow-up: `improved`, `no_change`, `worse` or `too_early`, and the evidence. |
+
+The quickest way to add a row is from the BigQuery console:
+
+```sql
+INSERT INTO `your-project.gemini_analytics.ai_interventions`
+  (intervention_id, name, type, start_date, target_scope_type, target_scope, owner, opportunity_type, follow_up_date, status)
+VALUES
+  ('2026-11-sales-session', 'Sales team prompt session', 'training', '2026-11-03', 'department', 'Sales', 'jane@example.com', 'expand_department_adoption', '2026-12-01', 'planned');
+```
+
+To let a change team log interventions without BigQuery access, keep the list in a Google Sheet with the same column headers, create a BigQuery external table over the sheet, and schedule a daily query that replaces the contents of `ai_interventions` with the sheet's rows. The `outcome` and `outcome_notes` columns were added after the first release; run `terraform apply` to add them to an existing table. The dashboard works without them.
+
 ## Validate the block
 
 1. Open the Looker IDE for the installed project.

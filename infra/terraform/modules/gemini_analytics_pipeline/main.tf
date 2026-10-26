@@ -153,10 +153,12 @@ resource "google_bigquery_table" "ai_interventions" {
     { name = "target_scope_type", type = "STRING", mode = "REQUIRED", description = "department, email_list or organisation." },
     { name = "target_scope", type = "STRING", mode = "REQUIRED", description = "Department name, comma-separated email list or organisation label." },
     { name = "owner", type = "STRING", mode = "NULLABLE" },
-    { name = "opportunity_type", type = "STRING", mode = "NULLABLE" },
-    { name = "follow_up_date", type = "DATE", mode = "NULLABLE" },
+    { name = "opportunity_type", type = "STRING", mode = "NULLABLE", description = "Opportunity code from the Looker opportunity queue, e.g. expand_department_adoption, so the queue shows owner and status." },
+    { name = "follow_up_date", type = "DATE", mode = "NULLABLE", description = "Date to re-measure and record the outcome. Shown as the deadline." },
     { name = "status", type = "STRING", mode = "NULLABLE", description = "planned, active, complete or cancelled." },
     { name = "notes", type = "STRING", mode = "NULLABLE" },
+    { name = "outcome", type = "STRING", mode = "NULLABLE", description = "Result after the follow-up: improved, no_change, worse or too_early." },
+    { name = "outcome_notes", type = "STRING", mode = "NULLABLE", description = "What changed, with the evidence used." },
   ])
 }
 

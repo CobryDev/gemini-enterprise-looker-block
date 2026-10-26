@@ -130,6 +130,8 @@ Terraform creates two empty tables that the Looker block can read when you want 
 - `ai_interventions`: one row per training session, campaign, coaching action or licence review. Required fields are `intervention_id`, `name`, `start_date`, `target_scope_type` and `target_scope`. `target_scope_type` supports `department`, `email_list` and `organisation`.
 - `ai_value_outcomes`: externally validated business outcomes, such as workflow cycle-time reductions, survey-backed time savings or quality measures.
 
+`ai_interventions` also has `outcome` and `outcome_notes` columns for the result recorded after the follow-up date. On a table created before they existed, `terraform apply` adds them in place. The Looker README describes each column and how to log rows.
+
 You can load these tables from the BigQuery console, scheduled queries, Dataform, or a Google Sheet ingestion pattern that your organisation already supports. The Looker dashboard compares 28 days before and after each intervention against a simple comparison group and labels the result as directional evidence, not causal proof.
 
 ## Log pipeline (user-level analytics)
