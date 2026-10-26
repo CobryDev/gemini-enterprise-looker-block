@@ -36,7 +36,7 @@
     },
     "excluded_email_pattern": {
       "label": "Excluded email pattern",
-      "description": "BigQuery regular expression for service accounts or non-human accounts to exclude from employee adoption rates. Defaults to common service-account and noreply patterns."
+      "description": "BigQuery regular expression for service accounts or non-human accounts to exclude from employee adoption rates. Defaults to common service-account and noreply patterns. Avoid backslashes: write a literal dot as [.]."
     },
     "reporting_time_zone": {
       "label": "Reporting time zone",

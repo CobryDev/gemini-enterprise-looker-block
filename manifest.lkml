@@ -52,7 +52,7 @@ constant: excluded_org_units {
 }
 
 constant: excluded_email_pattern {
-  value: "gserviceaccount\\.com$|^noreply"
+  value: "gserviceaccount[.]com$|^noreply"
   export: override_optional
 }
 

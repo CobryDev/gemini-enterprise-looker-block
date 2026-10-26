@@ -114,6 +114,8 @@ def check_dashboard_files() -> list[str]:
             tabs = {t["name"] for t in dashboard.get("tabs", [])}
             if len(tabs) > 5:
                 raise ValueError(f"{len(tabs)} tabs; Looker allows at most 5")
+            if "@{" in Path(path).read_text():
+                raise ValueError("manifest constants (@{...}) are not substituted in dashboards")
             for element in dashboard.get("elements", []):
                 if tabs and element.get("tab_name") not in tabs:
                     raise ValueError(f"element {element.get('name', '?')} has unknown tab_name {element.get('tab_name')}")

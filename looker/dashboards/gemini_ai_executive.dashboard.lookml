@@ -85,7 +85,7 @@
     tab_name: overview
 
   - name: regular_kpi
-    title: "Regular Adoption | @{normal_user_min_days}+ AI days"
+    title: "Regular Adoption | Normal or Power users"
     type: single_value
     model: gemini_enterprise
     explore: ai_user_profile

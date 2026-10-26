@@ -474,7 +474,7 @@
       <div style="font-family:'Google Sans',Arial,sans-serif;line-height:1.55;">
         <h2>Definitions</h2>
         <p><strong>Activation:</strong> eligible people with at least one AI-active day in the last 28 days, divided by eligible people in scope.</p>
-        <p><strong>Regular adoption:</strong> eligible people with at least @{normal_user_min_days} AI-active days in the last 28 days, divided by eligible people in scope.</p>
+        <p><strong>Regular adoption:</strong> eligible people with at least the Normal user threshold of AI-active days (default 4) in the last 28 days, divided by eligible people in scope.</p>
         <p><strong>Engagement:</strong> distinct AI-active days per active user.</p>
         <p><strong>Retention:</strong> people active in the previous 28-day window who returned in the current 28-day window.</p>
         <p><strong>Google export metric:</strong> Daily Active / Seats Claimed is product telemetry from the Gemini Enterprise export and has a different denominator from employee activation.</p>

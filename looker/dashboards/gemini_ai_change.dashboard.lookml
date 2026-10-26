@@ -327,7 +327,7 @@
     explore: ai_user_profile
     fields: [ai_user_profile.user_email, user_org_unit.department, ai_user_profile.cohort, ai_user_profile.ai_days_28d, ai_user_profile.ai_actions_28d, ai_user_profile.product_mix]
     filters:
-      ai_user_profile.ai_days_28d: ">=@{normal_user_min_days}"
+      ai_user_profile.cohort: "Power,Normal"
     sorts: ["ai_user_profile.ai_days_28d desc"]
     limit: 50
     listen:
@@ -345,7 +345,7 @@
     explore: ai_user_profile
     fields: [ai_user_profile.user_email, user_org_unit.department, ai_user_profile.cohort, ai_user_profile.ai_days_28d, ai_user_profile.ai_actions_28d, ai_user_profile.last_ai_date]
     filters:
-      ai_user_profile.ai_days_28d: "1 to @{normal_user_min_days}"
+      ai_user_profile.cohort: "Casual"
     sorts: ["ai_user_profile.ai_days_28d desc"]
     limit: 50
     listen:
