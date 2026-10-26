@@ -32,7 +32,7 @@ view: data_state {
           MIN(event_date) AS first_event_date,
           COUNTIF(ai_actions > 0) AS action_rows,
           SUM(ai_actions) AS ai_actions,
-          SUM(IF(LOWER(feature) IN ('unspecified', 'unknown'), ai_actions, 0)) AS unclassified_actions
+          SUM(IF(use_case = 'Unclassified', ai_actions, 0)) AS unclassified_actions
         FROM ${ai_activity_hourly.SQL_TABLE_NAME}
       ),
 

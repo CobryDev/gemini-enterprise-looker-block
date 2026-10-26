@@ -101,7 +101,7 @@ constant: currency_symbol {
 # Enterprise feature, Workspace feature_source or Antigravity experience),
 # case-insensitive. "default" covers any feature not listed.
 constant: time_saved_minutes {
-  value: "default=2,Assistant chat=4,Search=2,Deep Research=30,Idea Generation=15,Custom agents=8,Workflows=10,Scheduled and triggered agents=10,Actions=3,Image generation=5,Agent builder=0,File upload=0,Feedback=0,Skill authoring=0,Agent designer=0,help_me_write=5,take_notes_for_me=15,conversation_summaries=3,summarize=3"
+  value: "default=2,Assistant chat=4,Search=2,Deep Research=30,Idea Generation=15,Custom agents=8,Workflows=10,Scheduled and triggered agents=10,Actions=3,Image generation=5,Agent builder=0,File upload=0,Feedback=0,Skill authoring=0,Agent designer=0,help_me_write=5,take_notes_for_me=15,conversation_summaries=3,summarize=3,summarize_responses=5,chat_with_gemini=3,ask_gemini=2,side_panel=3,proofread=2,help_me_schedule=3,help_me_visualize=5,help_me_design=5,help_me_create=10,ai_function=5,notebooklm=5,workflows_execution=2,workflows_unspecified=0"
   export: override_optional
 }
 
@@ -118,7 +118,7 @@ constant: time_saved_high_factor {
 # Comma-separated feature=Use Case pairs. Product defaults cover common
 # feature names and can be overridden by exact feature/source names.
 constant: use_case_mapping {
-  value: "help_me_write=Drafting & Editing,take_notes_for_me=Summarisation,conversation_summaries=Summarisation,summarize=Summarisation,Search=Research & Retrieval,Deep Research=Research & Retrieval,Assistant chat=Research & Retrieval,Workflows=Workflow Automation,Scheduled and triggered agents=Workflow Automation,Actions=Workflow Automation,Custom agents=Workflow Automation,Code Assist=Coding,default=Unclassified"
+  value: "help_me_write=Drafting & Editing,take_notes_for_me=Summarisation,conversation_summaries=Summarisation,summarize=Summarisation,Search=Research & Retrieval,Deep Research=Research & Retrieval,Assistant chat=Research & Retrieval,Workflows=Workflow Automation,Scheduled and triggered agents=Workflow Automation,Actions=Workflow Automation,Custom agents=Workflow Automation,Code Assist=Coding,proofread=Drafting & Editing,help_me_create=Drafting & Editing,summarize_responses=Summarisation,chat_with_gemini=Research & Retrieval,ask_gemini=Research & Retrieval,search_ai_overview=Research & Retrieval,notebooklm=Research & Retrieval,drive_gemini_shelf=Research & Retrieval,Idea Generation=Research & Retrieval,side_panel=In-app Assistant,help_me_schedule=Planning & Scheduling,drive_help_me_organize=Planning & Scheduling,project_creation_dialog=Planning & Scheduling,ai_function=Analysis,enhanced_smart_fill=Analysis,help_me_visualize=Creative & Design,help_me_design=Creative & Design,remove_image_background=Creative & Design,ai_image=Creative & Design,ai_voiceover=Creative & Design,generate_background=Creative & Design,Image generation=Creative & Design,workflows_execution=Workflow Automation,workflows_creation=Workflow Automation,workflows_unspecified=Workflow Automation,default=Unclassified"
   export: override_optional
 }
 

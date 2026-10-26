@@ -44,7 +44,9 @@ view: ai_activity_hourly {
           LOWER(email) AS user_email,
           'Gemini for Workspace' AS product,
           gemini_for_workspace.app_name AS surface,
-          COALESCE(gemini_for_workspace.feature_source, 'unspecified') AS feature,
+          IF(IFNULL(gemini_for_workspace.feature_source, 'feature_source_unspecified') IN ('feature_source_unspecified', 'unspecified'),
+            CONCAT(gemini_for_workspace.app_name, '_unspecified'),
+            gemini_for_workspace.feature_source) AS feature,
           COUNT(*) AS events,
           COUNTIF(STARTS_WITH(gemini_for_workspace.event_category, 'active')) AS ai_actions,
           COUNTIF(STARTS_WITH(gemini_for_workspace.event_category, 'active')) AS value_actions,
@@ -93,7 +95,12 @@ view: ai_activity_hourly {
           FORMAT_TIMESTAMP('%Y%m%d%H', unioned.event_hour)
         ) AS pk,
         DATE(unioned.event_hour) AS event_date,
-        unioned.*
+        unioned.*,
+        {% assign pairs = '@{use_case_mapping}' | split: ',' %}{% assign fallback = 'Unclassified' %}CASE LOWER(unioned.feature)
+        {% for pair in pairs %}{% assign kv = pair | split: '=' %}{% assign key = kv[0] | strip | downcase %}{% if key == 'default' %}{% assign fallback = kv[1] | strip %}{% elsif key != '' %}
+        WHEN '{{ key }}' THEN '{{ kv[1] | strip }}'{% endif %}{% endfor %}
+        ELSE '{{ fallback }}'
+        END AS use_case
       FROM unioned
       JOIN ${population_scope.SQL_TABLE_NAME} AS population_scope
         ON population_scope.user_email = unioned.user_email
@@ -161,11 +168,7 @@ view: ai_activity_hourly {
     label: "AI Use Case"
     description: "Business-facing use-case group mapped from product and feature. Unclassified is explicit when the source event does not identify a meaningful feature."
     type: string
-    sql: {% assign pairs = '@{use_case_mapping}' | split: ',' %}CASE LOWER(${TABLE}.feature)
-      {% for pair in pairs %}{% assign kv = pair | split: '=' %}{% assign key = kv[0] | strip | downcase %}{% if key != 'default' %}
-      WHEN '{{ key }}' THEN '{{ kv[1] | strip }}'{% endif %}{% endfor %}
-      ELSE {% for pair in pairs %}{% assign kv = pair | split: '=' %}{% assign key = kv[0] | strip | downcase %}{% if key == 'default' %}'{{ kv[1] | strip }}'{% endif %}{% endfor %}
-      END ;;
+    sql: ${TABLE}.use_case ;;
   }
 
   dimension: use_case_confidence {
@@ -173,7 +176,7 @@ view: ai_activity_hourly {
     description: "High when a specific feature/source was mapped, Low when the event source is unspecified or otherwise unclassified."
     type: string
     sql: CASE
-      WHEN LOWER(${TABLE}.feature) IN ('unspecified', 'unknown') THEN 'Low'
+      WHEN LOWER(${TABLE}.feature) IN ('unspecified', 'unknown') OR ENDS_WITH(LOWER(${TABLE}.feature), '_unspecified') THEN 'Low'
       WHEN ${use_case} = 'Unclassified' THEN 'Low'
       WHEN ${TABLE}.product = 'Gemini Enterprise' THEN 'Medium'
       ELSE 'High'

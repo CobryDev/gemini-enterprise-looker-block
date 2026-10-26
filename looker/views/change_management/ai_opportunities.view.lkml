@@ -35,7 +35,7 @@ view: ai_opportunities {
       classification AS (
         SELECT
           SUM(ai_actions) AS actions,
-          SUM(IF(LOWER(feature) IN ('unspecified', 'unknown'), ai_actions, 0)) AS unclassified_actions
+          SUM(IF(use_case = 'Unclassified', ai_actions, 0)) AS unclassified_actions
         FROM ${ai_activity_hourly.SQL_TABLE_NAME}
         WHERE event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 27 DAY)
       )
