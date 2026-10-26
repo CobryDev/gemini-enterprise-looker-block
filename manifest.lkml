@@ -140,3 +140,11 @@ constant: value_outcomes_table {
   value: "ai_value_outcomes"
   export: override_optional
 }
+
+# Link to the form or app your change team uses to record interventions (for
+# example a Google Form or AppSheet app that writes to interventions_table).
+# "none" hides the Record an intervention button.
+constant: interventions_form_url {
+  value: "none"
+  export: override_optional
+}

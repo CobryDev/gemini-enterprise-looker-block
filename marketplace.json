@@ -93,6 +93,10 @@
     "value_outcomes_table": {
       "label": "Value outcomes table",
       "description": "BigQuery table in the Gemini analytics dataset containing optional validated outcome records. Defaults to ai_value_outcomes."
+    },
+    "interventions_form_url": {
+      "label": "Intervention input form URL",
+      "description": "Optional link to the form or app your change team uses to record interventions, such as a Google Form or AppSheet app that writes to the interventions table. Leave as none to hide the Record an intervention button."
     }
   },
   "models": [

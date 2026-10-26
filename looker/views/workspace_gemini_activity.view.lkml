@@ -129,6 +129,13 @@ view: workspace_gemini_activity {
       INITCAP(REPLACE(${TABLE}.feature_source, '_', ' '))) ;;
   }
 
+  dimension: app_feature_label {
+    label: "App and Feature"
+    description: "App and readable feature together, for example Gmail: Help Me Write. The same feature name can appear in several apps."
+    type: string
+    sql: CONCAT(INITCAP(REPLACE(${TABLE}.app_name, '_', ' ')), ': ', ${feature_label}) ;;
+  }
+
   dimension: interaction_mode {
     label: "Interaction Mode"
     description: "Active: the person asked Gemini to do something. Automated: a Workspace Flow ran on its own. Proactive: Gemini surfaced a suggestion or feature without being asked. Same rule as the change-management dashboards."

@@ -175,6 +175,8 @@ VALUES
   ('2026-11-sales-session', 'Sales team prompt session', 'training', '2026-11-03', 'department', 'Sales', 'jane@example.com', 'expand_department_adoption', '2026-12-01', 'planned');
 ```
 
+If your change team records interventions through a form or app (for example a Google Form or AppSheet app that writes to this table), set the `interventions_form_url` constant to its link. The Interventions tab then shows a **Record an intervention** button. With the default `none`, the button is hidden.
+
 To let a change team log interventions without BigQuery access, keep the list in a Google Sheet with the same column headers, create a BigQuery external table over the sheet, and schedule a daily query that replaces the contents of `ai_interventions` with the sheet's rows. The `outcome` and `outcome_notes` columns were added after the first release; run `terraform apply` to add them to an existing table. The dashboard works without them.
 
 ## Validate the block

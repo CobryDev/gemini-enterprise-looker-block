@@ -116,6 +116,13 @@ view: ai_interventions {
     filters: [status: "planned,active"]
   }
 
+  measure: interventions_state_card {
+    hidden: yes
+    description: "Empty state or summary for the Interventions tab. Include open_interventions, overdue_interventions and completed_interventions in the tile query."
+    type: count
+    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:6px 10px;line-height:1.4;white-space:normal;">{% if value == 0 %}<div style="font-size:20px;font-weight:600;color:#202124;">No interventions recorded yet</div><div style="font-size:14px;color:#3c4043;margin-top:6px;max-width:640px;">Record a training session, adoption campaign or targeted coaching activity to measure its impact over time.</div>{% if "@{interventions_form_url}" != "none" %}<a href="@{interventions_form_url}" target="_blank" style="display:inline-block;margin-top:12px;background:#1a73e8;color:#fff;font-size:13px;font-weight:600;padding:8px 16px;border-radius:18px;text-decoration:none;">Record an intervention</a>{% else %}<div style="font-size:12px;color:#5f6368;margin-top:10px;">Your Looker admin can connect an intervention form; see the block README.</div>{% endif %}{% else %}<div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#5f6368;">Interventions</div><div style="display:flex;gap:40px;margin-top:8px;"><div><div style="font-size:28px;font-weight:600;color:#202124;">{{ open_interventions._rendered_value }}</div><div style="font-size:12px;color:#5f6368;">open</div></div><div><div style="font-size:28px;font-weight:600;color:{% if overdue_interventions._value > 0 %}#C5221F{% else %}#202124{% endif %};">{{ overdue_interventions._rendered_value }}</div><div style="font-size:12px;color:#5f6368;">follow-up overdue</div></div><div><div style="font-size:28px;font-weight:600;color:#202124;">{{ completed_interventions._rendered_value }}</div><div style="font-size:12px;color:#5f6368;">completed</div></div></div>{% if "@{interventions_form_url}" != "none" %}<a href="@{interventions_form_url}" target="_blank" style="display:inline-block;margin-top:14px;background:#1a73e8;color:#fff;font-size:13px;font-weight:600;padding:8px 16px;border-radius:18px;text-decoration:none;">Record an intervention</a>{% else %}<div style="font-size:12px;color:#5f6368;margin-top:10px;">Your Looker admin can connect an intervention form; see the block README.</div>{% endif %}{% endif %}</div> ;;
+  }
+
   measure: overdue_interventions {
     type: count
     filters: [is_overdue: "yes"]

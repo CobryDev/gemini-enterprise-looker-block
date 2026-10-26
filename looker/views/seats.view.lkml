@@ -63,6 +63,15 @@ view: seats {
     value_format_name: percent_1
   }
 
+  measure: seat_utilisation_card {
+    hidden: yes
+    description: "Claimed out of purchased with a progress bar. Include seats_claimed, seats_purchased and unclaimed_seats in the tile query."
+    type: number
+    sql: ${seat_utilisation} ;;
+    value_format_name: percent_0
+    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:4px 8px;line-height:1.35;white-space:normal;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#5f6368;">Seat utilisation</div><div style="font-size:32px;font-weight:600;color:#202124;margin:4px 0;">{{ rendered_value }}</div><div style="font-size:13px;color:#3c4043;">{{ seats_claimed._rendered_value }} of {{ seats_purchased._rendered_value }} seats claimed · {{ unclaimed_seats._rendered_value }} available</div><div style="margin-top:10px;height:10px;border-radius:5px;background:#E8EAED;overflow:hidden;"><div style="height:10px;width:{{ value | times: 100 | round }}%;background:#1A73E8;border-radius:5px;"></div></div></div> ;;
+  }
+
   measure: unclaimed_seats {
     description: "Purchased seats not yet assigned to a user (seats purchased minus seats claimed)."
     type: number

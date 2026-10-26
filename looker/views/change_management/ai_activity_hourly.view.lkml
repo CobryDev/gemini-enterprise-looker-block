@@ -101,8 +101,9 @@ view: ai_activity_hourly {
         SELECT * FROM gws
         UNION ALL
         SELECT * FROM antigravity
-      )
+      ),
 
+      scoped AS (
       SELECT
         CONCAT(
           unioned.user_email, '|', unioned.product, '|', IFNULL(unioned.surface, ''), '|', IFNULL(unioned.feature, ''), '|', unioned.interaction_mode, '|',
@@ -118,7 +119,29 @@ view: ai_activity_hourly {
       FROM unioned
       JOIN ${population_scope.SQL_TABLE_NAME} AS population_scope
         ON population_scope.user_email = unioned.user_email
-      WHERE population_scope.in_scope ;;
+      WHERE population_scope.in_scope
+      ),
+
+      use_case_totals AS (
+        SELECT
+          scoped.*,
+          SUM(IF(use_case != 'Unclassified' AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 90 DAY), ai_actions, 0))
+            OVER (PARTITION BY use_case) AS use_case_actions_90d
+        FROM scoped
+      ),
+
+      use_case_ranks AS (
+        SELECT
+          use_case_totals.*,
+          DENSE_RANK() OVER (ORDER BY use_case_actions_90d DESC, use_case) AS use_case_rank
+        FROM use_case_totals
+      )
+
+      SELECT
+        use_case_ranks.* EXCEPT (use_case_actions_90d, use_case_rank),
+        IF(use_case_rank <= 3 AND use_case_actions_90d > 0, use_case, 'Other') AS use_case_group,
+        IF(use_case_rank <= 3 AND use_case_actions_90d > 0, use_case_rank, 4) AS use_case_group_order
+      FROM use_case_ranks ;;
   }
 
   dimension: pk {
@@ -213,6 +236,20 @@ view: ai_activity_hourly {
     description: "Business-facing use-case group mapped from product and feature. Unclassified is explicit when the source event does not identify a meaningful feature."
     type: string
     sql: ${TABLE}.use_case ;;
+  }
+
+  dimension: use_case_group {
+    label: "AI Use Case (Top 3)"
+    description: "The three use cases with the most hands-on actions in the last 90 days, with everything else as Other. Fixed at each daily rebuild so trend colours stay stable."
+    type: string
+    sql: ${TABLE}.use_case_group ;;
+    order_by_field: use_case_group_order
+  }
+
+  dimension: use_case_group_order {
+    hidden: yes
+    type: number
+    sql: ${TABLE}.use_case_group_order ;;
   }
 
   dimension: use_case_confidence {

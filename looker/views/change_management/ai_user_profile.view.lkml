@@ -453,22 +453,6 @@ view: ai_user_profile {
     html: {{ rendered_value }} &middot; {{ ai_active_users._rendered_value }} of {{ people._rendered_value }} ;;
   }
 
-  measure: executive_narrative_card {
-    hidden: yes
-    label: "Executive Narrative"
-    description: "Narrative summary for the executive dashboard. Include the supporting count measures in the same tile query."
-    type: number
-    sql: ${ai_activation_rate} ;;
-    value_format_name: percent_0
-    html:
-      <div style="font-family:'Google Sans',Arial,sans-serif;text-align:left;line-height:1.45;">
-        <div style="font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#5f6368;">Last 28 days</div>
-        <div style="font-size:24px;font-weight:600;color:#202124;margin:4px 0 10px;">AI adoption is {{ rendered_value }}.</div>
-        <div style="font-size:14px;color:#3c4043;">{{ ai_active_users._rendered_value }} of {{ people._rendered_value }} eligible people used AI. {{ normal_users._rendered_value }} normal and {{ power_users._rendered_value }} power users show habitual use.</div>
-        <div style="font-size:14px;color:#3c4043;margin-top:6px;">{{ idle_ge_licences._rendered_value }} Gemini Enterprise licences had no Enterprise activity, and the top user generated {{ top_user_action_share._rendered_value }} of AI actions.</div>
-      </div> ;;
-  }
-
   measure: power_users {
     type: count
     filters: [ai_days_28d: ">=@{power_user_min_days}"]
@@ -576,62 +560,6 @@ view: ai_user_profile {
   # Dashboard cohort cards: the share renders large, with the head count and
   # threshold underneath. The count must be in the same query (hidden on the
   # tile) for the html to read it.
-  measure: power_users_card {
-    hidden: yes
-    label: "Power Users Card"
-    type: number
-    sql: SAFE_DIVIDE(${power_users}, NULLIF(${people}, 0)) ;;
-    value_format_name: percent_0
-    html:
-      <div style="font-family: 'Google Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: left; padding: 10px 18px; border-left: 6px solid #174EA6;">
-        <div style="font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #5f6368;">Power users</div>
-        <div style="font-size: 34px; font-weight: 600; color: #202124; line-height: 1.25;">{{ rendered_value }}</div>
-        <div style="font-size: 13px; color: #5f6368;">{{ power_users._rendered_value }} people &middot; @{power_user_min_days}+ AI days in the last 28</div>
-      </div> ;;
-  }
-
-  measure: normal_users_card {
-    hidden: yes
-    label: "Normal Users Card"
-    type: number
-    sql: SAFE_DIVIDE(${normal_users}, NULLIF(${people}, 0)) ;;
-    value_format_name: percent_0
-    html:
-      <div style="font-family: 'Google Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: left; padding: 10px 18px; border-left: 6px solid #1A73E8;">
-        <div style="font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #5f6368;">Normal users</div>
-        <div style="font-size: 34px; font-weight: 600; color: #202124; line-height: 1.25;">{{ rendered_value }}</div>
-        <div style="font-size: 13px; color: #5f6368;">{{ normal_users._rendered_value }} people &middot; @{normal_user_min_days}+ AI days in the last 28</div>
-      </div> ;;
-  }
-
-  measure: casual_users_card {
-    hidden: yes
-    label: "Casual Users Card"
-    type: number
-    sql: SAFE_DIVIDE(${casual_users}, NULLIF(${people}, 0)) ;;
-    value_format_name: percent_0
-    html:
-      <div style="font-family: 'Google Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: left; padding: 10px 18px; border-left: 6px solid #8AB4F8;">
-        <div style="font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #5f6368;">Casual users</div>
-        <div style="font-size: 34px; font-weight: 600; color: #202124; line-height: 1.25;">{{ rendered_value }}</div>
-        <div style="font-size: 13px; color: #5f6368;">{{ casual_users._rendered_value }} people &middot; tried AI, under @{normal_user_min_days} days</div>
-      </div> ;;
-  }
-
-  measure: non_ai_users_card {
-    hidden: yes
-    label: "Non-AI Users Card"
-    type: number
-    sql: SAFE_DIVIDE(${non_ai_users}, NULLIF(${people}, 0)) ;;
-    value_format_name: percent_0
-    html:
-      <div style="font-family: 'Google Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: left; padding: 10px 18px; border-left: 6px solid #BDC1C6;">
-        <div style="font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #5f6368;">Non-AI users</div>
-        <div style="font-size: 34px; font-weight: 600; color: #202124; line-height: 1.25;">{{ rendered_value }}</div>
-        <div style="font-size: 13px; color: #5f6368;">{{ non_ai_users._rendered_value }} people &middot; licensed or in Workspace, no AI use</div>
-      </div> ;;
-  }
-
   measure: idle_ge_licences {
     label: "Idle Gemini Enterprise Licences"
     description: "Licensed users with no Gemini Enterprise prompt or search in the last 28 days."
@@ -717,7 +645,7 @@ view: ai_user_profile {
     type: number
     sql: ${ai_activation_rate} ;;
     value_format_name: percent_0
-    html: <div style="font-family:'Google Sans',Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.3;white-space:normal;"><div style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#5f6368;">Employee adoption · last 28 days</div><div style="font-size:34px;font-weight:600;color:#202124;margin:2px 0;">{{ rendered_value }}</div><div style="font-size:13px;color:#5f6368;">{{ ai_active_users._rendered_value }} of {{ people._rendered_value }} eligible people used AI</div></div> ;;
+    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #1A73E8;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Adoption</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">{{ ai_active_users._rendered_value }} of {{ people._rendered_value }} eligible people</div></div> ;;
   }
 
   measure: habit_card {
@@ -725,7 +653,7 @@ view: ai_user_profile {
     type: number
     sql: ${regular_among_active_rate} ;;
     value_format_name: percent_0
-    html: <div style="font-family:'Google Sans',Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.3;white-space:normal;"><div style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#5f6368;">Regular among active users</div><div style="font-size:34px;font-weight:600;color:#202124;margin:2px 0;">{{ rendered_value }}</div><div style="font-size:13px;color:#5f6368;">{{ regular_users._rendered_value }} of {{ ai_active_users._rendered_value }} are Normal or Power users</div></div> ;;
+    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #174EA6;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Regular use</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">{{ regular_users._rendered_value }} of {{ ai_active_users._rendered_value }} active people use AI weekly or more</div></div> ;;
   }
 
   measure: retention_card {
@@ -733,7 +661,7 @@ view: ai_user_profile {
     type: number
     sql: ${ai_retention_rate} ;;
     value_format_name: percent_0
-    html: <div style="font-family:'Google Sans',Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.3;white-space:normal;"><div style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#5f6368;">Retention · 28 days on 28 days</div><div style="font-size:34px;font-weight:600;color:#202124;margin:2px 0;">{{ rendered_value }}</div><div style="font-size:13px;color:#5f6368;">{{ retained_ai_users._rendered_value }} of {{ previous_ai_active_users._rendered_value }} returned from the previous 28 days</div></div> ;;
+    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #1A73E8;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Retention</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">{{ retained_ai_users._rendered_value }} of {{ previous_ai_active_users._rendered_value }} came back from the previous 28 days</div></div> ;;
   }
 
   measure: not_yet_active_card {
@@ -741,26 +669,26 @@ view: ai_user_profile {
     type: number
     sql: ${non_ai_users} ;;
     value_format_name: decimal_0
-    html: <div style="font-family:'Google Sans',Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.3;white-space:normal;"><div style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#5f6368;">Not yet active</div><div style="font-size:34px;font-weight:600;color:#202124;margin:2px 0;">{{ rendered_value }}</div><div style="font-size:13px;color:#5f6368;">of {{ people._rendered_value }} eligible people have no AI use in the last 28 days</div></div> ;;
+    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #9AA0A6;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Not yet active</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">of {{ people._rendered_value }} eligible people, no AI use yet</div></div> ;;
   }
 
   measure: licence_decision_card {
     hidden: yes
-    label: "Licence Decision"
     type: number
     sql: ${idle_ge_licences} ;;
     value_format_name: decimal_0
-    html:
-      {% if value == 0 %}<div style="font-family:'Google Sans',Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.3;white-space:normal;"><div style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#5f6368;">Decision</div><div style="font-size:34px;font-weight:600;color:#202124;margin:2px 0;">None</div><div style="font-size:13px;color:#5f6368;">Every assigned Gemini Enterprise licence was used in the last 28 days.</div></div>
-      {% elsif @{ge_seat_cost_monthly} == 0 %}<div style="font-family:'Google Sans',Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.3;white-space:normal;"><div style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#5f6368;">Decision · review unused licences</div><div style="font-size:34px;font-weight:600;color:#b06000;margin:2px 0;">{{ rendered_value }} licences</div><div style="font-size:13px;color:#5f6368;">assigned with no Gemini Enterprise use in 28 days. Set the seat cost in Marketplace &gt; Manage to see spend. Validate need before reassigning.</div></div>
-      {% else %}<div style="font-family:'Google Sans',Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.3;white-space:normal;"><div style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#5f6368;">Decision · review unused licences</div><div style="font-size:34px;font-weight:600;color:#b06000;margin:2px 0;">{{ idle_ge_licence_spend._rendered_value }}/month</div><div style="font-size:13px;color:#5f6368;">{{ rendered_value }} assigned licences had no Gemini Enterprise use in 28 days. Validate need, then reassign or reclaim.</div></div>{% endif %} ;;
+    label: "Licence Decision"
+    description: "Include idle_ge_licence_spend in the tile query."
+    html: {% if value == 0 %}<div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#E6F4EA;border-radius:12px;padding:18px 20px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#188038;">Licences</div><div style="font-size:34px;font-weight:600;color:#202124;margin:6px 0 4px;letter-spacing:-0.5px;">None idle</div><div style="font-size:14px;font-weight:600;color:#202124;">No unused Gemini Enterprise licences</div><div style="font-size:12px;color:#5f6368;margin-top:6px;">Every assigned licence was used in the last 28 days.</div></div>{% elsif @{ge_seat_cost_monthly} == 0 %}<div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#FEF7E0;border-radius:12px;padding:18px 20px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#B06000;">Decision to make</div><div style="font-size:34px;font-weight:600;color:#202124;margin:6px 0 4px;letter-spacing:-0.5px;">{{ rendered_value }} licences</div><div style="font-size:14px;font-weight:600;color:#202124;">Review unused Gemini Enterprise licences</div><div style="font-size:12px;color:#5f6368;margin-top:6px;">No use in 28 days. Set the seat cost to see spend. <a href="/dashboards/gemini_enterprise::gemini_ai_change" style="color:#1a73e8;text-decoration:none;">See the licence list</a></div></div>{% else %}<div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#FEF7E0;border-radius:12px;padding:18px 20px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#B06000;">Decision to make</div><div style="font-size:34px;font-weight:600;color:#202124;margin:6px 0 4px;letter-spacing:-0.5px;">{{ idle_ge_licence_spend._rendered_value }}<span style="font-size:18px;font-weight:500;color:#5f6368;">/mo</span></div><div style="font-size:14px;font-weight:600;color:#202124;">Review {{ rendered_value }} unused Gemini Enterprise licences</div><div style="font-size:12px;color:#5f6368;margin-top:6px;">No use in the last 28 days. <a href="/dashboards/gemini_enterprise::gemini_ai_change" style="color:#1a73e8;text-decoration:none;">See the licence list</a></div></div>{% endif %} ;;
   }
 
-  measure: metric_window_card {
+  measure: story_card {
     hidden: yes
-    label: "Metric Window"
-    type: count
-    html: <div style="font-family:'Google Sans',Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.3;white-space:normal;"><div style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#5f6368;">Metric window</div><div style="font-size:34px;font-weight:600;color:#202124;margin:2px 0;">28 days</div><div style="font-size:13px;color:#5f6368;">Rolling window to today for every adoption KPI. Tracking since {{ tracking_since._rendered_value }}. The Date filter changes trend charts only.</div></div> ;;
+    type: number
+    sql: ${ai_activation_rate} ;;
+    value_format_name: percent_0
+    description: "Executive headline. Include ai_activation_rate, regular_among_active_rate, ai_active_users, people, non_ai_users and ai_retention_rate in the tile query."
+    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#E8F0FE;border-radius:12px;padding:18px 22px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#174EA6;">The main story · last 28 days</div><div style="font-size:24px;font-weight:600;color:#202124;margin:8px 0 10px;">{% assign act = ai_activation_rate._value | times: 1.0 %}{% assign hab = regular_among_active_rate._value | times: 1.0 %}{% if act < 0.5 and hab >= 0.7 %}AI use is habitual among adopters. The opportunity is reaching {{ non_ai_users._rendered_value }} non-users.{% elsif act >= 0.5 and hab >= 0.7 %}AI use is broad and habitual. The opportunity is deeper use and measured value.{% elsif act >= 0.5 %}Many people have tried AI, but few use it regularly. The opportunity is building habits.{% else %}AI adoption is early. {{ non_ai_users._rendered_value }} eligible people have not started yet.{% endif %}</div><div style="font-size:14px;color:#3c4043;">{{ ai_active_users._rendered_value }} of {{ people._rendered_value }} eligible people active <span style="color:#9aa0a6;">·</span> {{ regular_among_active_rate._rendered_value }} of them use it regularly <span style="color:#9aa0a6;">·</span> {{ ai_retention_rate._rendered_value }} retention</div></div> ;;
   }
 
   measure: concentration_card {
@@ -768,7 +696,7 @@ view: ai_user_profile {
     type: number
     sql: ${top_decile_action_share} ;;
     value_format_name: percent_0
-    html: <div style="font-family:'Google Sans',Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.3;white-space:normal;"><div style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#5f6368;">Usage concentration</div><div style="font-size:34px;font-weight:600;color:#202124;margin:2px 0;">{{ rendered_value }}</div><div style="font-size:13px;color:#5f6368;">of AI actions come from the top 10% of people. The single top user generates {{ top_user_action_share._rendered_value }}.</div></div> ;;
+    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #8AB4F8;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Top 10% share</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">of hands-on actions come from the most active 10% of people</div></div> ;;
   }
 
   measure: activation_summary {
@@ -777,32 +705,6 @@ view: ai_user_profile {
     type: string
     sql: CONCAT(CAST(${ai_active_users} AS STRING), ' of ', CAST(${people} AS STRING), ' active (',
       CAST(CAST(ROUND(100 * SAFE_DIVIDE(${ai_active_users}, NULLIF(${people}, 0))) AS INT64) AS STRING), '%)') ;;
-  }
-
-  measure: executive_narrative_v2 {
-    hidden: yes
-    label: "Executive Narrative"
-    description: "Headline and recommended focus chosen from activation and habit. Include ai_activation_rate, regular_among_active_rate, ai_active_users, people, regular_users, non_ai_users, ai_retention_rate and top_decile_action_share in the tile query."
-    type: number
-    sql: ${ai_activation_rate} ;;
-    value_format_name: percent_0
-    html:
-      <div style="font-family:'Google Sans',Arial,sans-serif;text-align:left;line-height:1.45;white-space:normal;padding:2px 6px;">
-        <div style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#5f6368;">Last 28 days</div>
-        <div style="font-size:21px;font-weight:600;color:#202124;margin:4px 0 8px;">
-        {% assign act = ai_activation_rate._value | times: 1.0 %}{% assign hab = regular_among_active_rate._value | times: 1.0 %}
-        {% if act < 0.5 and hab >= 0.7 %}AI use is habitual among adopters. The next challenge is reaching non-users.
-        {% elsif act >= 0.5 and hab >= 0.7 %}AI use is broad and habitual. The next challenge is depth and value.
-        {% elsif act >= 0.5 %}Many people have tried AI, but few use it regularly. The next challenge is building habits.
-        {% else %}AI adoption is early. The next challenge is getting people started.{% endif %}
-        </div>
-        <div style="font-size:14px;color:#3c4043;">{{ ai_active_users._rendered_value }} of {{ people._rendered_value }} eligible people used AI; {{ regular_users._rendered_value }} of them use it regularly, and {{ ai_retention_rate._rendered_value }} of last period's users came back. {{ non_ai_users._rendered_value }} people have not started. The top 10% of people generate {{ top_decile_action_share._rendered_value }} of AI actions.</div>
-        <div style="font-size:14px;color:#202124;margin-top:8px;"><strong>Recommended focus:</strong>
-        {% if act < 0.5 and hab >= 0.7 %} expand adoption to the people not yet using AI, while keeping existing users engaged.
-        {% elsif act >= 0.5 and hab >= 0.7 %} deepen use: spread proven use cases and measure their outcomes.
-        {% elsif act >= 0.5 %} turn casual users into regular ones with task-specific coaching.
-        {% else %} start with teams that already have early adopters, and remove access barriers.{% endif %}</div>
-      </div> ;;
   }
 
   # What other explores show about a person when they join this view: the

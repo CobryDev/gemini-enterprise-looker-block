@@ -181,6 +181,7 @@ view: ai_opportunities {
     description: "Plain-English name of the opportunity."
     type: string
     sql: ${TABLE}.action_title ;;
+    html: <span title="{{ ai_opportunities.evidence._value }}">{{ value }}</span> ;;
   }
 
   dimension: category {
@@ -255,5 +256,16 @@ view: ai_opportunities {
 
   measure: opportunities {
     type: count
+  }
+
+  measure: next_decisions_card {
+    hidden: yes
+    label: "Next Decisions"
+    description: "The three highest-priority actionable opportunities as a compact list."
+    type: string
+    sql: ARRAY_TO_STRING(ARRAY_AGG(
+      IF(${is_actionable}, CONCAT(${priority_label}, '~', ${action_title}, '~', ${impact}), NULL)
+      IGNORE NULLS ORDER BY ${priority}, ${size} DESC LIMIT 3), '^') ;;
+    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.35;white-space:normal;">{% assign rows = value | split: "^" %}<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#5f6368;">Next decisions</div><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="font-size:12px;color:#1a73e8;text-decoration:none;">Open the opportunity queue</a></div>{% if value == blank %}<div style="font-size:14px;color:#5f6368;">No open decisions.</div>{% endif %}{% for r in rows %}{% assign c = r | split: "~" %}<div style="display:flex;gap:10px;align-items:baseline;padding:6px 0;border-top:1px solid #F1F3F4;"><span style="flex:none;font-size:11px;font-weight:600;padding:1px 8px;border-radius:10px;{% if c[0] == 'High' %}background:#FCE8E6;color:#C5221F;{% elsif c[0] == 'Medium' %}background:#FEF7E0;color:#B06000;{% else %}background:#E8F0FE;color:#1967D2;{% endif %}">{{ c[0] }}</span><span style="font-size:14px;font-weight:600;color:#202124;">{{ c[1] }}</span><span style="font-size:12px;color:#5f6368;">{{ c[2] }}</span></div>{% endfor %}</div> ;;
   }
 }
