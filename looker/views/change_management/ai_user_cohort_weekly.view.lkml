@@ -279,6 +279,14 @@ view: ai_user_cohort_weekly {
     drill_fields: [detail*]
   }
 
+  measure: moved_down_negative {
+    label: "Moved down"
+    description: "Moved down as a negative value, for diverging movement charts."
+    type: number
+    sql: -1 * ${moved_down} ;;
+    value_format_name: decimal_0
+  }
+
   measure: newly_active {
     description: "People who were Non-AI or new the week before and are now Casual or above."
     type: count

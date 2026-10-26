@@ -49,6 +49,7 @@ view: ai_user_profile {
         SELECT
           user_email,
           APPROX_TOP_COUNT(model, 1)[SAFE_OFFSET(0)].value AS top_model,
+          COUNT(DISTINCT model) AS models_used_28d,
           COUNTIF(REGEXP_CONTAINS(UPPER(IFNULL(model_selection_mode, '')), r'AUTO')) AS auto_prompts_28d,
           COUNTIF(
             REGEXP_CONTAINS(UPPER(IFNULL(model_selection_mode, '')), r'AUTO')
@@ -59,6 +60,18 @@ view: ai_user_profile {
         WHERE is_user_prompt
           AND model IS NOT NULL
           AND user_email IS NOT NULL
+          AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 27 DAY)
+        GROUP BY user_email
+      ),
+
+      token_user AS (
+        SELECT
+          LOWER(user_email) AS user_email,
+          SUM(IFNULL(input_tokens, 0) + IFNULL(output_tokens, 0)) AS total_tokens_28d,
+          SUM(IFNULL(reasoning_tokens, 0)) AS reasoning_tokens_28d,
+          COUNT(*) AS model_calls_28d
+        FROM `@{gemini_project}.@{gemini_dataset}.ge_model_calls`
+        WHERE user_email IS NOT NULL
           AND event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 27 DAY)
         GROUP BY user_email
       ),
@@ -121,12 +134,17 @@ view: ai_user_profile {
           IFNULL(ai.antigravity_actions_28d, 0) AS antigravity_actions_28d,
           peak.peak_local_hour,
           models.top_model,
+          IFNULL(models.models_used_28d, 0) AS models_used_28d,
           IFNULL(models.auto_prompts_28d, 0) AS auto_prompts_28d,
-          IFNULL(models.auto_advanced_prompts_28d, 0) AS auto_advanced_prompts_28d
+          IFNULL(models.auto_advanced_prompts_28d, 0) AS auto_advanced_prompts_28d,
+          IFNULL(token_user.total_tokens_28d, 0) AS total_tokens_28d,
+          IFNULL(token_user.reasoning_tokens_28d, 0) AS reasoning_tokens_28d,
+          IFNULL(token_user.model_calls_28d, 0) AS model_calls_28d
         FROM scoped_people
         LEFT JOIN ai USING (user_email)
         LEFT JOIN peak USING (user_email)
         LEFT JOIN models USING (user_email)
+        LEFT JOIN token_user USING (user_email)
         LEFT JOIN licenses USING (user_email)
         LEFT JOIN workspace USING (user_email)
       )
@@ -337,6 +355,12 @@ view: ai_user_profile {
     sql: ${TABLE}.top_model ;;
   }
 
+  dimension: models_used_28d {
+    label: "Models Used (28d)"
+    type: number
+    sql: ${TABLE}.models_used_28d ;;
+  }
+
   dimension: auto_prompts_28d {
     label: "Auto Prompts (28d)"
     type: number
@@ -351,10 +375,113 @@ view: ai_user_profile {
     value_format_name: percent_0
   }
 
+  dimension: total_tokens_28d {
+    label: "Tokens (28d)"
+    description: "Input plus output tokens from Gemini Enterprise model calls in the last 28 days."
+    type: number
+    sql: ${TABLE}.total_tokens_28d ;;
+    value_format_name: decimal_0
+  }
+
+  dimension: reasoning_tokens_28d {
+    label: "Reasoning Tokens (28d)"
+    type: number
+    sql: ${TABLE}.reasoning_tokens_28d ;;
+    value_format_name: decimal_0
+  }
+
+  dimension: model_calls_28d {
+    label: "Model Calls (28d)"
+    type: number
+    sql: ${TABLE}.model_calls_28d ;;
+    value_format_name: decimal_0
+  }
+
   measure: people {
     description: "People in the current population."
     type: count
     drill_fields: [detail*]
+  }
+
+  measure: ai_days_28d_value {
+    hidden: yes
+    type: max
+    sql: ${TABLE}.ai_days_28d ;;
+    value_format_name: decimal_0
+  }
+
+  measure: ai_actions_28d_value {
+    hidden: yes
+    type: max
+    sql: ${TABLE}.ai_actions_28d ;;
+    value_format_name: decimal_0
+  }
+
+  measure: median_ai_days {
+    label: "Median AI Days"
+    type: median
+    sql: ${TABLE}.ai_days_28d ;;
+    value_format_name: decimal_0
+  }
+
+  measure: median_actions_active {
+    label: "Median Actions per Active Person"
+    type: median
+    sql: ${TABLE}.ai_actions_28d ;;
+    filters: [ai_days_28d: ">0"]
+    value_format_name: decimal_0
+  }
+
+  measure: min_actions_28d {
+    hidden: yes
+    type: min
+    sql: ${TABLE}.ai_actions_28d ;;
+    value_format_name: decimal_0
+  }
+
+  measure: p25_actions_28d {
+    hidden: yes
+    type: percentile
+    percentile: 25
+    sql: ${TABLE}.ai_actions_28d ;;
+    value_format_name: decimal_0
+  }
+
+  measure: median_actions_28d {
+    hidden: yes
+    type: median
+    sql: ${TABLE}.ai_actions_28d ;;
+    value_format_name: decimal_0
+  }
+
+  measure: p75_actions_28d {
+    hidden: yes
+    type: percentile
+    percentile: 75
+    sql: ${TABLE}.ai_actions_28d ;;
+    value_format_name: decimal_0
+  }
+
+  measure: max_actions_28d {
+    hidden: yes
+    type: max
+    sql: ${TABLE}.ai_actions_28d ;;
+    value_format_name: decimal_0
+  }
+
+  measure: models_per_ge_user {
+    label: "Models per GE User"
+    type: number
+    sql: SAFE_DIVIDE(SUM(${TABLE}.models_used_28d), NULLIF(COUNT(DISTINCT IF(${TABLE}.ge_days_28d > 0, ${TABLE}.user_email, NULL)), 0)) ;;
+    value_format_name: decimal_1
+  }
+
+  measure: median_tokens_per_ge_user {
+    label: "Median Tokens per GE User"
+    type: median
+    sql: ${TABLE}.total_tokens_28d ;;
+    filters: [total_tokens_28d: ">0"]
+    value_format_name: decimal_0
   }
 
   measure: workspace_users {
@@ -645,7 +772,7 @@ view: ai_user_profile {
     type: number
     sql: ${ai_activation_rate} ;;
     value_format_name: percent_0
-    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #1A73E8;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Adoption</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">{{ ai_active_users._rendered_value }} of {{ people._rendered_value }} eligible people</div></div> ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #1A73E8;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Adoption</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">{{ ai_active_users._rendered_value }} of {{ people._rendered_value }} eligible people</div></div> ;;
   }
 
   measure: habit_card {
@@ -653,7 +780,7 @@ view: ai_user_profile {
     type: number
     sql: ${regular_among_active_rate} ;;
     value_format_name: percent_0
-    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #174EA6;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Regular use</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">{{ regular_users._rendered_value }} of {{ ai_active_users._rendered_value }} active people use AI weekly or more</div></div> ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #174EA6;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Regular use</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">{{ regular_users._rendered_value }} of {{ ai_active_users._rendered_value }} active people use AI weekly or more</div></div> ;;
   }
 
   measure: retention_card {
@@ -661,7 +788,7 @@ view: ai_user_profile {
     type: number
     sql: ${ai_retention_rate} ;;
     value_format_name: percent_0
-    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #1A73E8;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Retention</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">{{ retained_ai_users._rendered_value }} of {{ previous_ai_active_users._rendered_value }} came back from the previous 28 days</div></div> ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #1A73E8;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Retention</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">{{ retained_ai_users._rendered_value }} of {{ previous_ai_active_users._rendered_value }} came back from the previous 28 days</div></div> ;;
   }
 
   measure: not_yet_active_card {
@@ -669,7 +796,7 @@ view: ai_user_profile {
     type: number
     sql: ${non_ai_users} ;;
     value_format_name: decimal_0
-    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #9AA0A6;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Not yet active</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">of {{ people._rendered_value }} eligible people, no AI use yet</div></div> ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #9AA0A6;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Not yet active</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">of {{ people._rendered_value }} eligible people, no AI use yet</div></div> ;;
   }
 
   measure: licence_decision_card {
@@ -679,7 +806,7 @@ view: ai_user_profile {
     value_format_name: decimal_0
     label: "Licence Decision"
     description: "Include idle_ge_licence_spend in the tile query."
-    html: {% if value == 0 %}<div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#E6F4EA;border-radius:12px;padding:18px 20px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#188038;">Licences</div><div style="font-size:34px;font-weight:600;color:#202124;margin:6px 0 4px;letter-spacing:-0.5px;">None idle</div><div style="font-size:14px;font-weight:600;color:#202124;">No unused Gemini Enterprise licences</div><div style="font-size:12px;color:#5f6368;margin-top:6px;">Every assigned licence was used in the last 28 days.</div></div>{% elsif @{ge_seat_cost_monthly} == 0 %}<div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#FEF7E0;border-radius:12px;padding:18px 20px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#B06000;">Decision to make</div><div style="font-size:34px;font-weight:600;color:#202124;margin:6px 0 4px;letter-spacing:-0.5px;">{{ rendered_value }} licences</div><div style="font-size:14px;font-weight:600;color:#202124;">Review unused Gemini Enterprise licences</div><div style="font-size:12px;color:#5f6368;margin-top:6px;">No use in 28 days. Set the seat cost to see spend. <a href="/dashboards/gemini_enterprise::gemini_ai_change" style="color:#1a73e8;text-decoration:none;">See the licence list</a></div></div>{% else %}<div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#FEF7E0;border-radius:12px;padding:18px 20px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#B06000;">Decision to make</div><div style="font-size:34px;font-weight:600;color:#202124;margin:6px 0 4px;letter-spacing:-0.5px;">{{ idle_ge_licence_spend._rendered_value }}<span style="font-size:18px;font-weight:500;color:#5f6368;">/mo</span></div><div style="font-size:14px;font-weight:600;color:#202124;">Review {{ rendered_value }} unused Gemini Enterprise licences</div><div style="font-size:12px;color:#5f6368;margin-top:6px;">No use in the last 28 days. <a href="/dashboards/gemini_enterprise::gemini_ai_change" style="color:#1a73e8;text-decoration:none;">See the licence list</a></div></div>{% endif %} ;;
+    html: {% if value == 0 %}<div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#E6F4EA;border-radius:12px;padding:18px 20px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#188038;">Licences</div><div style="font-size:34px;font-weight:600;color:#202124;margin:6px 0 4px;letter-spacing:-0.5px;">None idle</div><div style="font-size:14px;font-weight:600;color:#202124;">No unused Gemini Enterprise licences</div><div style="font-size:12px;color:#5f6368;margin-top:6px;">Every assigned licence was used in the last 28 days.</div></div>{% elsif @{ge_seat_cost_monthly} == 0 %}<div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#FEF7E0;border-radius:12px;padding:18px 20px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#B06000;">Decision to make</div><div style="font-size:34px;font-weight:600;color:#202124;margin:6px 0 4px;letter-spacing:-0.5px;">{{ rendered_value }} licences</div><div style="font-size:14px;font-weight:600;color:#202124;">Review unused Gemini Enterprise licences</div><div style="font-size:12px;color:#5f6368;margin-top:6px;">No use in 28 days. Set the seat cost to see spend. <a href="/dashboards/gemini_enterprise::gemini_ai_change" style="color:#1a73e8;text-decoration:none;">See the licence list</a></div></div>{% else %}<div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#FEF7E0;border-radius:12px;padding:18px 20px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#B06000;">Decision to make</div><div style="font-size:34px;font-weight:600;color:#202124;margin:6px 0 4px;letter-spacing:-0.5px;">{{ idle_ge_licence_spend._rendered_value }}<span style="font-size:18px;font-weight:500;color:#5f6368;">/mo</span></div><div style="font-size:14px;font-weight:600;color:#202124;">Review {{ rendered_value }} unused Gemini Enterprise licences</div><div style="font-size:12px;color:#5f6368;margin-top:6px;">No use in the last 28 days. <a href="/dashboards/gemini_enterprise::gemini_ai_change" style="color:#1a73e8;text-decoration:none;">See the licence list</a></div></div>{% endif %} ;;
   }
 
   measure: story_card {
@@ -688,7 +815,7 @@ view: ai_user_profile {
     sql: ${ai_activation_rate} ;;
     value_format_name: percent_0
     description: "Executive headline. Include ai_activation_rate, regular_among_active_rate, ai_active_users, people, non_ai_users and ai_retention_rate in the tile query."
-    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#E8F0FE;border-radius:12px;padding:18px 22px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#174EA6;">The main story: last 28 days</div><div style="font-size:24px;font-weight:600;color:#202124;margin:8px 0 10px;">{% assign act = ai_activation_rate._value | times: 1.0 %}{% assign hab = regular_among_active_rate._value | times: 1.0 %}{% if act < 0.5 and hab >= 0.7 %}AI use is habitual among adopters. The opportunity is reaching {{ non_ai_users._rendered_value }} non-users.{% elsif act >= 0.5 and hab >= 0.7 %}AI use is broad and habitual. The opportunity is deeper use and measured value.{% elsif act >= 0.5 %}Many people have tried AI, but few use it regularly. The opportunity is building habits.{% else %}AI adoption is early. {{ non_ai_users._rendered_value }} eligible people have not started yet.{% endif %}</div><div style="font-size:14px;color:#3c4043;">{{ ai_active_users._rendered_value }} of {{ people._rendered_value }} eligible people are active. {{ regular_among_active_rate._rendered_value }} of them use it regularly, and {{ ai_retention_rate._rendered_value }} came back from the previous 28 days.</div></div> ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;background:#E8F0FE;border-radius:12px;padding:18px 22px;white-space:normal;line-height:1.3;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#174EA6;">The main story: last 28 days</div><div style="font-size:24px;font-weight:600;color:#202124;margin:8px 0 10px;">{% assign act = ai_activation_rate._value | times: 1.0 %}{% assign hab = regular_among_active_rate._value | times: 1.0 %}{% if act < 0.5 and hab >= 0.7 %}AI use is habitual among adopters. The opportunity is reaching {{ non_ai_users._rendered_value }} non-users.{% elsif act >= 0.5 and hab >= 0.7 %}AI use is broad and habitual. The opportunity is deeper use and measured value.{% elsif act >= 0.5 %}Many people have tried AI, but few use it regularly. The opportunity is building habits.{% else %}AI adoption is early. {{ non_ai_users._rendered_value }} eligible people have not started yet.{% endif %}</div><div style="font-size:14px;color:#3c4043;">{{ ai_active_users._rendered_value }} of {{ people._rendered_value }} eligible people are active. {{ regular_among_active_rate._rendered_value }} of them use it regularly, and {{ ai_retention_rate._rendered_value }} came back from the previous 28 days.</div></div> ;;
   }
 
   measure: concentration_card {
@@ -696,7 +823,7 @@ view: ai_user_profile {
     type: number
     sql: ${top_decile_action_share} ;;
     value_format_name: percent_0
-    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #8AB4F8;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Top 10% share</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">of hands-on actions come from the most active 10% of people</div></div> ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.25;white-space:normal;border-left:4px solid #8AB4F8;"><div style="font-size:32px;font-weight:600;color:#202124;letter-spacing:-0.5px;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;margin-top:2px;">Top 10% share</div><div style="font-size:12px;color:#5f6368;margin-top:2px;">of hands-on actions come from the most active 10% of people</div></div> ;;
   }
 
   measure: activation_summary {

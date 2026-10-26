@@ -52,6 +52,12 @@ view: active_users {
     sql: ${TABLE}.product_type ;;
   }
 
+  dimension: is_complete_week {
+    description: "The metric date sits in a completed reporting week."
+    type: yesno
+    sql: ${TABLE}.metric_date < DATE_TRUNC(CURRENT_DATE(), WEEK(MONDAY)) ;;
+  }
+
   measure: daily_active_users {
     label: "Daily Active Users"
     description: "Distinct users active on a given day. Reported once per product surface per day; filter to a single day (and product_type = Total) for a point-in-time count, since summing across days adds daily figures together."
@@ -65,6 +71,14 @@ view: active_users {
     description: "Distinct users active in the trailing 7-day window ending on each date. Best read for a single date rather than summed across days."
     type: sum
     sql: ${TABLE}.weekly_active_user_count ;;
+    value_format_name: decimal_0
+  }
+
+  measure: weekly_active_users_reported {
+    label: "Weekly Active Users"
+    description: "Distinct users active in the trailing 7-day window. Uses the latest reported non-zero value in each week so weekly charts do not drop to zero on days Google did not publish the metric."
+    type: max
+    sql: NULLIF(${TABLE}.weekly_active_user_count, 0) ;;
     value_format_name: decimal_0
   }
 

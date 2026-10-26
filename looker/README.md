@@ -47,6 +47,11 @@ You also need the `develop`, `manage_models`, and `deploy` Looker permissions to
 
 To change any value later, use **Manage** on the block's Marketplace listing.
 
+The dashboards name `Plus Jakarta Sans` first, then fall back to Google Sans,
+Roboto and Arial. Looker blocks cannot load web fonts themselves, so viewers see
+Plus Jakarta Sans only if the font is already available to their browser or a
+Looker admin applies it through an instance theme.
+
 > With **Workspace audit export** left at `none`, the Workspace Gemini tab and
 > Workspace tiles load empty instead of erroring, so the block installs cleanly
 > before the Workspace export exists.

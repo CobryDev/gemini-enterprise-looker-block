@@ -26,6 +26,12 @@ view: ge_model_calls {
     sql: ${TABLE}.app_name ;;
   }
 
+  dimension: trace_id {
+    hidden: yes
+    type: string
+    sql: ${TABLE}.trace_id ;;
+  }
+
   dimension: user_email {
     label: "User"
     type: string

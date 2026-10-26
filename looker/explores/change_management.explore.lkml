@@ -225,6 +225,12 @@ explore: ge_model_calls {
   description: "Model inferences with token counts, by user and agent."
   persist_with: gemini_change_management_datagroup
 
+  join: ge_trace_context {
+    view_label: "Trace Context"
+    sql_on: ${ge_trace_context.trace_id} = ${ge_model_calls.trace_id} ;;
+    relationship: many_to_one
+  }
+
   join: user_org_unit {
     sql_on: ${user_org_unit.user_email} = ${ge_model_calls.user_email} ;;
     relationship: many_to_one

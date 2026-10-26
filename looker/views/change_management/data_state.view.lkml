@@ -170,7 +170,7 @@ view: data_state {
     type: number
     sql: ${passing_checks} ;;
     value_format_name: decimal_0
-    html: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.4;white-space:normal;"><div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#202124;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:{% if value == checks._value %}#188038{% else %}#F9AB00{% endif %};"></span><span><b>{{ rendered_value }}/{{ checks._rendered_value }}</b> reporting readiness checks passing</span></div><div style="font-size:12px;color:#5f6368;margin-top:6px;">Headline figures cover the last 28 days; the Date filter changes trends only. Figures moved after an update? See <a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="color:#1a73e8;text-decoration:none;">Data Health</a>.</div></div> ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 6px;line-height:1.4;white-space:normal;"><div style="display:flex;align-items:center;gap:8px;font-size:14px;color:#202124;"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:{% if value == checks._value %}#188038{% else %}#F9AB00{% endif %};"></span><span><b>{{ rendered_value }}/{{ checks._rendered_value }}</b> reporting readiness checks passing</span></div><div style="font-size:12px;color:#5f6368;margin-top:6px;">Headline figures cover the last 28 days; the Date filter changes trends only. Figures moved after an update? See <a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="color:#1a73e8;text-decoration:none;">Data Health</a>.</div></div> ;;
   }
 
   measure: data_trust_card {

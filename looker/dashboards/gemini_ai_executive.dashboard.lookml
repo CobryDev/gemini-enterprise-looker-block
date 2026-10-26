@@ -140,7 +140,7 @@
       tab_name: overview
     - name: adoption_trend
       title: Is adoption growing? | weekly active people, complete weeks
-      type: looker_column
+      type: looker_area
       model: gemini_enterprise
       explore: ai_activity_hourly
       fields: [ai_activity_hourly.event_week, ai_activity_hourly.ai_users]
@@ -150,7 +150,7 @@
       limit: 26
       show_value_labels: true
       show_view_names: false
-      y_axis_gridlines: false
+      y_axis_gridlines: true
       legend_position: none
       series_colors:
         ai_activity_hourly.ai_users: '#1A73E8'
@@ -167,6 +167,137 @@
       show_x_axis_label: false
       show_y_axis_labels: false
       show_y_axis_ticks: false
+      point_style: none
+      interpolation: monotone
+      advanced_vis_config: |-
+        {
+          "chart": {
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif"
+            },
+            "borderRadius": 10,
+            "spacing": [
+              8,
+              8,
+              8,
+              8
+            ]
+          },
+          "title": {
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "600",
+              "color": "#202124"
+            }
+          },
+          "xAxis": {
+            "labels": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "11px"
+              }
+            },
+            "lineColor": "#DADCE0",
+            "tickColor": "#DADCE0"
+          },
+          "yAxis": {
+            "gridLineColor": "#E8EAED",
+            "gridLineDashStyle": "ShortDash",
+            "labels": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "11px"
+              }
+            },
+            "title": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "12px"
+              }
+            }
+          },
+          "legend": {
+            "align": "left",
+            "verticalAlign": "top",
+            "itemStyle": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "fontWeight": "500",
+              "color": "#3C4043"
+            },
+            "symbolRadius": 6
+          },
+          "tooltip": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#DADCE0",
+            "borderRadius": 8,
+            "shadow": true,
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "color": "#202124"
+            }
+          },
+          "plotOptions": {
+            "series": {
+              "dataLabels": {
+                "style": {
+                  "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                  "fontWeight": "600",
+                  "textOutline": "none"
+                }
+              }
+            },
+            "column": {
+              "borderRadius": {
+                "radius": 4,
+                "where": "end"
+              },
+              "pointPadding": 0.08,
+              "groupPadding": 0.12
+            },
+            "bar": {
+              "borderRadius": {
+                "radius": 4,
+                "where": "end"
+              },
+              "pointPadding": 0.08,
+              "groupPadding": 0.12
+            },
+            "line": {
+              "lineWidth": 2.5,
+              "marker": {
+                "enabled": false
+              }
+            },
+            "area": {
+              "lineWidth": 2.5,
+              "marker": {
+                "enabled": false
+              },
+              "fillColor": {
+                "linearGradient": {
+                  "x1": 0,
+                  "y1": 0,
+                  "x2": 0,
+                  "y2": 1
+                },
+                "stops": [
+                  [
+                    0,
+                    "rgba(26,115,232,0.28)"
+                  ],
+                  [
+                    1,
+                    "rgba(26,115,232,0.02)"
+                  ]
+                ]
+              }
+            }
+          }
+        }
     - name: adoption_gap
       title: Where's the adoption gap? | people not yet active, by department
       type: looker_bar
@@ -197,6 +328,118 @@
       width: 36
       height: 11
       tab_name: overview
+      advanced_vis_config: |-
+        {
+          "chart": {
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif"
+            },
+            "borderRadius": 10,
+            "spacing": [
+              8,
+              8,
+              8,
+              8
+            ]
+          },
+          "title": {
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "600",
+              "color": "#202124"
+            }
+          },
+          "xAxis": {
+            "labels": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "11px"
+              }
+            },
+            "lineColor": "#DADCE0",
+            "tickColor": "#DADCE0"
+          },
+          "yAxis": {
+            "gridLineColor": "#E8EAED",
+            "gridLineDashStyle": "ShortDash",
+            "labels": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "11px"
+              }
+            },
+            "title": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "12px"
+              }
+            },
+            "gridLineWidth": 0
+          },
+          "legend": {
+            "align": "left",
+            "verticalAlign": "top",
+            "itemStyle": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "fontWeight": "500",
+              "color": "#3C4043"
+            },
+            "symbolRadius": 6
+          },
+          "tooltip": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#DADCE0",
+            "borderRadius": 8,
+            "shadow": true,
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "color": "#202124"
+            }
+          },
+          "plotOptions": {
+            "series": {
+              "dataLabels": {
+                "style": {
+                  "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                  "fontWeight": "600",
+                  "textOutline": "none"
+                }
+              }
+            },
+            "column": {
+              "borderRadius": {
+                "radius": 4,
+                "where": "end"
+              },
+              "pointPadding": 0.08,
+              "groupPadding": 0.12
+            },
+            "bar": {
+              "borderRadius": {
+                "radius": 4,
+                "where": "end"
+              },
+              "pointPadding": 0.08,
+              "groupPadding": 0.12
+            },
+            "line": {
+              "lineWidth": 2.5,
+              "marker": {
+                "enabled": false
+              }
+            },
+            "area": {
+              "lineWidth": 2.5,
+              "marker": {
+                "enabled": false
+              }
+            }
+          }
+        }
     - name: next_decisions
       title: ''
       title_hidden: true
@@ -323,8 +566,8 @@
       custom_color: '#202124'
       hidden_fields: [ai_user_profile.idle_ge_licences]
     - name: hours_by_use_case
-      title: Hours by use case | total for the selected dates, hands-on only
-      type: looker_bar
+      title: Hours by use case | selected dates, hands-on only
+      type: looker_waterfall
       model: gemini_enterprise
       explore: ai_activity_hourly
       fields: [ai_activity_hourly.use_case, ai_activity_hourly.hours_saved]
@@ -352,6 +595,117 @@
       show_x_axis_label: false
       show_y_axis_labels: false
       show_y_axis_ticks: false
+      advanced_vis_config: |-
+        {
+          "chart": {
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif"
+            },
+            "borderRadius": 10,
+            "spacing": [
+              8,
+              8,
+              8,
+              8
+            ]
+          },
+          "title": {
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "600",
+              "color": "#202124"
+            }
+          },
+          "xAxis": {
+            "labels": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "11px"
+              }
+            },
+            "lineColor": "#DADCE0",
+            "tickColor": "#DADCE0"
+          },
+          "yAxis": {
+            "gridLineColor": "#E8EAED",
+            "gridLineDashStyle": "ShortDash",
+            "labels": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "11px"
+              }
+            },
+            "title": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "12px"
+              }
+            }
+          },
+          "legend": {
+            "align": "left",
+            "verticalAlign": "top",
+            "itemStyle": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "fontWeight": "500",
+              "color": "#3C4043"
+            },
+            "symbolRadius": 6
+          },
+          "tooltip": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#DADCE0",
+            "borderRadius": 8,
+            "shadow": true,
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "color": "#202124"
+            }
+          },
+          "plotOptions": {
+            "series": {
+              "dataLabels": {
+                "style": {
+                  "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                  "fontWeight": "600",
+                  "textOutline": "none"
+                }
+              }
+            },
+            "column": {
+              "borderRadius": {
+                "radius": 4,
+                "where": "end"
+              },
+              "pointPadding": 0.08,
+              "groupPadding": 0.12
+            },
+            "bar": {
+              "borderRadius": {
+                "radius": 4,
+                "where": "end"
+              },
+              "pointPadding": 0.08,
+              "groupPadding": 0.12
+            },
+            "line": {
+              "lineWidth": 2.5,
+              "marker": {
+                "enabled": false
+              }
+            },
+            "area": {
+              "lineWidth": 2.5,
+              "marker": {
+                "enabled": false
+              }
+            }
+          }
+        }
     - name: value_trend
       title: Hours per complete week | hands-on and automation
       type: looker_column
@@ -383,6 +737,119 @@
       x_axis_gridlines: false
       show_x_axis_label: false
       legend_position: center
+      show_value_labels: false
+      advanced_vis_config: |-
+        {
+          "chart": {
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif"
+            },
+            "borderRadius": 10,
+            "spacing": [
+              8,
+              8,
+              8,
+              8
+            ]
+          },
+          "title": {
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "fontSize": "16px",
+              "fontWeight": "600",
+              "color": "#202124"
+            }
+          },
+          "xAxis": {
+            "labels": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "11px"
+              }
+            },
+            "lineColor": "#DADCE0",
+            "tickColor": "#DADCE0"
+          },
+          "yAxis": {
+            "gridLineColor": "#E8EAED",
+            "gridLineDashStyle": "ShortDash",
+            "labels": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "11px"
+              }
+            },
+            "title": {
+              "style": {
+                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                "color": "#5F6368",
+                "fontSize": "12px"
+              }
+            },
+            "gridLineWidth": 0
+          },
+          "legend": {
+            "align": "left",
+            "verticalAlign": "top",
+            "itemStyle": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "fontWeight": "500",
+              "color": "#3C4043"
+            },
+            "symbolRadius": 6
+          },
+          "tooltip": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#DADCE0",
+            "borderRadius": 8,
+            "shadow": true,
+            "style": {
+              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+              "color": "#202124"
+            }
+          },
+          "plotOptions": {
+            "series": {
+              "dataLabels": {
+                "style": {
+                  "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
+                  "fontWeight": "600",
+                  "textOutline": "none"
+                }
+              }
+            },
+            "column": {
+              "borderRadius": {
+                "radius": 4,
+                "where": "end"
+              },
+              "pointPadding": 0.08,
+              "groupPadding": 0.12
+            },
+            "bar": {
+              "borderRadius": {
+                "radius": 4,
+                "where": "end"
+              },
+              "pointPadding": 0.08,
+              "groupPadding": 0.12
+            },
+            "line": {
+              "lineWidth": 2.5,
+              "marker": {
+                "enabled": false
+              }
+            },
+            "area": {
+              "lineWidth": 2.5,
+              "marker": {
+                "enabled": false
+              }
+            }
+          }
+        }
     - name: credit_assumptions
       title: Credit assumptions | minutes saved per action, selected dates
       note_display: hover
