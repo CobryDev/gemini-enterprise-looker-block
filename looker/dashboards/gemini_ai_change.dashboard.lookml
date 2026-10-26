@@ -446,6 +446,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: 'Share of eligible people in each cohort today. Cohorts count AI-active days in the trailing 28 days: Power 12 or more, Normal 4 or more, Casual 1 to 3, Non-AI none (thresholds are install settings).'
     - name: cohort_trend
       title: Cohort share per week | last 12 complete weeks
       type: looker_column
@@ -602,6 +605,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: 'Share of eligible people in each cohort at the end of each of the last 12 complete weeks. Cohorts count AI-active days in the trailing 28 days: Power 12 or more, Normal 4 or more, Casual 1 to 3, Non-AI none (thresholds are install settings).'
     - name: cohort_movement
       title: Cohort movement | last 12 complete weeks
       type: looker_column
@@ -754,6 +760,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: People who changed cohort compared with the week before. Newly active were Non-AI or new; Moved up went to a higher cohort; Moved down (below the line) went lower, including lapsing to Non-AI.
     - name: cohort_by_department
       title: Cohort mix by department | eligible people, last 28 days
       type: looker_bar
@@ -898,6 +907,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: 'Share of each department''s eligible people in each cohort today. Cohorts count AI-active days in the trailing 28 days: Power 12 or more, Normal 4 or more, Casual 1 to 3, Non-AI none (thresholds are install settings).'
     - name: use_cases_header
       type: text
       title_text: ''
@@ -1572,6 +1584,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Hands-on AI actions per complete week, for the three use cases with the most actions in the last 90 days. Everything else is grouped as Other.
     - name: feature_mapping
       title: Feature to use-case mapping | detail
       type: looker_grid
@@ -1997,6 +2012,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: 'Weekly cohort share for up to 52 weeks. Early weeks can undercount because their 28-day window reaches back before activity history starts. Cohorts count AI-active days in the trailing 28 days: Power 12 or more, Normal 4 or more, Casual 1 to 3, Non-AI none (thresholds are install settings).'
     - name: interventions_state
       title: ''
       title_hidden: true
@@ -2034,7 +2052,7 @@
       y_axis_label: Regular among active
       note_state: collapsed
       note_display: hover
-      note_text: Guide lines split broad from narrow adoption and habitual from occasional use.
+      note_text: 'Each bubble is a department, sized by eligible people. Across: share of people active in the last 28 days. Up: share of those active people who use AI on 4 or more days. Guide lines mark 50% and 70%.'
       show_view_names: false
       x_axis_gridlines: false
       y_axis_gridlines: false
@@ -2468,6 +2486,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: How many eligible people used AI on each number of days in the last 28, coloured by cohort. A tall bar at 0 means many people haven't started; bars further right mean habitual use.
     - name: people_scatter
       title: People map | days vs actions
       type: looker_scatter
@@ -2634,6 +2655,9 @@
         }
       filters:
         ai_user_profile.ai_actions_28d: '>0'
+      note_state: collapsed
+      note_display: hover
+      note_text: 'Each dot is a person with at least one hands-on action in the last 28 days. Across: days they used AI. Up: hands-on actions (log scale). Colour is their cohort.'
     - name: department_action_boxplot
       title: Action distribution | by department
       type: looker_boxplot
@@ -2721,6 +2745,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Spread of hands-on AI actions per person in the last 28 days, by department. The box covers the middle half of people, the line inside is the median, and the whiskers show the lowest and highest.
     - name: who_uses_what
       title: Who uses what? | top people by use case
       type: looker_bar
@@ -2869,6 +2896,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: The 25 people with the most hands-on AI actions in the selected dates, split by use case. Shows what each heavy user relies on AI for.
     - name: user_model_mix
       title: Model choice by person | top GE users
       type: looker_bar
@@ -3007,6 +3037,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Share of each person's Gemini Enterprise prompts handled by each model in the selected dates, for the 25 people who prompted most. (not recorded) means the log carried no model.
     - name: department_model_mix
       title: Model choice by department | prompt mix
       type: looker_bar
@@ -3145,6 +3178,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Share of each department's Gemini Enterprise prompts handled by each model in the selected dates.
     - name: user_hour_heatmap
       title: When do people use AI? | top people by hour
       type: looker_grid
@@ -3335,6 +3371,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Input plus output tokens from Gemini Enterprise model calls in the selected dates, for the 25 heaviest users, split by the agent that made the call. Workspace Gemini doesn't report tokens.
     - name: tokens_by_context
       title: Tokens by workflow/event | Gemini Enterprise
       type: looker_pie
@@ -3480,6 +3519,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Gemini Enterprise tokens in the selected dates by the feature, workflow or event that started the call. Unattributed means the call couldn't be matched to an interaction.
     - name: tokens_by_app_context
       title: Tokens by app and workflow/event
       type: looker_bar
@@ -3616,6 +3658,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Gemini Enterprise tokens in the selected dates per app, split by the feature, workflow or event that started the call.
   filters:
     - name: Date
       title: Date

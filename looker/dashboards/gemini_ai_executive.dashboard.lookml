@@ -298,6 +298,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Distinct eligible people with at least one hands-on AI action in each complete week, across Gemini Enterprise, Gemini for Workspace and Antigravity. Hands-on means the person asked Gemini for something; automated runs and suggestions don't count.
     - name: adoption_gap
       title: Where's the adoption gap? | people not yet active, by department
       type: looker_bar
@@ -706,6 +709,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: 'Estimated hours saved in the selected dates: hands-on actions times the minutes-saved setting for each feature, grouped by use case. Bars step up to the total on the right.'
     - name: value_trend
       title: Hours per complete week | hands-on and automation
       type: looker_column
@@ -850,6 +856,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Estimated hours saved per complete week. Hands-on is people asking Gemini. Automation is workflow and scheduled agent runs, a lower-confidence estimate shown separately.
     - name: credit_assumptions
       title: Credit assumptions | minutes saved per action, selected dates
       note_display: hover

@@ -107,7 +107,7 @@
       custom_color_enabled: true
       custom_color: '#202124'
     - name: ge_active_trend
-      title: Weekly active users | interpolated weekly report
+      title: Weekly active users | Gemini Enterprise, complete weeks
       type: looker_line
       model: gemini_enterprise
       explore: active_users
@@ -247,6 +247,9 @@
           }
         }
       show_null_points: false
+      note_state: collapsed
+      note_display: hover
+      note_text: Google's own count of distinct people who used Gemini Enterprise in the 7 days to each report, one point per complete week. Google publishes it roughly weekly, so days without a figure are skipped. This is product telemetry and counts anyone signed in, not just eligible employees.
     - name: ge_seats_trend
       title: ''
       title_hidden: true
@@ -502,6 +505,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: 'Workspace Gemini audit events in the selected dates, per app. Hands-on: a person asked Gemini. Automated: Workspace Flow runs. Proactive: suggestions Gemini showed unprompted.'
     - name: ws_funnel
       title: Shown vs used | top surfaced feature
       type: looker_funnel
@@ -836,6 +842,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Gemini Enterprise prompts people sent in the selected dates, by the model that answered. (not recorded) means the log carried no model.
     - name: tools_called
       title: Tools the assistant calls | by connector
       type: looker_bar
@@ -973,6 +982,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Times the Gemini Enterprise assistant called each tool or connector (for example Drive search or Calendar) while answering, in the selected dates.
     - name: tokens_by_agent
       title: Tokens by agent | stacked by model family
       type: looker_bar
@@ -1117,6 +1129,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Input plus output tokens from Gemini Enterprise model calls in the selected dates, by the agent that made the call and the model family it used. Main assistant is the default chat agent.
     - name: hourly_actions
       title: Hands-on actions by local hour
       type: looker_column
@@ -1254,6 +1269,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Hands-on AI actions in the selected dates by hour of day, in the reporting time zone. Shows when people work with AI.
     - name: ag_header
       type: text
       title_text: ''
@@ -1439,6 +1457,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Antigravity inference requests in the selected dates by surface, for example agent or autocomplete.
     - name: governance_header
       type: text
       title_text: ''
@@ -1607,6 +1628,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Safety screening matches in the selected dates by category. Zero means the configured sources recorded none.
     - name: admin_changes
       title: Recent admin changes
       type: looker_grid
@@ -2120,6 +2144,9 @@
             }
           }
         }
+      note_state: collapsed
+      note_display: hover
+      note_text: Gemini Enterprise tokens in the selected dates by model. Input is what was sent to the model, output is the reply, and reasoning is thinking tokens. Unattributed means the call couldn't be matched to a model.
   filters:
     - name: Date
       title: Date
