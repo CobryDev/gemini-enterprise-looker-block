@@ -146,6 +146,25 @@ view: ge_user_activity {
     sql: IFNULL(${TABLE}.model, '(not recorded)') ;;
   }
 
+  dimension: model_series {
+    label: "Model Series"
+    description: "Model grouped into a named series (Gemini 4 Argon, Gemini Pro, Gemini Flash, Claude Opus and so on), matched on the model name so new versions keep their colour. Failed request means the prompt returned an error, so no model was logged."
+    type: string
+    sql: CASE
+      WHEN ${TABLE}.model IS NULL AND IFNULL(${TABLE}.status_code, 0) != 0 THEN 'Failed request'
+      WHEN ${TABLE}.model IS NULL THEN '(not recorded)'
+      WHEN REGEXP_CONTAINS(LOWER(${TABLE}.model), r'argon') THEN 'Gemini 4 (Argon)'
+      WHEN REGEXP_CONTAINS(LOWER(${TABLE}.model), r'gemini.*flash-lite') THEN 'Gemini Flash-Lite'
+      WHEN REGEXP_CONTAINS(LOWER(${TABLE}.model), r'gemini.*flash') THEN 'Gemini Flash'
+      WHEN REGEXP_CONTAINS(LOWER(${TABLE}.model), r'^gemini-4') THEN 'Gemini 4 (Argon)'
+      WHEN REGEXP_CONTAINS(LOWER(${TABLE}.model), r'gemini.*pro') THEN 'Gemini Pro'
+      WHEN REGEXP_CONTAINS(LOWER(${TABLE}.model), r'opus') THEN 'Claude Opus'
+      WHEN REGEXP_CONTAINS(LOWER(${TABLE}.model), r'sonnet') THEN 'Claude Sonnet'
+      WHEN REGEXP_CONTAINS(LOWER(${TABLE}.model), r'haiku') THEN 'Claude Haiku'
+      ELSE 'Other'
+    END ;;
+  }
+
   dimension: model_family {
     description: "Model grouped by family (Pro, Flash, Flash-Lite, Thinking, Image and video, Other), matched on the model name so new versions group automatically."
     type: string

@@ -419,8 +419,10 @@ view: ai_user_profile {
 
   measure: median_ai_days {
     label: "Median AI Days"
+    description: "Median AI-active days in the last 28 days, among people with at least one."
     type: median
     sql: ${TABLE}.ai_days_28d ;;
+    filters: [ai_days_28d: ">0"]
     value_format_name: decimal_0
   }
 

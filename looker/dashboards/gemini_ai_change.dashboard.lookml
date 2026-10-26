@@ -1679,7 +1679,7 @@
       limit: 50
       listen:
         Department: user_org_unit.department
-      row: 75
+      row: 80
       col: 0
       width: 36
       height: 12
@@ -1706,7 +1706,7 @@
       limit: 50
       listen:
         Department: user_org_unit.department
-      row: 75
+      row: 80
       col: 36
       width: 36
       height: 12
@@ -1734,7 +1734,7 @@
       limit: 50
       listen:
         Department: user_org_unit.department
-      row: 87
+      row: 92
       col: 0
       width: 36
       height: 12
@@ -1760,7 +1760,7 @@
         ge_user_licenses.license_state: NO_LICENSE_ATTEMPTED_LOGIN
       sorts: [ge_user_licenses.last_login_date desc]
       limit: 50
-      row: 87
+      row: 92
       col: 36
       width: 36
       height: 12
@@ -2231,7 +2231,7 @@
       show_value_labels: false
       show_y_axis_labels: true
     - name: median_days
-      title: Median AI days
+      title: Median AI days | active people
       type: single_value
       model: gemini_enterprise
       explore: ai_user_profile
@@ -2358,7 +2358,7 @@
       row: 10
       col: 0
       width: 24
-      height: 10
+      height: 15
       tab_name: people_coaching
       show_view_names: false
       x_axis_gridlines: false
@@ -2502,7 +2502,7 @@
       row: 10
       col: 24
       width: 24
-      height: 10
+      height: 15
       tab_name: people_coaching
       series_colors:
         power: '#174EA6'
@@ -2700,7 +2700,7 @@
       row: 10
       col: 48
       width: 24
-      height: 10
+      height: 15
       tab_name: people_coaching
       show_view_names: false
       x_axis_gridlines: false
@@ -2800,7 +2800,7 @@
         Date: ai_activity_hourly.event_date
         Product: ai_activity_hourly.product
         Department: user_org_unit.department
-      row: 20
+      row: 25
       col: 0
       width: 36
       height: 14
@@ -2949,8 +2949,8 @@
       type: looker_bar
       model: gemini_enterprise
       explore: ge_user_activity
-      fields: [ge_user_activity.user_email, ge_user_activity.model_label, ge_user_activity.prompts]
-      pivots: [ge_user_activity.model_label]
+      fields: [ge_user_activity.user_email, ge_user_activity.model_series, ge_user_activity.prompts]
+      pivots: [ge_user_activity.model_series]
       filters:
         ge_user_activity.prompts: '>0'
       sorts: [ge_user_activity.prompts desc 0]
@@ -2958,7 +2958,7 @@
       listen:
         Date: ge_user_activity.event_date
         Department: user_org_unit.department
-      row: 20
+      row: 25
       col: 36
       width: 36
       height: 14
@@ -3090,26 +3090,26 @@
         }
       note_state: collapsed
       note_display: hover
-      note_text: Share of each person's Gemini Enterprise prompts handled by each model in the selected dates, for the 25 people who prompted most. (not recorded) means the log carried no model.
+      note_text: Share of each person's Gemini Enterprise prompts by model series in the selected dates, for the 15 people who prompted most. Failed request means the prompt returned an error, so no model was logged; (not recorded) means it succeeded without one.
       show_y_axis_labels: false
       series_colors:
+        Gemini 4 (Argon): '#174EA6'
+        Gemini Pro: '#1A73E8'
+        Gemini Flash: '#8AB4F8'
+        Gemini Flash-Lite: '#C6DAFC'
+        Claude Opus: '#D97757'
+        Claude Sonnet: '#F0B49A'
+        Claude Haiku: '#F7D9CB'
+        Other: '#9AA0A6'
+        Failed request: '#F6AEA9'
         (not recorded): '#DADCE0'
-        Unattributed: '#DADCE0'
-      color_application:
-        collection_id: google
-        custom:
-          id: gemini-series
-          label: gemini-series
-          type: discrete
-          colors: ['#174EA6', '#1A73E8', '#8AB4F8', '#5F6368', '#9AA0A6', '#C6DAFC', '#DADCE0', '#0B3D91']
-        options: {}
     - name: department_model_mix
       title: Model choice by department | prompt mix
       type: looker_bar
       model: gemini_enterprise
       explore: ge_user_activity
-      fields: [user_org_unit.department, ge_user_activity.model_label, ge_user_activity.prompts]
-      pivots: [ge_user_activity.model_label]
+      fields: [user_org_unit.department, ge_user_activity.model_series, ge_user_activity.prompts]
+      pivots: [ge_user_activity.model_series]
       filters:
         ge_user_activity.prompts: '>0'
       sorts: [ge_user_activity.prompts desc 0]
@@ -3117,7 +3117,7 @@
       listen:
         Date: ge_user_activity.event_date
         Department: user_org_unit.department
-      row: 34
+      row: 39
       col: 0
       width: 36
       height: 12
@@ -3249,19 +3249,19 @@
         }
       note_state: collapsed
       note_display: hover
-      note_text: Share of each department's Gemini Enterprise prompts handled by each model in the selected dates.
+      note_text: Share of each department's Gemini Enterprise prompts by model series in the selected dates. Failed request means the prompt returned an error, so no model was logged.
       show_y_axis_labels: false
       series_colors:
+        Gemini 4 (Argon): '#174EA6'
+        Gemini Pro: '#1A73E8'
+        Gemini Flash: '#8AB4F8'
+        Gemini Flash-Lite: '#C6DAFC'
+        Claude Opus: '#D97757'
+        Claude Sonnet: '#F0B49A'
+        Claude Haiku: '#F7D9CB'
+        Other: '#9AA0A6'
+        Failed request: '#F6AEA9'
         (not recorded): '#DADCE0'
-        Unattributed: '#DADCE0'
-      color_application:
-        collection_id: google
-        custom:
-          id: gemini-series
-          label: gemini-series
-          type: discrete
-          colors: ['#174EA6', '#1A73E8', '#8AB4F8', '#5F6368', '#9AA0A6', '#C6DAFC', '#DADCE0', '#0B3D91']
-        options: {}
     - name: user_hour_heatmap
       title: When do people use AI? | top people by hour
       type: looker_grid
@@ -3277,7 +3277,7 @@
         Date: ai_activity_hourly.event_date
         Product: ai_activity_hourly.product
         Department: user_org_unit.department
-      row: 46
+      row: 51
       col: 0
       width: 72
       height: 12
@@ -3307,7 +3307,7 @@
       series_labels:
         actions: ' '
       series_column_widths:
-        ai_activity_hourly.user_email: 220
+        ai_activity_hourly.user_email: 190
       enable_conditional_formatting: true
       conditional_formatting:
         - type: along a scale...
@@ -3333,6 +3333,7 @@
           fields: [actions]
       conditional_formatting_include_totals: false
       conditional_formatting_include_nulls: false
+      minimum_column_width: 28
     - name: day_hour_heatmap
       title: When does work happen? | day and local hour
       type: looker_grid
@@ -3347,7 +3348,7 @@
         Date: ai_activity_hourly.event_date
         Product: ai_activity_hourly.product
         Department: user_org_unit.department
-      row: 58
+      row: 63
       col: 0
       width: 72
       height: 7
@@ -3402,6 +3403,7 @@
           fields: [actions]
       conditional_formatting_include_totals: false
       conditional_formatting_include_nulls: false
+      minimum_column_width: 28
     - name: tokens_by_person
       title: Tokens by person | stacked by agent
       type: looker_bar
@@ -3414,7 +3416,7 @@
       listen:
         Date: ge_model_calls.event_date
         Department: user_org_unit.department
-      row: 34
+      row: 39
       col: 36
       width: 36
       height: 12
@@ -3570,7 +3572,7 @@
       listen:
         Date: ge_model_calls.event_date
         Department: user_org_unit.department
-      row: 65
+      row: 70
       col: 0
       width: 24
       height: 10
@@ -3733,7 +3735,7 @@
       listen:
         Date: ge_model_calls.event_date
         Department: user_org_unit.department
-      row: 65
+      row: 70
       col: 24
       width: 48
       height: 10
