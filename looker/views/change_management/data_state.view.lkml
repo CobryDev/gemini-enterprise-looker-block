@@ -166,9 +166,10 @@ view: data_state {
     value_format_name: percent_0
     html:
       <div style="font-family: 'Google Sans', Arial, sans-serif; text-align:left;">
-        <div style="font-size:13px;color:#5f6368;">Data trust checks passing</div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#5f6368;">Data trust checks passing</div>
         <div style="font-size:32px;font-weight:600;color:#202124;">{{ rendered_value }}</div>
         <div style="font-size:13px;color:#5f6368;">{{ attention_checks._rendered_value }} checks need attention</div>
+        <div style="font-size:12px;color:#5f6368;margin-top:6px;">Figures moved after an update? See <a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="color:#1a73e8;">Methodology changes</a> on Data Health.</div>
       </div> ;;
   }
 }

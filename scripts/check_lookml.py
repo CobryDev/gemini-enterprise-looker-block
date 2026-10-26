@@ -116,6 +116,9 @@ def check_dashboard_files() -> list[str]:
                 raise ValueError(f"{len(tabs)} tabs; Looker allows at most 5")
             if "@{" in Path(path).read_text():
                 raise ValueError("manifest constants (@{...}) are not substituted in dashboards")
+            for link in re.findall(r'href="/dashboards/([^"?]+)', Path(path).read_text()):
+                if "::" not in link:
+                    raise ValueError(f"dashboard link /dashboards/{link} needs the model prefix, e.g. gemini_enterprise::{link}")
             for element in dashboard.get("elements", []):
                 if tabs and element.get("tab_name") not in tabs:
                     raise ValueError(f"element {element.get('name', '?')} has unknown tab_name {element.get('tab_name')}")

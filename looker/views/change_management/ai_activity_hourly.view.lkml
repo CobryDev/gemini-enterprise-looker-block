@@ -138,6 +138,13 @@ view: ai_activity_hourly {
     sql: ${TABLE}.event_date ;;
   }
 
+  dimension: is_complete_week {
+    label: "Is Complete Week"
+    description: "Yes for activity before the start of the current Monday-to-Sunday week. Filter weekly trends on this so the unfinished current week doesn't look like a drop."
+    type: yesno
+    sql: ${TABLE}.event_date < DATE_TRUNC(CURRENT_DATE('@{reporting_time_zone}'), WEEK(MONDAY)) ;;
+  }
+
   dimension_group: event_local {
     label: "Local Time"
     description: "Activity hour in the reporting time zone (the reporting_time_zone constant), for time-of-day patterns."
@@ -176,6 +183,15 @@ view: ai_activity_hourly {
     description: "Gemini Enterprise feature, Workspace feature_source (help_me_write, take_notes_for_me...) or Antigravity experience."
     type: string
     sql: ${TABLE}.feature ;;
+  }
+
+  dimension: feature_label {
+    label: "Feature (Readable)"
+    description: "Feature name for display. Workspace events where Google did not record a feature show as '<app> (feature not recorded)'; the raw value is <app>_unspecified."
+    type: string
+    sql: IF(ENDS_WITH(${TABLE}.feature, '_unspecified'),
+      CONCAT(REGEXP_REPLACE(${TABLE}.feature, r'_unspecified$', ''), ' (feature not recorded)'),
+      INITCAP(REPLACE(${TABLE}.feature, '_', ' '))) ;;
   }
 
   dimension: interaction_mode {
@@ -254,7 +270,7 @@ view: ai_activity_hourly {
 
   measure: passive_event_share {
     label: "Passive Share of AI Events"
-    description: "Automated plus proactive events as a share of all AI events."
+    description: "Automated Flow runs plus proactive suggestions, divided by all AI events (hands-on, automated and proactive) by eligible people in the selected dates. Event-based, not a share of people."
     type: number
     sql: SAFE_DIVIDE(${automated_events} + ${proactive_events}, NULLIF(${ai_events}, 0)) ;;
     value_format_name: percent_0
@@ -415,23 +431,27 @@ view: ai_activity_hourly {
 
   measure: unclassified_action_share {
     label: "Unclassified Action Share"
-    description: "Share of AI actions that cannot be mapped to a business-facing use case."
+    description: "Hands-on AI actions by eligible people in the selected dates whose feature has no business use case in the use_case_mapping constant, divided by all hands-on AI actions."
     type: number
     sql: SAFE_DIVIDE(${unclassified_actions}, NULLIF(${ai_actions}, 0)) ;;
     value_format_name: percent_0
   }
 
+  # Estimated time benefit. The headline counts Active actions only: things a
+  # person asked for. Automated runs are a separate, lower-confidence estimate
+  # because a run can fire on every incoming item without replacing any work.
+  # Proactive events never earn credit.
   measure: hours_saved {
     label: "Estimated Hours Saved"
-    description: "Value actions times the minutes in the time_saved_minutes constant, in hours. An assumption-based estimate, not a measurement."
+    description: "Active value actions times the minutes in the Minutes saved per AI action setting, in hours. Excludes automated runs and proactive suggestions. An assumption-based estimate, not a measurement."
     type: sum
-    sql: ${TABLE}.value_actions * ${minutes_saved_per_action} / 60 ;;
+    sql: IF(${TABLE}.interaction_mode = 'Active', ${TABLE}.value_actions * ${minutes_saved_per_action} / 60, 0) ;;
     value_format_name: decimal_0
   }
 
   measure: hours_saved_low {
     label: "Estimated Hours Saved (Low)"
-    description: "Low scenario for estimated hours saved, using time_saved_low_factor."
+    description: "Low scenario for estimated hours saved, using the low scenario factor."
     type: number
     sql: ${hours_saved} * @{time_saved_low_factor} ;;
     value_format_name: decimal_0
@@ -439,9 +459,76 @@ view: ai_activity_hourly {
 
   measure: hours_saved_high {
     label: "Estimated Hours Saved (High)"
-    description: "High scenario for estimated hours saved, using time_saved_high_factor."
+    description: "High scenario for estimated hours saved, using the high scenario factor."
     type: number
     sql: ${hours_saved} * @{time_saved_high_factor} ;;
+    value_format_name: decimal_0
+  }
+
+  measure: automation_hours_saved {
+    label: "Estimated Automation Hours (lower confidence)"
+    description: "Automated workflow and agent runs times their minutes-saved setting. Lower confidence: a run is not proof that work was replaced. Kept out of the headline estimate."
+    type: sum
+    sql: IF(${TABLE}.interaction_mode = 'Automated', ${TABLE}.value_actions * ${minutes_saved_per_action} / 60, 0) ;;
+    value_format_name: decimal_0
+  }
+
+  measure: credited_hours {
+    label: "Credited Hours (all modes)"
+    description: "Active plus automated estimated hours. Use it to audit which features earn time-saving credit."
+    type: number
+    sql: ${hours_saved} + ${automation_hours_saved} ;;
+    value_format_name: decimal_0
+  }
+
+  measure: credited_actions {
+    label: "Credited Actions"
+    description: "Actions that earn time-saving credit: active value actions plus automated runs."
+    type: sum
+    sql: IF(${TABLE}.interaction_mode IN ('Active', 'Automated'), ${TABLE}.value_actions, 0) ;;
+  }
+
+  measure: window_days {
+    hidden: yes
+    type: number
+    sql: DATE_DIFF(MAX(${TABLE}.event_date), MIN(${TABLE}.event_date), DAY) + 1 ;;
+  }
+
+  measure: hours_saved_per_month {
+    label: "Estimated Hours Saved per Month"
+    description: "Estimated hours saved scaled to an average month (30.4 days) from the days covered by the selection."
+    type: number
+    sql: SAFE_DIVIDE(${hours_saved}, NULLIF(${window_days}, 0)) * 30.4 ;;
+    value_format_name: decimal_0
+    html: <div style="font-size:40px;font-weight:700;line-height:1.1">{{ rendered_value }} h</div><div style="font-size:13px;color:#5f6368">range {{ hours_saved_low_per_month._rendered_value }}–{{ hours_saved_high_per_month._rendered_value }} h · active actions only</div> ;;
+  }
+
+  measure: hours_saved_low_per_month {
+    label: "Estimated Hours Saved per Month (Low)"
+    type: number
+    sql: ${hours_saved_per_month} * @{time_saved_low_factor} ;;
+    value_format_name: decimal_0
+  }
+
+  measure: hours_saved_high_per_month {
+    label: "Estimated Hours Saved per Month (High)"
+    type: number
+    sql: ${hours_saved_per_month} * @{time_saved_high_factor} ;;
+    value_format_name: decimal_0
+  }
+
+  measure: automation_hours_per_month {
+    label: "Estimated Automation Hours per Month (lower confidence)"
+    type: number
+    sql: SAFE_DIVIDE(${automation_hours_saved}, NULLIF(${window_days}, 0)) * 30.4 ;;
+    value_format_name: decimal_0
+    html: <div style="font-size:40px;font-weight:700;line-height:1.1;color:#5f6368">{{ rendered_value }} h</div><div style="font-size:13px;color:#5f6368">{{ automation_runs_per_month._rendered_value }} automated runs a month · not in the headline</div> ;;
+  }
+
+  measure: automation_runs_per_month {
+    hidden: yes
+    type: number
+    sql: SAFE_DIVIDE(SUM(IF(${TABLE}.interaction_mode = 'Automated' AND ${minutes_saved_per_action} > 0, ${TABLE}.value_actions, 0)), NULLIF(${window_days}, 0)) * 30.4 ;;
     value_format_name: decimal_0
   }
 
@@ -454,7 +541,7 @@ view: ai_activity_hourly {
 
   measure: value_of_time_saved {
     label: "Estimated Value of Time Saved"
-    description: "Estimated hours saved times the loaded_hourly_rate constant."
+    description: "Estimated hours saved times the loaded hourly rate setting."
     type: number
     sql: ${hours_saved} * @{loaded_hourly_rate} ;;
     value_format: "\"@{currency_symbol}\"#,##0"
@@ -475,6 +562,29 @@ view: ai_activity_hourly {
     sql: ${hours_saved_high} * @{loaded_hourly_rate} ;;
     value_format: "\"@{currency_symbol}\"#,##0"
     html: {% if @{loaded_hourly_rate} == 0 %}<span style="font-size:14px">Set the loaded hourly rate in Marketplace &gt; Manage</span>{% else %}{{ rendered_value }}{% endif %} ;;
+  }
+
+  measure: value_per_month {
+    label: "Estimated Time Benefit per Month"
+    description: "Estimated hours saved per month times the loaded hourly rate. An estimate of time benefit, not realised ROI."
+    type: number
+    sql: ${hours_saved_per_month} * @{loaded_hourly_rate} ;;
+    value_format: "\"@{currency_symbol}\"#,##0"
+    html: {% if @{loaded_hourly_rate} == 0 %}<span style="font-size:14px">Set the loaded hourly rate in Marketplace &gt; Manage</span>{% else %}<div style="font-size:40px;font-weight:700;line-height:1.1">{{ rendered_value }}</div><div style="font-size:13px;color:#5f6368">range {{ value_low_per_month._rendered_value }}–{{ value_high_per_month._rendered_value }} · at @{currency_symbol}@{loaded_hourly_rate}/h</div>{% endif %} ;;
+  }
+
+  measure: value_low_per_month {
+    hidden: yes
+    type: number
+    sql: ${hours_saved_low_per_month} * @{loaded_hourly_rate} ;;
+    value_format: "\"@{currency_symbol}\"#,##0"
+  }
+
+  measure: value_high_per_month {
+    hidden: yes
+    type: number
+    sql: ${hours_saved_high_per_month} * @{loaded_hourly_rate} ;;
+    value_format: "\"@{currency_symbol}\"#,##0"
   }
 
   measure: tracking_since {

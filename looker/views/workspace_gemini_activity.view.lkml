@@ -31,7 +31,12 @@ view: workspace_gemini_activity {
         gemini_for_workspace.feature_source AS feature_source,
         gemini_for_workspace.action AS action,
         gemini_for_workspace.event_category AS event_category,
-        STARTS_WITH(gemini_for_workspace.event_category, 'active') AS is_active_usage
+        STARTS_WITH(gemini_for_workspace.event_category, 'active') AS is_active_usage,
+        CASE
+          WHEN NOT STARTS_WITH(IFNULL(gemini_for_workspace.event_category, ''), 'active') THEN 'Proactive'
+          WHEN gemini_for_workspace.app_name = 'workflows' AND IFNULL(gemini_for_workspace.feature_source, '') != 'workflows_creation' THEN 'Automated'
+          ELSE 'Active'
+        END AS interaction_mode
       FROM `@{gemini_project}.@{workspace_dataset}.activity`
       WHERE gemini_for_workspace.app_name IS NOT NULL
       {% else %}
@@ -46,7 +51,8 @@ view: workspace_gemini_activity {
         CAST(NULL AS STRING) AS feature_source,
         CAST(NULL AS STRING) AS action,
         CAST(NULL AS STRING) AS event_category,
-        CAST(NULL AS BOOL) AS is_active_usage
+        CAST(NULL AS BOOL) AS is_active_usage,
+        CAST(NULL AS STRING) AS interaction_mode
       FROM UNNEST(ARRAY<INT64>[])
       {% endif %} ;;
   }
@@ -114,6 +120,22 @@ view: workspace_gemini_activity {
     sql: ${TABLE}.feature_source ;;
   }
 
+  dimension: feature_label {
+    label: "Feature (Readable)"
+    description: "Feature name for display. Events where Google did not record a feature show as '<app> (feature not recorded)'."
+    type: string
+    sql: IF(IFNULL(${TABLE}.feature_source, 'feature_source_unspecified') IN ('feature_source_unspecified', 'unspecified'),
+      CONCAT(${TABLE}.app_name, ' (feature not recorded)'),
+      INITCAP(REPLACE(${TABLE}.feature_source, '_', ' '))) ;;
+  }
+
+  dimension: interaction_mode {
+    label: "Interaction Mode"
+    description: "Active: the person asked Gemini to do something. Automated: a Workspace Flow ran on its own. Proactive: Gemini surfaced a suggestion or feature without being asked. Same rule as the change-management dashboards."
+    type: string
+    sql: ${TABLE}.interaction_mode ;;
+  }
+
   dimension: action {
     description: "Specific Gemini action recorded by the audit log for the event."
     type: string
@@ -128,7 +150,7 @@ view: workspace_gemini_activity {
 
   dimension: is_active_usage {
     label: "Is Active Usage"
-    description: "True when the user actively generated, conversed, or summarised (vs passive surfacing)."
+    description: "True for any active_* audit category, including automated Workspace Flow runs. Use Interaction Mode to separate hands-on use from automation."
     type: yesno
     sql: ${TABLE}.is_active_usage ;;
   }
@@ -141,23 +163,59 @@ view: workspace_gemini_activity {
   }
 
   measure: active_events {
-    label: "Active Gemini Events"
-    description: "Events where the user actively used Gemini (generate, converse, or summarise), excluding passive surfacing."
+    label: "Hands-on Gemini Events"
+    description: "Events where a person asked Gemini to do something. Excludes automated Workspace Flow runs and proactive suggestions."
     type: count
-    filters: [is_active_usage: "yes"]
+    filters: [interaction_mode: "Active"]
+  }
+
+  measure: automated_events {
+    label: "Automated Gemini Events"
+    description: "Workspace Flow runs and steps that ran without a person in the loop."
+    type: count
+    filters: [interaction_mode: "Automated"]
+  }
+
+  measure: surfaced_events {
+    label: "Proactive Gemini Events"
+    description: "Times Gemini surfaced a suggestion or feature without being asked."
+    type: count
+    filters: [interaction_mode: "Proactive"]
   }
 
   measure: active_usage_rate {
-    label: "Active Share of Workspace Gemini Events"
-    description: "Share of Gemini events that were active usage rather than passive surfacing."
+    label: "Hands-on Share of Workspace Gemini Events"
+    description: "Hands-on events divided by all Workspace Gemini events (hands-on, automated and proactive) in the selected dates. Most events are proactive, so this share is low even when people use Gemini daily."
     type: number
-    sql: SAFE_DIVIDE(${active_events}, ${events}) ;;
+    sql: SAFE_DIVIDE(${active_events}, NULLIF(${events}, 0)) ;;
     value_format_name: percent_1
+  }
+
+  measure: surfaced_users {
+    label: "People Shown the Feature"
+    description: "Distinct people Gemini proactively surfaced this feature to in the selected dates."
+    type: count_distinct
+    sql: IF(${TABLE}.interaction_mode = 'Proactive', ${TABLE}.email, NULL) ;;
+  }
+
+  measure: acting_users {
+    label: "People Who Used It"
+    description: "Distinct people with at least one hands-on event for this feature in the selected dates."
+    type: count_distinct
+    sql: IF(${TABLE}.interaction_mode = 'Active', ${TABLE}.email, NULL) ;;
+  }
+
+  measure: uptake_rate {
+    label: "Uptake"
+    description: "People who used the feature divided by people it was shown to, in the selected dates. Can exceed 100% when people open the feature directly without being prompted."
+    type: number
+    sql: SAFE_DIVIDE(${acting_users}, NULLIF(${surfaced_users}, 0)) ;;
+    value_format_name: percent_0
   }
 
   measure: active_users {
     label: "Gemini Users"
-    description: "Distinct users with any Gemini event."
+    description: "Distinct users with any Workspace Gemini event in the selected dates, including people who were only shown suggestions. Not filtered by the population scope used on the Executive and Change dashboards."
     type: count_distinct
     sql: ${email} ;;
     drill_fields: [email, events]
@@ -165,9 +223,9 @@ view: workspace_gemini_activity {
 
   measure: engaged_users {
     label: "Engaged Gemini Users"
-    description: "Distinct users with at least one active usage event."
+    description: "Distinct users with at least one hands-on event in the selected dates. Automated Flow runs and proactive suggestions do not count."
     type: count_distinct
-    sql: CASE WHEN ${is_active_usage} THEN ${email} END ;;
+    sql: IF(${TABLE}.interaction_mode = 'Active', ${TABLE}.email, NULL) ;;
     drill_fields: [email, active_events]
   }
 

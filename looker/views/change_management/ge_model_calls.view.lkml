@@ -40,6 +40,14 @@ view: ge_model_calls {
     sql: ${TABLE}.agent_name ;;
   }
 
+  dimension: agent_label {
+    label: "Agent (Readable)"
+    description: "Agent name in plain words. root_agent shows as Main assistant."
+    type: string
+    sql: IF(${TABLE}.agent_name = 'root_agent', 'Main assistant',
+      INITCAP(REPLACE(REGEXP_REPLACE(${TABLE}.agent_name, r'^llm_agent_|_agent$', ''), '_', ' '))) ;;
+  }
+
   dimension: agent_id {
     label: "Agent ID"
     type: string

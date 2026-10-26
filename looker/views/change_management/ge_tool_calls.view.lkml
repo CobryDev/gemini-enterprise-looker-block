@@ -47,6 +47,28 @@ view: ge_tool_calls {
     sql: ${TABLE}.tool_name ;;
   }
 
+  dimension: connector {
+    description: "Connector or agent that owns the tool, for example Asana or Google Chat. Built-in tools show as Built-in."
+    type: string
+    sql: CASE
+      WHEN STARTS_WITH(${TABLE}.tool_name, 'custom_mcp_') THEN 'Custom MCP'
+      WHEN STRPOS(${TABLE}.tool_name, '__') > 0 THEN INITCAP(REPLACE(REGEXP_REPLACE(SPLIT(${TABLE}.tool_name, '__')[OFFSET(0)], r'_agent$', ''), '_', ' '))
+      WHEN STARTS_WITH(${TABLE}.tool_name, 'googlesheets_') THEN 'Google Sheets'
+      WHEN STARTS_WITH(${TABLE}.tool_name, 'googledocs_') THEN 'Google Docs'
+      WHEN STARTS_WITH(${TABLE}.tool_name, 'googleslides_') THEN 'Google Slides'
+      ELSE 'Built-in'
+    END ;;
+  }
+
+  dimension: tool_label {
+    label: "Tool (Readable)"
+    description: "Connector and action in plain words, for example Asana: Search Tasks."
+    type: string
+    sql: CONCAT(${connector}, ': ', INITCAP(REPLACE(REGEXP_REPLACE(
+      IF(STRPOS(${TABLE}.tool_name, '__') > 0, SPLIT(${TABLE}.tool_name, '__')[SAFE_OFFSET(1)], ${TABLE}.tool_name),
+      r'^(googlesheets|googledocs|googleslides)_|_tool$', ''), '_', ' '))) ;;
+  }
+
   dimension: tool_family {
     label: "Tool Family"
     description: "Connector or sub-agent that owns the tool, for example email_agent, google_drive_agent, or the tool name itself for built-ins."

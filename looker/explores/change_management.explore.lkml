@@ -165,8 +165,18 @@ explore: data_state {
 explore: ai_opportunities {
   hidden: yes
   label: "AI Opportunities"
-  description: "Prioritised queue of adoption, licence, access and data-quality opportunities with recommended next steps."
+  description: "Prioritised queue of adoption, licence, access and data-quality opportunities with recommended next steps, and the interventions logged against them."
   persist_with: gemini_change_management_datagroup
+
+  # An intervention addresses an opportunity when its opportunity_type matches and,
+  # for department opportunities, its target_scope names the same department.
+  join: ai_interventions {
+    type: left_outer
+    relationship: one_to_many
+    sql_on: ${ai_interventions.opportunity_type} = ${ai_opportunities.opportunity_type}
+      AND (${ai_opportunities.scope_type} != 'Department' OR ${ai_interventions.target_scope} = ${ai_opportunities.scope})
+      AND IFNULL(${ai_interventions.status}, '') != 'cancelled' ;;
+  }
 }
 
 explore: ai_interventions {

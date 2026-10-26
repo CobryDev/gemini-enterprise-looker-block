@@ -25,7 +25,7 @@
         <div style="font-size:12px;text-transform:uppercase;letter-spacing:1.5px;opacity:.75;">Gemini AI Adoption</div>
         <div style="font-size:26px;font-weight:600;">Admin AI Telemetry</div>
         <div style="font-size:13px;opacity:.85;">Product analytics, technical diagnostics, governance and data health.</div>
-        <div style="margin-top:8px;font-size:12px;"><a style="color:#D2E3FC;" href="/dashboards/gemini_ai_executive">Executive dashboard</a> &nbsp;|&nbsp; <a style="color:#D2E3FC;" href="/dashboards/gemini_ai_change">Change dashboard</a></div>
+        <div style="margin-top:8px;font-size:12px;"><a style="color:#D2E3FC;" href="/dashboards/gemini_enterprise::gemini_ai_executive">Executive dashboard</a> &nbsp;|&nbsp; <a style="color:#D2E3FC;" href="/dashboards/gemini_enterprise::gemini_ai_change">Change dashboard</a></div>
       </div>
     row: 0
     col: 0
@@ -128,7 +128,7 @@
     type: text
     title_text: ""
     subtitle_text: ""
-    body_text: "<h2>Workspace Gemini</h2><p>Workspace event telemetry. The active-share metric is event-based, not a people activation rate.</p>"
+    body_text: "<h2>Workspace Gemini</h2><p>Raw Workspace audit telemetry for the selected dates, not limited to the eligible population. <b>Active</b> means a person asked Gemini to do something, <b>Automated</b> means a Workspace Flow ran on its own, and <b>Proactive</b> means Gemini surfaced a suggestion unprompted. Shares here are event-based, not people activation rates.</p>"
     row: 0
     col: 0
     width: 72
@@ -136,77 +136,154 @@
     tab_name: workspace
 
   - name: ws_users
-    title: "Gemini Users"
+    title: "People with any Workspace Gemini event"
     type: single_value
     model: gemini_enterprise
     explore: workspace_gemini_activity
     fields: [workspace_gemini_activity.active_users]
+    note_state: collapsed
+    note_display: hover
+    note_text: "Distinct people with any Workspace Gemini event in the selected dates, including people who were only shown suggestions."
     listen:
       Date: workspace_gemini_activity.event_date
     row: 4
     col: 0
     width: 18
-    height: 7
+    height: 6
     tab_name: workspace
 
   - name: ws_engaged
-    title: "Engaged Users"
+    title: "People using it hands-on"
     type: single_value
     model: gemini_enterprise
     explore: workspace_gemini_activity
     fields: [workspace_gemini_activity.engaged_users]
+    note_state: collapsed
+    note_display: hover
+    note_text: "Distinct people with at least one Active event in the selected dates. Automated Flow runs and proactive suggestions do not count."
     listen:
       Date: workspace_gemini_activity.event_date
     row: 4
     col: 18
     width: 18
-    height: 7
+    height: 6
     tab_name: workspace
 
   - name: ws_active_share
-    title: "Active Share of Workspace Gemini Events"
+    title: "Hands-on share of events"
     type: single_value
     model: gemini_enterprise
     explore: workspace_gemini_activity
     fields: [workspace_gemini_activity.active_usage_rate]
+    note_state: collapsed
+    note_display: hover
+    note_text: "Active events divided by all Workspace Gemini events in the selected dates. Most events are proactive suggestions, so this is low even when people use Gemini daily."
     listen:
       Date: workspace_gemini_activity.event_date
     row: 4
     col: 36
     width: 18
-    height: 7
+    height: 6
+    tab_name: workspace
+
+  - name: ws_automated
+    title: "Automated Flow events"
+    type: single_value
+    model: gemini_enterprise
+    explore: workspace_gemini_activity
+    fields: [workspace_gemini_activity.automated_events]
+    note_state: collapsed
+    note_display: hover
+    note_text: "Workspace Flow runs and steps in the selected dates. Reported separately because they run without a person."
+    listen:
+      Date: workspace_gemini_activity.event_date
+    row: 4
+    col: 54
+    width: 18
+    height: 6
     tab_name: workspace
 
   - name: ws_by_app
-    title: "Usage by App"
+    title: "Events by app | active, automated, proactive"
     type: looker_bar
     model: gemini_enterprise
     explore: workspace_gemini_activity
-    fields: [workspace_gemini_activity.app_name, workspace_gemini_activity.events, workspace_gemini_activity.active_events]
-    sorts: ["workspace_gemini_activity.events desc"]
-    limit: 20
+    fields: [workspace_gemini_activity.app_name, workspace_gemini_activity.interaction_mode, workspace_gemini_activity.events]
+    pivots: [workspace_gemini_activity.interaction_mode]
+    sorts: ["workspace_gemini_activity.interaction_mode", "workspace_gemini_activity.events desc 0"]
+    limit: 15
+    stacking: normal
+    show_view_names: false
+    y_axis_gridlines: false
+    legend_position: center
+    series_colors:
+      Active - workspace_gemini_activity.events: "#1a73e8"
+      Automated - workspace_gemini_activity.events: "#9aa0a6"
+      Proactive - workspace_gemini_activity.events: "#dadce0"
     listen:
       Date: workspace_gemini_activity.event_date
-    row: 11
+    row: 10
     col: 0
     width: 36
-    height: 11
+    height: 12
     tab_name: workspace
 
-  - name: ws_features
-    title: "Top Features"
+  - name: ws_funnel
+    title: "Shown vs used | people per feature"
     type: looker_grid
     model: gemini_enterprise
     explore: workspace_gemini_activity
-    fields: [workspace_gemini_activity.feature_source, workspace_gemini_activity.events, workspace_gemini_activity.active_events, workspace_gemini_activity.active_users]
-    sorts: ["workspace_gemini_activity.events desc"]
-    limit: 50
+    fields: [workspace_gemini_activity.app_name, workspace_gemini_activity.feature_label, workspace_gemini_activity.surfaced_users, workspace_gemini_activity.acting_users, workspace_gemini_activity.uptake_rate]
+    filters:
+      workspace_gemini_activity.surfaced_users: ">0"
+    sorts: ["workspace_gemini_activity.surfaced_users desc"]
+    limit: 25
+    show_view_names: false
+    show_row_numbers: false
+    size_to_fit: true
+    series_labels:
+      workspace_gemini_activity.app_name: "App"
+      workspace_gemini_activity.feature_label: "Feature"
+      workspace_gemini_activity.surfaced_users: "Shown to"
+      workspace_gemini_activity.acting_users: "Used by"
+    series_cell_visualizations:
+      workspace_gemini_activity.uptake_rate:
+        is_active: true
+    note_state: collapsed
+    note_display: hover
+    note_text: "People Gemini proactively showed each feature to, and people who then used it hands-on, in the selected dates. Uptake can exceed 100% when people open the feature directly."
     listen:
       Date: workspace_gemini_activity.event_date
-    row: 11
+    row: 10
     col: 36
     width: 36
-    height: 11
+    height: 12
+    tab_name: workspace
+
+  - name: ws_features
+    title: "Most-used features | hands-on"
+    type: looker_grid
+    model: gemini_enterprise
+    explore: workspace_gemini_activity
+    fields: [workspace_gemini_activity.app_name, workspace_gemini_activity.feature_label, workspace_gemini_activity.active_events, workspace_gemini_activity.engaged_users]
+    filters:
+      workspace_gemini_activity.active_events: ">0"
+    sorts: ["workspace_gemini_activity.active_events desc"]
+    limit: 25
+    show_view_names: false
+    show_row_numbers: false
+    size_to_fit: true
+    series_labels:
+      workspace_gemini_activity.app_name: "App"
+      workspace_gemini_activity.feature_label: "Feature"
+      workspace_gemini_activity.active_events: "Hands-on events"
+      workspace_gemini_activity.engaged_users: "People"
+    listen:
+      Date: workspace_gemini_activity.event_date
+    row: 22
+    col: 0
+    width: 72
+    height: 10
     tab_name: workspace
 
   - name: models_header
@@ -225,7 +302,7 @@
     type: looker_bar
     model: gemini_enterprise
     explore: ge_user_activity
-    fields: [ge_user_activity.model, ge_user_activity.prompts]
+    fields: [ge_user_activity.model_label, ge_user_activity.prompts]
     sorts: ["ge_user_activity.prompts desc"]
     limit: 20
     listen:
@@ -238,13 +315,15 @@
     tab_name: ge_analytics
 
   - name: tools_called
-    title: "Tools the Assistant Calls"
+    title: "Tools the assistant calls | by connector"
     type: looker_bar
     model: gemini_enterprise
     explore: ge_tool_calls
-    fields: [ge_tool_calls.tool_name, ge_tool_calls.tool_calls]
+    fields: [ge_tool_calls.tool_label, ge_tool_calls.tool_calls]
     sorts: ["ge_tool_calls.tool_calls desc"]
-    limit: 20
+    limit: 15
+    show_view_names: false
+    legend_position: none
     listen:
       Date: ge_tool_calls.event_date
     row: 27
@@ -254,13 +333,15 @@
     tab_name: ge_analytics
 
   - name: tokens_by_agent
-    title: "Tokens by Agent"
+    title: "Tokens by agent | main assistant and sub-agents"
     type: looker_bar
     model: gemini_enterprise
     explore: ge_model_calls
-    fields: [ge_model_calls.agent_name, ge_model_calls.total_tokens]
+    fields: [ge_model_calls.agent_label, ge_model_calls.total_tokens]
     sorts: ["ge_model_calls.total_tokens desc"]
-    limit: 20
+    limit: 15
+    show_view_names: false
+    legend_position: none
     listen:
       Date: ge_model_calls.event_date
     row: 37
@@ -485,6 +566,33 @@
     col: 0
     width: 72
     height: 20
+    tab_name: data_health
+
+  - name: methodology_log
+    type: text
+    title_text: ""
+    subtitle_text: ""
+    body_text: |-
+      <div style="font-family:'Google Sans',Arial,sans-serif;line-height:1.5;">
+        <h2>Methodology changes</h2>
+        <p style="color:#5f6368">Changes to how the block calculates its metrics. If a figure moved sharply after an update, check here before reading it as a real change in adoption. Your own install settings are listed in the Setup settings table above.</p>
+        <table style="border-collapse:collapse;width:100%;font-size:13px">
+          <tr style="text-align:left;border-bottom:1px solid #dadce0"><th style="padding:4px 8px">Date</th><th style="padding:4px 8px">Change</th><th style="padding:4px 8px">Effect on figures</th></tr>
+          <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">Cohort movement separates Newly active (Non-AI or new, now active) from Moved up (already active, now a higher cohort).</td><td style="padding:4px 8px">Moved up falls. People starting to use AI are counted as Newly active instead.</td></tr>
+          <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">Workspace admin tab counts automated Flow runs separately. Hands-on share and Engaged users exclude them.</td><td style="padding:4px 8px">Hands-on share and Engaged users fall where Flows run.</td></tr>
+          <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">People in the top-level org unit or with no org unit are one data-quality item in the opportunity queue, not a department.</td><td style="padding:4px 8px">The "(Top level)" group no longer appears as a training target.</td></tr>
+          <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">Time benefit headline counts active actions only. Automated runs moved to a separate, lower-confidence estimate. Figures shown per month.</td><td style="padding:4px 8px">Headline hours fall where workflows are used. Totals over long windows no longer look larger simply because the window is longer.</td></tr>
+          <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">Events split into Active, Automated and Proactive. AI actions, AI-active days, cohorts and adoption rates count Active only.</td><td style="padding:4px 8px">AI action counts fall sharply where workflows run. People-based rates usually move little.</td></tr>
+          <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">Weekly trends show complete weeks only.</td><td style="padding:4px 8px">The current week no longer appears as a drop.</td></tr>
+          <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">26 Oct 2026</td><td style="padding:4px 8px">Default use-case and minutes-saved mappings cover Workspace feature names. Unnamed Workspace events are labelled by app (for example workflows_unspecified).</td><td style="padding:4px 8px">Unclassified share falls. Time benefit for Workspace features starts counting.</td></tr>
+          <tr style="border-bottom:1px solid #f1f3f4"><td style="padding:4px 8px">25 Oct 2026</td><td style="padding:4px 8px">Employee scope (employee domains, excluded org units, excluded email pattern) applied to every adoption rate.</td><td style="padding:4px 8px">Denominators change: guests, external users and service accounts drop out.</td></tr>
+          <tr><td style="padding:4px 8px">25 Oct 2026</td><td style="padding:4px 8px">Cross-product adoption includes Gemini for Workspace when the Workspace audit export is configured.</td><td style="padding:4px 8px">Active people and actions rise sharply once the export is set up. Before that, adoption reflected Gemini Enterprise only.</td></tr>
+        </table>
+      </div>
+    row: 46
+    col: 0
+    width: 72
+    height: 18
     tab_name: data_health
 
   filters:

@@ -139,6 +139,13 @@ view: ge_user_activity {
     sql: ${TABLE}.model ;;
   }
 
+  dimension: model_label {
+    label: "Model (Readable)"
+    description: "Model that produced the answer, or (not recorded) when the log has none."
+    type: string
+    sql: IFNULL(${TABLE}.model, '(not recorded)') ;;
+  }
+
   dimension: model_family {
     description: "Model grouped by family (Pro, Flash, Flash-Lite, Thinking, Image and video, Other), matched on the model name so new versions group automatically."
     type: string

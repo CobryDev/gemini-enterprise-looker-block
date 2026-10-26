@@ -199,10 +199,11 @@ view: ai_user_cohort_weekly {
   }
 
   dimension: cohort_movement {
-    description: "Moved up, Moved down, No change, or New (not in the population the week before)."
+    description: "Compared with the week before. Newly active: Non-AI or new to the population, now Casual or above. Moved up or Moved down: changed cohort while already active (Moved down includes lapsing to Non-AI). No change. New, not active: joined the population without using AI."
     type: string
     sql: CASE
-      WHEN ${TABLE}.previous_cohort IS NULL THEN 'New'
+      WHEN ${TABLE}.cohort != 'Non-AI' AND IFNULL(${TABLE}.previous_cohort, 'Non-AI') = 'Non-AI' THEN 'Newly active'
+      WHEN ${TABLE}.previous_cohort IS NULL THEN 'New, not active'
       WHEN ${cohort_order} < CASE ${TABLE}.previous_cohort WHEN 'Power' THEN 1 WHEN 'Normal' THEN 2 WHEN 'Casual' THEN 3 ELSE 4 END THEN 'Moved up'
       WHEN ${cohort_order} > CASE ${TABLE}.previous_cohort WHEN 'Power' THEN 1 WHEN 'Normal' THEN 2 WHEN 'Casual' THEN 3 ELSE 4 END THEN 'Moved down'
       ELSE 'No change'
@@ -266,6 +267,7 @@ view: ai_user_cohort_weekly {
   }
 
   measure: moved_up {
+    description: "Already-active people who moved to a higher cohort than the week before."
     type: count
     filters: [cohort_movement: "Moved up"]
     drill_fields: [detail*]
@@ -275,6 +277,19 @@ view: ai_user_cohort_weekly {
     type: count
     filters: [cohort_movement: "Moved down"]
     drill_fields: [detail*]
+  }
+
+  measure: newly_active {
+    description: "People who were Non-AI or new the week before and are now Casual or above."
+    type: count
+    filters: [cohort_movement: "Newly active"]
+    drill_fields: [detail*]
+  }
+
+  measure: unchanged {
+    label: "No Change"
+    type: count
+    filters: [cohort_movement: "No change"]
   }
 
   measure: average_ai_days {
