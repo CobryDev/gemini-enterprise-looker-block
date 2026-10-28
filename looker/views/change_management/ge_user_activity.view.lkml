@@ -342,9 +342,9 @@ view: ge_user_activity {
 
   dimension: error_detail {
     label: "Error Detail"
-    description: "Non-sensitive failure detail bucketed from the returned status message. The raw message is not stored."
+    description: "Non-sensitive failure detail. Existing installs that do not have detailed error buckets show the failure reason."
     type: string
-    sql: ${TABLE}.failure_cause ;;
+    sql: ${failure_reason} ;;
   }
 
   dimension: search_result_count {

@@ -33,7 +33,7 @@ view: gemini_health {
             WHEN status_code = 16 THEN 'Not signed in'
             ELSE CONCAT('Error code ', CAST(status_code AS STRING))
           END AS reason,
-          failure_cause AS detail,
+          CAST(NULL AS STRING) AS detail,
           COALESCE(agent_display_name, agent_id) AS agent_name,
           CAST(NULL AS STRING) AS screened_content,
           CAST(NULL AS STRING) AS attribution_method,
