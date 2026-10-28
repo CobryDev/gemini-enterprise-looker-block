@@ -123,7 +123,7 @@ The block installs four role-based dashboards instead of one large dashboard:
 - Gemini | Executive AI Adoption (`gemini_ai_executive.dashboard.lookml`): a concise decision view with canonical activation, regular adoption, engagement, retention, licence spend to review, a data-trust indicator and the top recommended actions.
 - Gemini | AI Change Management (`gemini_ai_change.dashboard.lookml`): an operational view for opportunity queues, cohort movement, use-case adoption, authorised people/coaching lists and intervention measurement.
 - Gemini | Admin AI Telemetry (`gemini_ai_admin.dashboard.lookml`): product telemetry, Workspace Gemini events, agents, models, Antigravity, governance, setup health and definitions.
-- Gemini | Service Health (`gemini_ai_health.dashboard.lookml`): an operational page for finding and fixing failures. It shows a Healthy, Degraded, Down or Unknown status, the largest issues with what they mean and the next step, failure trends, and the people and agents most affected. Every tile cross-filters, and there are Person, Agent, Integration and Reason filters.
+- Gemini | Service Health (`gemini_ai_health.dashboard.lookml`): an operational page for finding and fixing failures. It shows a Healthy, Degraded, Down or Unknown status, the three largest issues with the next step, the daily share of prompts that failed, connector error trends, the people and agents most affected, and grouped recent failures. Every tile cross-filters, and there are Person, Agent, Integration and Reason filters.
 
 The old `gemini_ai_adoption` dashboard has been removed. Existing bookmarks to it should be replaced with one of the four role-based dashboards.
 
@@ -145,7 +145,7 @@ Service Health classifies every failure as Service (timeouts, internal errors, t
 - Degraded: at least 5% of prompts failed for any reason (`health_degraded_failure_rate`), connector errors equal to 10% of prompts (`health_degraded_connector_rate`), or Model Armor rejected 10% of at least 20 screened items (`health_degraded_armor_rate`).
 - Healthy: otherwise.
 
-Connector errors are often logged without a person, so the People affected card also reports how many errors it couldn't match to anyone.
+Connector errors are often logged without a person. These are left out of People affected and Most affected people, and summarised on a separate Not linked to a person card. Most come from root agent sessions with no trace and no matching user activity, so they are likely background or retried connector calls rather than people being blocked.
 
 The layout uses the 72-column `granular` grid. Outcome tiles come first, explanation charts second, and investigation tables last. Sparse sources use data-state cards so users can distinguish **Not configured**, **No records**, **Insufficient history** and **Zero activity**.
 

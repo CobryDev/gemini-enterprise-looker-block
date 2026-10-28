@@ -1,8 +1,8 @@
 view: gemini_health_issues {
   label: "Gemini Service Health Issues"
   # One row per issue (signal, integration and reason) in the filtered period,
-  # with its share of that signal's failures. The card lists each signal's top
-  # issue and any issue with 10% or more of its signal. Not persisted: the templated
+  # with its share of that signal's failures. The card shows three issues: each
+  # signal's largest first, then the next largest. Not persisted: the templated
   # filters below take the Service Health dashboard filters.
   derived_table: {
     sql:
@@ -15,7 +15,7 @@ view: gemini_health_issues {
           AND {% condition app_filter %} health.app_name {% endcondition %}
           AND {% condition department_filter %} COALESCE(org.department, 'Unknown') {% endcondition %}
           AND {% condition person_filter %} health.user_email {% endcondition %}
-          AND {% condition agent_filter %} health.agent_name {% endcondition %}
+          AND {% condition agent_filter %} COALESCE(health.agent_name, 'Not recorded') {% endcondition %}
           AND {% condition integration_filter %} health.integration {% endcondition %}
           AND {% condition reason_filter %} health.reason {% endcondition %}
       ),
@@ -143,26 +143,36 @@ view: gemini_health_issues {
     type: count
   }
 
+  dimension: headline {
+    description: "Short issue name, such as Asana access or Project not enabled."
+    type: string
+    sql: CASE
+      WHEN ${TABLE}.signal = 'Connector' THEN CONCAT(${TABLE}.integration, ' ', LOWER(IFNULL(${TABLE}.failure_class, 'other')))
+      WHEN ${TABLE}.signal = 'Model Armor' THEN 'Model Armor'
+      ELSE ${TABLE}.reason
+    END ;;
+  }
+
   measure: needs_attention_card {
     hidden: yes
     label: "Needs Attention"
-    description: "The largest prompt, connector and Model Armor issues as an actionable list."
+    description: "The three largest issues as cards: each signal's top issue first, then the next largest."
     type: string
     sql: ARRAY_TO_STRING(ARRAY_AGG(
-      IF(${TABLE}.signal_rank = 1 OR SAFE_DIVIDE(${TABLE}.failures, ${TABLE}.signal_failures) >= 0.1, CONCAT(
+      CONCAT(
         ${TABLE}.signal, '~',
-        ${issue}, '~',
+        ${headline}, '~',
         IFNULL(${TABLE}.failure_class, 'Other'), '~',
         CAST(${TABLE}.failures AS STRING), '~',
         CAST(${TABLE}.signal_failures AS STRING), '~',
-        FORMAT('%.1f', 100 * SAFE_DIVIDE(${TABLE}.failures, ${TABLE}.signal_failures)), '~',
         CAST(${TABLE}.people AS STRING), '~',
         IFNULL(${TABLE}.explanation, '-'), '~',
         IFNULL(${TABLE}.next_step, '-'), '~',
         IFNULL(${TABLE}.reason, '-'), '~',
-        IFNULL(${TABLE}.integration, '-')
-      ), NULL)
-      IGNORE NULLS ORDER BY ${TABLE}.signal_rank, ${TABLE}.failures DESC LIMIT 4), '^') ;;
-    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:2px 8px;line-height:1.4;white-space:normal;">{% assign rows = value | split: "^" %}<div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#5f6368;margin-bottom:4px;">Needs attention{% if value != blank %}: {{ rows.size }} main issues{% endif %}</div>{% if value == blank %}<div style="font-size:14px;color:#188038;padding:8px 0;">No failures in this period.</div>{% endif %}{% for r in rows %}{% assign c = r | split: "~" %}<div style="display:flex;gap:16px;align-items:flex-start;padding:8px 0;border-top:1px solid #F1F3F4;"><div style="flex:none;width:150px;"><div style="font-size:24px;font-weight:600;color:#202124;line-height:1.1;">{{ c[3] }}<span style="font-size:13px;font-weight:500;color:#5f6368;"> / {{ c[4] }}</span></div><div style="font-size:12px;color:#5f6368;">{{ c[5] }}% of {% if c[0] == 'Prompt' %}failed prompts{% elsif c[0] == 'Connector' %}connector errors{% else %}Model Armor rejections{% endif %}</div></div><div style="flex:1;min-width:0;"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><span style="font-size:15px;font-weight:600;color:#202124;">{{ c[1] }}</span><span style="font-size:11px;font-weight:600;padding:1px 8px;border-radius:10px;{% if c[2] == 'Service' %}background:#FCE8E6;color:#C5221F;{% elsif c[2] == 'Capacity' %}background:#FEF7E0;color:#B06000;{% elsif c[2] == 'Policy' %}background:#F1F3F4;color:#3C4043;{% else %}background:#E8F0FE;color:#1967D2;{% endif %}">{{ c[2] }}</span><span style="font-size:12px;color:#5f6368;">{% if c[6] == '0' %}People not identified{% elsif c[6] == '1' %}1 person affected{% else %}{{ c[6] }} people affected{% endif %}</span></div><div style="font-size:13px;color:#3c4043;margin-top:2px;">{{ c[7] }}</div><div style="font-size:12px;color:#5f6368;margin-top:2px;"><b style="color:#202124;">Next step:</b> {{ c[8] }} <a href="/dashboards/gemini_enterprise::gemini_ai_health?Reason={{ c[9] | url_encode }}{% if c[10] != '-' %}&Integration={{ c[10] | url_encode }}{% endif %}" style="color:#1a73e8;text-decoration:none;font-weight:600;margin-left:6px;">Investigate</a></div></div></div>{% endfor %}</div> ;;
+        IFNULL(${TABLE}.integration, '-'), '~',
+        IF(${TABLE}.signal = 'Prompt', IFNULL(${TABLE}.failure_class, 'Other'), IFNULL(${TABLE}.reason, '-'))
+      )
+      ORDER BY IF(${TABLE}.signal_rank = 1, 0, 1), ${TABLE}.failures DESC LIMIT 3), '^') ;;
+    html: {% assign rows = value | split: "^" %}{% assign date = _filters['gemini_health_issues.date_filter'] %}<div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;text-align:left;white-space:normal;padding:2px 4px;line-height:1.4;">{% if value == blank %}<div style="letter-spacing:normal;word-spacing:normal;font-size:14px;color:#188038;padding:12px 4px;">No failures in the selected period.</div>{% else %}<div style="display:flex;gap:12px;align-items:stretch;">{% for r in rows %}{% assign c = r | split: "~" %}<div style="flex:1 1 0;min-width:0;border:1px solid #DADCE0;border-left:4px solid {% if c[2] == 'Service' %}#D93025{% elsif c[2] == 'Capacity' %}#F9AB00{% elsif c[2] == 'Policy' %}#5F6368{% else %}#1A73E8{% endif %};border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;"><div style="display:flex;justify-content:space-between;gap:8px;"><span style="letter-spacing:normal;word-spacing:normal;font-size:11px;font-weight:700;text-transform:uppercase;color:#5F6368;">{{ c[0] }} · {{ c[2] }}</span><span style="letter-spacing:normal;word-spacing:normal;font-size:11px;color:#5F6368;white-space:nowrap;">{% if c[5] == '0' %}No person linked{% elsif c[5] == '1' %}1 person{% else %}{{ c[5] }} people{% endif %}</span></div><div style="letter-spacing:normal;word-spacing:normal;font-size:16px;font-weight:600;color:#202124;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ c[1] }}">{{ c[1] }}</div><div style="display:flex;align-items:baseline;gap:6px;margin-top:2px;"><span style="letter-spacing:normal;word-spacing:normal;font-size:30px;font-weight:600;color:#202124;line-height:1.15;">{{ c[3] }}</span><span style="letter-spacing:normal;word-spacing:normal;font-size:12px;color:#5F6368;">of {{ c[4] }} {% if c[0] == 'Prompt' %}prompt failures{% elsif c[0] == 'Connector' %}connector errors{% else %}rejections{% endif %}</span></div><div style="letter-spacing:normal;word-spacing:normal;font-size:13px;font-weight:500;color:#3C4043;">{{ c[10] }}</div><div title="{{ c[6] }} Next step: {{ c[7] }}" style="letter-spacing:normal;word-spacing:normal;font-size:12px;color:#5F6368;margin-top:4px;cursor:help;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">{{ c[7] }}</div><div style="margin-top:auto;padding-top:6px;"><a href="/dashboards/gemini_enterprise::gemini_ai_health?Reason={{ c[8] | url_encode }}{% if c[9] != '-' %}&Integration={{ c[9] | url_encode }}{% endif %}{% if date != blank %}&Date={{ date | url_encode }}{% endif %}" style="letter-spacing:normal;word-spacing:normal;font-size:12px;font-weight:600;color:#1A73E8;text-decoration:none;">Investigate →</a></div></div>{% endfor %}</div>{% endif %}</div> ;;
   }
 }

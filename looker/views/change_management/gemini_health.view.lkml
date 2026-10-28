@@ -26,7 +26,7 @@ view: gemini_health {
             WHEN status_code = 5 THEN 'Not found'
             WHEN status_code = 7 THEN 'Permission denied'
             WHEN status_code = 8 THEN 'Quota or rate limit'
-            WHEN status_code = 9 THEN 'Not enabled for this project'
+            WHEN status_code = 9 THEN 'Project not enabled'
             WHEN status_code = 10 THEN 'Aborted'
             WHEN status_code = 13 THEN 'Internal error'
             WHEN status_code = 14 THEN 'Service unavailable'
@@ -212,6 +212,27 @@ view: gemini_health {
     type: string
     required_access_grants: [can_see_individuals]
     sql: ${TABLE}.user_email ;;
+    html: {% if value == blank %}<span style="color:#9AA0A6;">Not linked to a person</span>{% else %}{{ value }}{% endif %} ;;
+  }
+
+  dimension: is_attributed {
+    label: "Is Linked to a Person"
+    description: "The row was matched to a person. Connector errors from sessions with no matching user activity are not."
+    type: yesno
+    sql: ${TABLE}.user_email IS NOT NULL ;;
+  }
+
+  dimension: source {
+    description: "Where the failure came from: the integration for connector errors, otherwise Prompt or Model Armor."
+    type: string
+    sql: COALESCE(${TABLE}.integration, ${TABLE}.signal) ;;
+  }
+
+  dimension: details {
+    description: "Hover for what the failure means and the next step."
+    type: string
+    sql: ${TABLE}.explanation ;;
+    html: <span title="{{ value }} Next step: {{ next_step._value }}" style="color:#1A73E8;font-weight:600;cursor:help;letter-spacing:normal;word-spacing:normal;">Details</span> ;;
   }
 
   dimension: signal {
@@ -267,8 +288,9 @@ view: gemini_health {
 
   dimension: agent_name {
     label: "Agent"
+    description: "Not recorded when a prompt failed before an agent was chosen."
     type: string
-    sql: ${TABLE}.agent_name ;;
+    sql: COALESCE(${TABLE}.agent_name, 'Not recorded') ;;
   }
 
   dimension: screened_content {
@@ -384,6 +406,14 @@ view: gemini_health {
     description: "Failed prompts and connector errors that couldn't be matched to a person."
     type: number
     sql: COUNT(CASE WHEN ${is_failure} AND ${signal} != 'Model Armor' AND ${TABLE}.user_email IS NULL THEN 1 END) ;;
+    drill_fields: [failure_detail*]
+  }
+
+  measure: occurrences {
+    description: "Failures in the group. Click for each event, with what it means and the next step."
+    type: count
+    filters: [is_failure: "yes"]
+    drill_fields: [event_time, user_email, source, reason, explanation, next_step, agent_name, app_name]
   }
 
   measure: last_error_time {
@@ -405,6 +435,27 @@ view: gemini_health {
     sql: FORMAT_TIMESTAMP('%d %b %Y, %H:%M UTC', MAX(${TABLE}.event_ts)) ;;
   }
 
+  measure: top_prompt_issue {
+    hidden: yes
+    description: "Most frequent prompt failure reason, in sentence case."
+    type: string
+    sql: LOWER(COALESCE(APPROX_TOP_COUNT(CASE WHEN ${TABLE}.signal = 'Prompt' AND ${TABLE}.is_failure THEN ${TABLE}.reason END, 2)[SAFE_OFFSET(0)].value, APPROX_TOP_COUNT(CASE WHEN ${TABLE}.signal = 'Prompt' AND ${TABLE}.is_failure THEN ${TABLE}.reason END, 2)[SAFE_OFFSET(1)].value)) ;;
+  }
+
+  measure: top_connector_issue {
+    hidden: yes
+    description: "Most frequent connector issue: integration and reason."
+    type: string
+    sql: COALESCE(APPROX_TOP_COUNT(CASE WHEN ${TABLE}.signal = 'Connector' THEN CONCAT(${TABLE}.integration, ' ', LOWER(${TABLE}.reason)) END, 2)[SAFE_OFFSET(0)].value, APPROX_TOP_COUNT(CASE WHEN ${TABLE}.signal = 'Connector' THEN CONCAT(${TABLE}.integration, ' ', LOWER(${TABLE}.reason)) END, 2)[SAFE_OFFSET(1)].value) ;;
+  }
+
+  measure: top_unattributed_issue {
+    hidden: yes
+    description: "Most frequent issue among errors not linked to a person."
+    type: string
+    sql: COALESCE(APPROX_TOP_COUNT(CASE WHEN ${TABLE}.is_failure AND ${TABLE}.signal != 'Model Armor' AND ${TABLE}.user_email IS NULL THEN CONCAT(COALESCE(${TABLE}.integration, 'Prompt'), ' ', LOWER(${TABLE}.reason)) END, 2)[SAFE_OFFSET(0)].value, APPROX_TOP_COUNT(CASE WHEN ${TABLE}.is_failure AND ${TABLE}.signal != 'Model Armor' AND ${TABLE}.user_email IS NULL THEN CONCAT(COALESCE(${TABLE}.integration, 'Prompt'), ' ', LOWER(${TABLE}.reason)) END, 2)[SAFE_OFFSET(1)].value) ;;
+  }
+
   measure: health_status {
     label: "Health Status"
     description: "Unknown below the minimum prompt volume, Down when service-side failures pass the Down threshold, Degraded when prompt failures, connector errors or Model Armor rejections pass their thresholds, otherwise Healthy. Include the measures the card reads in the tile query."
@@ -418,7 +469,7 @@ view: gemini_health {
         THEN 'Degraded'
       ELSE 'Healthy'
     END ;;
-    html: {% assign deg = '@{health_degraded_failure_rate}' | plus: 0 %}{% assign con = '@{health_degraded_connector_rate}' | plus: 0 %}{% assign arm = '@{health_degraded_armor_rate}' | plus: 0 %}{% assign svc2 = service_failed_prompts._value | times: 2 %}<div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:4px 10px;line-height:1.4;white-space:normal;"><div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#5f6368;">Service status</div><div style="display:flex;align-items:center;gap:10px;margin-top:6px;"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:{% if value == 'Healthy' %}#188038{% elsif value == 'Degraded' %}#F9AB00{% elsif value == 'Down' %}#D93025{% else %}#9AA0A6{% endif %};"></span><span style="font-size:30px;font-weight:600;color:#202124;">{{ value }}</span></div><div style="font-size:13px;color:#3c4043;margin-top:6px;">{% if value == 'Unknown' %}{% if prompts._value == 0 %}No prompts were recorded in this period, so health can't be judged.{% else %}Only {{ prompts._rendered_value }} prompts in this period. At least @{health_min_prompts} are needed to judge health; widen the date range.{% endif %}{% elsif value == 'Down' %}{{ service_failure_rate._rendered_value }} of prompts failed with service-side errors (timeouts, internal errors or the service unavailable). Check Google Cloud status.{% elsif value == 'Degraded' %}{% if prompt_failure_rate._value >= deg %}{{ prompt_failure_rate._rendered_value }} of prompts failed ({{ failed_prompts._rendered_value }} of {{ prompts._rendered_value }}). {% if svc2 < failed_prompts._value %}Most are configuration or access problems, so the service itself is responding. {% else %}Most are service-side errors. {% endif %}{% endif %}{% if connector_error_rate._value >= con %}Connectors failed {{ connector_errors._rendered_value }} times. {% endif %}{% if armor_screened._value >= @{health_min_prompts} and armor_rejection_rate._value >= arm %}Model Armor rejected {{ armor_rejection_rate._rendered_value }} of screened content.{% endif %}{% else %}Failure rates are within thresholds{% if failed_prompts._value > 0 %}; {{ failed_prompts._rendered_value }} prompts failed ({{ prompt_failure_rate._rendered_value }}){% endif %}.{% endif %}</div><div style="font-size:11px;color:#5f6368;margin-top:8px;padding-top:6px;border-top:1px solid #F1F3F4;">Degraded at {{ deg | times: 100 | round }}% failed prompts, {{ con | times: 100 | round }}% connector errors per prompt or {{ arm | times: 100 | round }}% Model Armor rejections. Down at {{ '@{health_down_failure_rate}' | times: 100 | round }}% service-side failures. Unknown under @{health_min_prompts} prompts.</div><div style="font-size:11px;color:#5f6368;margin-top:2px;">Data from {{ first_event_time._value }} to {{ latest_event_time._value }}</div></div> ;;
+    html: {% assign deg = '@{health_degraded_failure_rate}' | plus: 0 %}{% assign con = '@{health_degraded_connector_rate}' | plus: 0 %}{% assign arm = '@{health_degraded_armor_rate}' | plus: 0 %}{% assign svc2 = service_failed_prompts._value | times: 2 %}<div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;text-align:left;white-space:normal;padding:4px 10px;line-height:1.45;"><div style="letter-spacing:normal;word-spacing:normal;font-size:11px;font-weight:700;text-transform:uppercase;color:#5F6368;">Gemini Enterprise health</div><div style="display:flex;align-items:center;gap:10px;margin-top:4px;"><span style="flex:none;width:14px;height:14px;border-radius:50%;background:{% if value == 'Healthy' %}#188038{% elsif value == 'Degraded' %}#F9AB00{% elsif value == 'Down' %}#D93025{% else %}#9AA0A6{% endif %};"></span><span style="letter-spacing:normal;word-spacing:normal;font-size:34px;font-weight:600;color:#202124;line-height:1.15;">{{ value }}</span></div><div style="letter-spacing:normal;word-spacing:normal;font-size:14px;color:#3C4043;margin-top:8px;">{% if value == 'Unknown' %}{% if prompts._value == 0 %}No prompts were recorded in the selected period, so health can't be judged.{% else %}Only {{ prompts._rendered_value }} prompts in the selected period. At least @{health_min_prompts} are needed to judge health; widen the date range.{% endif %}{% elsif value == 'Down' %}{{ service_failure_rate._rendered_value }} of prompts failed with service-side errors in the selected period. Check Google Cloud status.{% elsif prompt_failure_rate._value >= deg %}{{ prompt_failure_rate._rendered_value }} of prompts failed in the selected period.{% elsif connector_error_rate._value >= con %}Connectors failed {{ connector_errors._rendered_value }} times in the selected period.{% elsif value == 'Degraded' %}Model Armor rejected {{ armor_rejection_rate._rendered_value }} of screened content.{% else %}Failure rates are within thresholds.{% endif %}{% assign p1 = top_prompt_issue._value %}{% assign c1 = top_connector_issue._value %}{% if value != 'Unknown' %}{% if p1 != blank and c1 != blank %} The leading issues are {{ p1 }} and {{ c1 }}.{% elsif p1 != blank %} The leading issue is {{ p1 }}.{% elsif c1 != blank %} The leading issue is {{ c1 }}.{% endif %}{% endif %}</div>{% if value == 'Degraded' and svc2 < failed_prompts._value %}<div style="letter-spacing:normal;word-spacing:normal;font-size:13px;color:#5F6368;margin-top:4px;">The service is responding. Most prompt failures are configuration or access problems.</div>{% endif %}<div style="letter-spacing:normal;word-spacing:normal;font-size:12px;color:#5F6368;margin-top:10px;">Last updated {{ latest_event_time._value }} <span title="Unknown: fewer than @{health_min_prompts} prompts. Down: {{ '@{health_down_failure_rate}' | times: 100 | round }}% or more of prompts fail with service-side errors. Degraded: {{ deg | times: 100 | round }}% or more of prompts fail, connector errors reach {{ con | times: 100 | round }}% of prompts, or Model Armor rejects {{ arm | times: 100 | round }}% of screened items. Healthy: otherwise." style="color:#1A73E8;font-weight:600;cursor:help;margin-left:8px;">View thresholds</span></div></div> ;;
   }
 
   measure: failed_prompts_card {
@@ -427,15 +478,15 @@ view: gemini_health {
     type: number
     sql: ${prompt_failure_rate} ;;
     value_format_name: percent_0
-    html: {% if prompts._value == 0 %}<div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:4px 8px;"><div style="font-size:30px;font-weight:600;color:#9AA0A6;">No data</div><div style="font-size:13px;color:#5f6368;">No prompts in this period</div></div>{% else %}<div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:4px 8px;"><div style="font-size:30px;font-weight:600;color:#C5221F;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;">Failed prompts</div><div style="font-size:12px;color:#5f6368;">{{ failed_prompts._rendered_value }} of {{ prompts._rendered_value }} prompts</div></div>{% endif %} ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;text-align:left;white-space:normal;padding:4px 10px;line-height:1.35;">{% if prompts._value == 0 %}<div style="letter-spacing:normal;word-spacing:normal;font-size:40px;font-weight:600;color:#9AA0A6;">No data</div><div style="letter-spacing:normal;word-spacing:normal;font-size:14px;font-weight:600;color:#202124;margin-top:4px;">Prompt failure rate</div><div style="letter-spacing:normal;word-spacing:normal;font-size:12px;color:#5F6368;">No prompts in the selected period</div>{% else %}<div style="letter-spacing:normal;word-spacing:normal;font-size:44px;font-weight:600;color:#C5221F;line-height:1.1;">{{ rendered_value }}</div><div style="letter-spacing:normal;word-spacing:normal;font-size:14px;font-weight:600;color:#202124;margin-top:4px;">of prompts failed</div><div style="letter-spacing:normal;word-spacing:normal;font-size:12px;color:#5F6368;">{{ failed_prompts._rendered_value }} of {{ prompts._rendered_value }} prompts</div>{% endif %}</div> ;;
   }
 
   measure: people_affected_card {
     hidden: yes
-    description: "People affected card. Include unattributed_errors in the tile query."
+    description: "People affected card."
     type: number
     sql: ${people_affected} ;;
-    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:4px 8px;"><div style="font-size:30px;font-weight:600;color:#202124;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;">People affected</div><div style="font-size:12px;color:#5f6368;">{% if unattributed_errors._value > 0 %}Plus {{ unattributed_errors._rendered_value }} errors not matched to a person{% else %}With a failed prompt or connector error{% endif %}</div></div> ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;text-align:left;white-space:normal;padding:4px 10px;line-height:1.35;"><div style="letter-spacing:normal;word-spacing:normal;font-size:32px;font-weight:600;color:#202124;line-height:1.1;">{{ rendered_value }}</div><div style="letter-spacing:normal;word-spacing:normal;font-size:14px;font-weight:600;color:#202124;margin-top:4px;">People affected</div><div style="letter-spacing:normal;word-spacing:normal;font-size:12px;color:#5F6368;">With a failed prompt or connector error</div></div> ;;
   }
 
   measure: total_errors_card {
@@ -443,7 +494,7 @@ view: gemini_health {
     description: "Total errors card. Include failed_prompts and connector_errors in the tile query."
     type: number
     sql: ${total_errors} ;;
-    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:4px 8px;"><div style="font-size:30px;font-weight:600;color:#202124;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;">Total errors</div><div style="font-size:12px;color:#5f6368;">{{ failed_prompts._rendered_value }} failed prompts + {{ connector_errors._rendered_value }} connector errors</div></div> ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;text-align:left;white-space:normal;padding:4px 10px;line-height:1.35;"><div style="letter-spacing:normal;word-spacing:normal;font-size:32px;font-weight:600;color:#202124;line-height:1.1;">{{ rendered_value }}</div><div style="letter-spacing:normal;word-spacing:normal;font-size:14px;font-weight:600;color:#202124;margin-top:4px;">Total errors</div><div style="letter-spacing:normal;word-spacing:normal;font-size:12px;color:#5F6368;">{{ failed_prompts._rendered_value }} prompts + {{ connector_errors._rendered_value }} connector</div></div> ;;
   }
 
   measure: armor_card {
@@ -451,10 +502,18 @@ view: gemini_health {
     description: "Model Armor card. Include armor_screened and armor_rejection_rate in the tile query."
     type: number
     sql: ${armor_rejections} ;;
-    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;text-align:left;padding:4px 8px;">{% if armor_screened._value == 0 %}<div style="font-size:30px;font-weight:600;color:#9AA0A6;">No data</div><div style="font-size:14px;font-weight:600;color:#202124;">Model Armor</div><div style="font-size:12px;color:#5f6368;">No screening recorded in this period</div>{% else %}<div style="font-size:30px;font-weight:600;color:#202124;">{{ rendered_value }}</div><div style="font-size:14px;font-weight:600;color:#202124;">Model Armor rejections</div><div style="font-size:12px;color:#5f6368;">{{ armor_rejection_rate._rendered_value }} of {{ armor_screened._rendered_value }} screened</div>{% endif %}</div> ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;text-align:left;white-space:normal;padding:4px 10px;line-height:1.35;"><div style="letter-spacing:normal;word-spacing:normal;font-size:11px;font-weight:700;text-transform:uppercase;color:#5F6368;">Model Armor</div>{% if armor_screened._value == 0 %}<div style="letter-spacing:normal;word-spacing:normal;font-size:18px;font-weight:600;color:#9AA0A6;margin-top:6px;">No data</div><div style="letter-spacing:normal;word-spacing:normal;font-size:12px;color:#5F6368;">Nothing screened</div>{% else %}<div style="letter-spacing:normal;word-spacing:normal;font-size:24px;font-weight:600;color:#202124;margin-top:4px;">{{ rendered_value }}</div><div style="letter-spacing:normal;word-spacing:normal;font-size:12px;color:#5F6368;">rejected, {{ armor_rejection_rate._rendered_value }} of {{ armor_screened._rendered_value }}</div>{% endif %}</div> ;;
+  }
+
+  measure: unattributed_card {
+    hidden: yes
+    description: "Errors not linked to a person. Include top_unattributed_issue and total_errors in the tile query."
+    type: number
+    sql: ${unattributed_errors} ;;
+    html: <div style="font-family:'Plus Jakarta Sans','Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;text-align:left;white-space:normal;padding:4px 10px;line-height:1.4;"><div style="letter-spacing:normal;word-spacing:normal;font-size:11px;font-weight:700;text-transform:uppercase;color:#5F6368;">Not linked to a person</div>{% if value == 0 %}<div style="letter-spacing:normal;word-spacing:normal;font-size:14px;color:#188038;margin-top:6px;">Every error in the selected period was matched to a person.</div>{% else %}<div style="display:flex;align-items:baseline;gap:8px;margin-top:4px;"><span style="letter-spacing:normal;word-spacing:normal;font-size:28px;font-weight:600;color:#202124;">{{ rendered_value }}</span><span style="letter-spacing:normal;word-spacing:normal;font-size:13px;color:#5F6368;">of {{ total_errors._rendered_value }} errors</span></div><div style="letter-spacing:normal;word-spacing:normal;font-size:13px;color:#3C4043;margin-top:4px;">Mostly {{ top_unattributed_issue._value }}. These come from assistant sessions with no matching user activity, such as background or retried connector calls, so they may not be human impact.</div><div style="margin-top:6px;"><a href="/dashboards/gemini_enterprise::gemini_ai_health?Person=NULL{% if _filters['gemini_health.event_time'] %}&Date={{ _filters['gemini_health.event_time'] | url_encode }}{% endif %}" style="letter-spacing:normal;word-spacing:normal;font-size:12px;font-weight:600;color:#1A73E8;text-decoration:none;">Investigate</a></div>{% endif %}</div> ;;
   }
 
   set: failure_detail {
-    fields: [event_time, user_email, signal, failure_class, integration, reason, explanation, agent_name, app_name]
+    fields: [event_time, user_email, source, failure_class, reason, explanation, next_step, agent_name, app_name]
   }
 }

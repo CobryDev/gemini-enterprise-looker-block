@@ -11,25 +11,21 @@
       title_text: ''
       subtitle_text: ''
       body_text: |-
-        <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:2px 4px;">
-          <div style="min-width:0;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#1A73E8;">Gemini AI adoption | Health</div>
-            <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Service Health</div>
-            <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">What is failing, who it affects and what to do next. Click a person, reason or connector to filter the page.</div>
-          </div>
-          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Admin</a><a href="/dashboards/gemini_enterprise::gemini_ai_health" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Health</a></div>
+        <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 4px;">
+          <div style="min-width:0;font-size:13px;color:#5F6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><b style="color:#202124;">Service Health.</b> What is failing, who it affects and what to do next. Click a person, reason or connector in any tile to filter the page.</div>
+          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:4px 12px;border-radius:16px;text-decoration:none;color:#5F6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:4px 12px;border-radius:16px;text-decoration:none;color:#5F6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:4px 12px;border-radius:16px;text-decoration:none;color:#5F6368;">Admin</a><a href="/dashboards/gemini_enterprise::gemini_ai_health" style="padding:4px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Health</a></div>
         </div>
       row: 0
       col: 0
       width: 72
-      height: 5
+      height: 3
 
     - name: section_overview
       type: text
       title_text: ''
       subtitle_text: ''
-      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;padding:2px 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">01</span><span style="font-size:15px;font-weight:600;color:#202124;">Service overview</span></div>
-      row: 5
+      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;padding:0 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">01</span><span style="font-size:15px;font-weight:600;color:#202124;">Service overview</span></div>
+      row: 3
       col: 0
       width: 72
       height: 2
@@ -38,8 +34,8 @@
       type: single_value
       model: gemini_enterprise
       explore: gemini_health
-      fields: [gemini_health.health_status, gemini_health.prompts, gemini_health.failed_prompts, gemini_health.prompt_failure_rate, gemini_health.service_failed_prompts, gemini_health.service_failure_rate, gemini_health.connector_errors, gemini_health.connector_error_rate, gemini_health.armor_screened, gemini_health.armor_rejection_rate, gemini_health.first_event_time, gemini_health.latest_event_time]
-      hidden_fields: [gemini_health.prompts, gemini_health.failed_prompts, gemini_health.prompt_failure_rate, gemini_health.service_failed_prompts, gemini_health.service_failure_rate, gemini_health.connector_errors, gemini_health.connector_error_rate, gemini_health.armor_screened, gemini_health.armor_rejection_rate, gemini_health.first_event_time, gemini_health.latest_event_time]
+      fields: [gemini_health.health_status, gemini_health.prompts, gemini_health.failed_prompts, gemini_health.prompt_failure_rate, gemini_health.service_failed_prompts, gemini_health.service_failure_rate, gemini_health.connector_errors, gemini_health.connector_error_rate, gemini_health.armor_screened, gemini_health.armor_rejection_rate, gemini_health.top_prompt_issue, gemini_health.top_connector_issue, gemini_health.latest_event_time]
+      hidden_fields: [gemini_health.prompts, gemini_health.failed_prompts, gemini_health.prompt_failure_rate, gemini_health.service_failed_prompts, gemini_health.service_failure_rate, gemini_health.connector_errors, gemini_health.connector_error_rate, gemini_health.armor_screened, gemini_health.armor_rejection_rate, gemini_health.top_prompt_issue, gemini_health.top_connector_issue, gemini_health.latest_event_time]
       listen:
         Date: gemini_health.event_time
         App: gemini_health.app_name
@@ -48,10 +44,10 @@
       show_comparison: false
       note_state: collapsed
       note_display: hover
-      note_text: Unknown means too few prompts to judge. Down needs service-side failures (timeouts, internal errors, the service unavailable); configuration and access failures such as a model not enabled or an expired connector sign-in make the status Degraded, because the service itself is still responding. Thresholds are set in Marketplace > Manage.
-      row: 7
+      note_text: 'Unknown: fewer than 20 prompts, too few to judge. Down: 25% or more of prompts fail with service-side errors (timeouts, internal errors, the service unavailable). Degraded: 5% or more of prompts fail, connector errors reach 10% of prompts, or Model Armor rejects 10% of screened items. Healthy: otherwise. Configuration and access failures make the status Degraded, never Down, because the service is still responding. Defaults shown; set them in Marketplace > Manage.'
+      row: 5
       col: 0
-      width: 28
+      width: 26
       height: 9
     - name: kpi_failed_prompts
       title: ''
@@ -68,17 +64,19 @@
         Agent: gemini_health.agent_name
       show_single_value_title: false
       show_comparison: false
-      row: 7
-      col: 28
-      width: 11
+      note_state: collapsed
+      note_display: hover
+      note_text: The share of prompts that returned an error. This is the main health measure; a rate rather than a count, so it doesn't fall just because usage does.
+      row: 5
+      col: 26
+      width: 16
       height: 9
     - name: kpi_people_affected
       title: ''
       type: single_value
       model: gemini_enterprise
       explore: gemini_health
-      fields: [gemini_health.people_affected_card, gemini_health.unattributed_errors]
-      hidden_fields: [gemini_health.unattributed_errors]
+      fields: [gemini_health.people_affected_card]
       listen:
         Date: gemini_health.event_time
         App: gemini_health.app_name
@@ -89,8 +87,11 @@
         Reason: gemini_health.reason
       show_single_value_title: false
       show_comparison: false
-      row: 7
-      col: 39
+      note_state: collapsed
+      note_display: hover
+      note_text: Identified people only. Errors not linked to a person are summarised separately in section 04.
+      row: 5
+      col: 42
       width: 11
       height: 9
     - name: kpi_total_errors
@@ -113,8 +114,8 @@
       note_state: collapsed
       note_display: hover
       note_text: Failed prompts plus connector errors, combined. It is not a separate error category. Model Armor rejections are counted separately.
-      row: 7
-      col: 50
+      row: 5
+      col: 53
       width: 11
       height: 9
     - name: kpi_model_armor
@@ -134,17 +135,17 @@
       note_state: collapsed
       note_display: hover
       note_text: No data means Model Armor screened nothing in this period, usually because no template is attached to the app. It is not the same as zero rejections.
-      row: 7
-      col: 61
-      width: 11
+      row: 5
+      col: 64
+      width: 8
       height: 9
 
     - name: section_fix
       type: text
       title_text: ''
       subtitle_text: ''
-      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;padding:2px 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">02</span><span style="font-size:15px;font-weight:600;color:#202124;">What needs fixing?</span><span style="font-size:13px;color:#5f6368;margin-left:8px;">the largest issues, what they mean and the next step</span></div>
-      row: 16
+      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;padding:0 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">02</span><span style="font-size:15px;font-weight:600;color:#202124;">What needs fixing?</span><span style="font-size:13px;color:#5F6368;margin-left:8px;">the three largest issues; hover the next step for what it means</span></div>
+      row: 14
       col: 0
       width: 72
       height: 2
@@ -166,11 +167,11 @@
       show_comparison: false
       note_state: collapsed
       note_display: hover
-      note_text: Each signal's largest issue, plus any issue with at least 10% of that signal's failures, up to four. Investigate filters the page to that reason. "People not identified" means the log couldn't be matched to a person, which is common for connector errors.
-      row: 18
+      note_text: The largest prompt, connector and Model Armor issues first, then the next largest, up to three. Hover the next step to see what the failure means. Investigate filters the page to that issue. "No person linked" means the log couldn't be matched to a person, which is common for connector errors.
+      row: 16
       col: 0
       width: 72
-      height: 12
+      height: 9
     - name: prompt_failures_by_reason
       title: Prompt failures by reason
       type: looker_bar
@@ -180,7 +181,7 @@
       filters:
         gemini_health.failed_prompts: '>0'
       sorts: [gemini_health.failed_prompts desc]
-      limit: 10
+      limit: 8
       listen:
         Date: gemini_health.event_time
         App: gemini_health.app_name
@@ -212,11 +213,11 @@
         }
       note_state: collapsed
       note_display: hover
-      note_text: Click a reason to filter the page. See Recent failures for what each reason means and the next step.
-      row: 30
+      note_text: Click a reason to filter the page. Hover Details in Recent failures for what each reason means and the next step.
+      row: 25
       col: 0
       width: 36
-      height: 10
+      height: 9
     - name: connector_errors_by_issue
       title: Connector errors by integration and reason
       type: looker_bar
@@ -226,7 +227,7 @@
       filters:
         gemini_health.signal: Connector
       sorts: [gemini_health.connector_errors desc]
-      limit: 10
+      limit: 8
       listen:
         Date: gemini_health.event_time
         App: gemini_health.app_name
@@ -260,26 +261,26 @@
       note_state: collapsed
       note_display: hover
       note_text: Connector tool failures by integration and error reason. The raw error message is not stored.
-      row: 30
+      row: 25
       col: 36
       width: 36
-      height: 10
+      height: 9
 
     - name: section_trend
       type: text
       title_text: ''
       subtitle_text: ''
-      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;padding:2px 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">03</span><span style="font-size:15px;font-weight:600;color:#202124;">How is it changing?</span><span style="font-size:13px;color:#5f6368;margin-left:8px;">per day, for the selected dates</span></div>
-      row: 40
+      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;padding:0 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">03</span><span style="font-size:15px;font-weight:600;color:#202124;">How is it changing?</span><span style="font-size:13px;color:#5F6368;margin-left:8px;">per day, for the selected dates; the Connector view filter switches the right chart between integration and reason</span></div>
+      row: 34
       col: 0
       width: 72
       height: 2
     - name: prompt_failure_trend
-      title: Prompt failure rate per day
-      type: looker_column
+      title: Share of prompts that failed, per day
+      type: looker_line
       model: gemini_enterprise
       explore: gemini_health
-      fields: [gemini_health.event_date, gemini_health.failed_prompts, gemini_health.prompt_failure_rate]
+      fields: [gemini_health.event_date, gemini_health.prompt_failure_rate, gemini_health.prompts]
       fill_fields: [gemini_health.event_date]
       filters:
         gemini_health.signal: Prompt
@@ -292,52 +293,58 @@
         Person: gemini_health.user_email
         Agent: gemini_health.agent_name
       series_types:
-        gemini_health.prompt_failure_rate: line
+        gemini_health.prompts: column
       series_colors:
-        gemini_health.failed_prompts: '#F6AEA9'
         gemini_health.prompt_failure_rate: '#C5221F'
+        gemini_health.prompts: '#E8EAED'
       series_labels:
-        gemini_health.failed_prompts: Failed prompts
-        gemini_health.prompt_failure_rate: Failure rate
+        gemini_health.prompt_failure_rate: Failed (% of prompts)
+        gemini_health.prompts: Prompts sent
       y_axes:
-        - label: Failed prompts
+        - label: ''
           orientation: left
           series:
-            - id: gemini_health.failed_prompts
-              name: Failed prompts
-              axisId: gemini_health.failed_prompts
-          showLabels: true
-          showValues: true
-          type: linear
-        - label: Failure rate
-          orientation: right
-          series:
             - id: gemini_health.prompt_failure_rate
-              name: Failure rate
+              name: Failed (% of prompts)
               axisId: gemini_health.prompt_failure_rate
           showLabels: true
           showValues: true
+          valueFormat: 0%
+          unpinAxis: false
           type: linear
+        - label: ''
+          orientation: right
+          series:
+            - id: gemini_health.prompts
+              name: Prompts sent
+              axisId: gemini_health.prompts
+          showLabels: true
+          showValues: true
+          unpinAxis: false
+          type: linear
+      x_axis_datetime_label: '%b %d'
       legend_position: center
       show_view_names: false
       x_axis_gridlines: false
       y_axis_gridlines: true
       show_x_axis_label: false
       show_value_labels: false
+      point_style: circle
+      interpolation: linear
       advanced_vis_config: |-
         {
           "chart": {"style": {"fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif"}},
           "xAxis": {"labels": {"style": {"fontSize": "12px", "color": "#3C4043"}}},
           "legend": {"itemStyle": {"fontSize": "12px", "fontWeight": "500", "color": "#3C4043"}},
-          "plotOptions": {"line": {"lineWidth": 2.5, "marker": {"enabled": true, "radius": 3}}}
+          "plotOptions": {"line": {"lineWidth": 2.5, "marker": {"enabled": true, "radius": 3}, "zIndex": 2}, "column": {"borderRadius": 3}}
         }
       note_state: collapsed
       note_display: hover
-      note_text: The line is the share of prompts that failed; the bars are the failed-prompt count. A gap in the line means no prompts that day. Days before the log pipeline started have no data and are not shown, so a short chart means short history, not zero errors (see Data from on the status card).
-      row: 42
+      note_text: The red line is the share of that day's prompts that failed, so it isn't skewed by usage going up or down. The grey bars are prompt volume for context. A gap means no prompts that day. Days before the log pipeline started have no data.
+      row: 36
       col: 0
       width: 36
-      height: 11
+      height: 10
     - name: connector_error_trend
       title: Connector errors per day
       type: looker_column
@@ -360,6 +367,7 @@
         Reason: gemini_health.reason
         Connector view: gemini_health.connector_breakdown
       stacking: normal
+      x_axis_datetime_label: '%b %d'
       legend_position: center
       show_view_names: false
       x_axis_gridlines: false
@@ -376,18 +384,18 @@
         }
       note_state: collapsed
       note_display: hover
-      note_text: Stacked by integration or by reason; switch with the Connector view filter.
-      row: 42
+      note_text: Stacked by integration or by reason; switch with the Connector view filter at the end of the filter bar.
+      row: 36
       col: 36
       width: 36
-      height: 11
+      height: 10
 
     - name: section_affected
       type: text
       title_text: ''
       subtitle_text: ''
-      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;padding:2px 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">04</span><span style="font-size:15px;font-weight:600;color:#202124;">Who and what is affected?</span><span style="font-size:13px;color:#5f6368;margin-left:8px;">click a person or agent to filter the page; click a column header to sort</span></div>
-      row: 53
+      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;padding:0 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">04</span><span style="font-size:15px;font-weight:600;color:#202124;">Who and what is affected?</span><span style="font-size:13px;color:#5F6368;margin-left:8px;">click a person or agent to filter the page; click a column header to sort</span></div>
+      row: 46
       col: 0
       width: 72
       height: 2
@@ -396,12 +404,12 @@
       type: looker_grid
       model: gemini_enterprise
       explore: gemini_health
-      fields: [gemini_health.user_email, user_org_unit.department, gemini_health.total_errors, gemini_health.failed_prompts, gemini_health.connector_errors, gemini_health.armor_rejections, gemini_health.last_error_time]
+      fields: [gemini_health.user_email, user_org_unit.department, gemini_health.total_errors, gemini_health.failed_prompts, gemini_health.connector_errors, gemini_health.last_error_time]
       filters:
         gemini_health.is_failure: 'Yes'
-        gemini_health.user_email: '-NULL'
+        gemini_health.is_attributed: 'Yes'
       sorts: [gemini_health.total_errors desc]
-      limit: 25
+      limit: 10
       listen:
         Date: gemini_health.event_time
         App: gemini_health.app_name
@@ -416,7 +424,6 @@
         gemini_health.total_errors: Total errors
         gemini_health.failed_prompts: Failed prompts
         gemini_health.connector_errors: Connector errors
-        gemini_health.armor_rejections: Model Armor
         gemini_health.last_error_time: Last failure (UTC)
       series_cell_visualizations:
         gemini_health.total_errors:
@@ -428,8 +435,6 @@
         gemini_health.failed_prompts:
           is_active: false
         gemini_health.connector_errors:
-          is_active: false
-        gemini_health.armor_rejections:
           is_active: false
       show_view_names: false
       show_row_numbers: false
@@ -443,11 +448,33 @@
       minimum_column_width: 80
       note_state: collapsed
       note_display: hover
-      note_text: Who to help first, sorted by total errors (failed prompts plus connector errors). Sort by any column, including Last failure. Errors that couldn't be matched to a person are left out; the People affected card counts them.
-      row: 55
+      note_text: The ten identified people with the most errors (failed prompts plus connector errors). Errors not linked to a person are summarised on the right, not here.
+      row: 48
       col: 0
       width: 44
-      height: 12
+      height: 11
+    - name: unattributed_errors
+      title: ''
+      type: single_value
+      model: gemini_enterprise
+      explore: gemini_health
+      fields: [gemini_health.unattributed_card, gemini_health.top_unattributed_issue, gemini_health.total_errors]
+      hidden_fields: [gemini_health.top_unattributed_issue, gemini_health.total_errors]
+      listen:
+        Date: gemini_health.event_time
+        App: gemini_health.app_name
+        Agent: gemini_health.agent_name
+        Integration: gemini_health.integration
+        Reason: gemini_health.reason
+      show_single_value_title: false
+      show_comparison: false
+      note_state: collapsed
+      note_display: hover
+      note_text: Errors whose log has no person and whose session doesn't appear in user activity. Most are connector calls from the root agent with no trace, at all hours, so they are likely background or retried calls rather than someone being blocked. Investigate filters the page to them.
+      row: 48
+      col: 44
+      width: 28
+      height: 5
     - name: affected_agents
       title: Failures by agent
       type: looker_grid
@@ -456,9 +483,8 @@
       fields: [gemini_health.agent_name, gemini_health.total_errors, gemini_health.failed_prompts, gemini_health.connector_errors, gemini_health.people_affected]
       filters:
         gemini_health.is_failure: 'Yes'
-        gemini_health.agent_name: '-NULL'
       sorts: [gemini_health.total_errors desc]
-      limit: 25
+      limit: 5
       listen:
         Date: gemini_health.event_time
         App: gemini_health.app_name
@@ -470,8 +496,8 @@
       series_labels:
         gemini_health.agent_name: Agent
         gemini_health.total_errors: Total errors
-        gemini_health.failed_prompts: Failed prompts
-        gemini_health.connector_errors: Connector errors
+        gemini_health.failed_prompts: Prompts
+        gemini_health.connector_errors: Connector
         gemini_health.people_affected: People
       series_cell_visualizations:
         gemini_health.total_errors:
@@ -495,21 +521,25 @@
       rows_font_size: '13'
       truncate_text: true
       size_to_fit: true
-      minimum_column_width: 70
-      row: 55
+      minimum_column_width: 60
+      note_state: collapsed
+      note_display: hover
+      note_text: Not recorded means the prompt failed before an agent was chosen, usually a configuration or access failure.
+      row: 53
       col: 44
       width: 28
-      height: 12
+      height: 6
     - name: recent_failures
-      title: Recent failures | what each means and what to do
+      title: Recent failures
       type: looker_grid
       model: gemini_enterprise
       explore: gemini_health
-      fields: [gemini_health.event_time, gemini_health.user_email, gemini_health.signal, gemini_health.failure_class, gemini_health.integration, gemini_health.reason, gemini_health.explanation, gemini_health.next_step, gemini_health.agent_name]
+      fields: [gemini_health.last_error_time, gemini_health.user_email, gemini_health.source, gemini_health.reason, gemini_health.occurrences, gemini_health.details, gemini_health.next_step]
+      hidden_fields: [gemini_health.next_step]
       filters:
         gemini_health.is_failure: 'Yes'
-      sorts: [gemini_health.event_time desc]
-      limit: 200
+      sorts: [gemini_health.last_error_time desc]
+      limit: 50
       listen:
         Date: gemini_health.event_time
         App: gemini_health.app_name
@@ -519,32 +549,32 @@
         Integration: gemini_health.integration
         Reason: gemini_health.reason
       series_labels:
-        gemini_health.event_time: Time (UTC)
+        gemini_health.last_error_time: Last seen (UTC)
         gemini_health.user_email: Person
-        gemini_health.signal: Signal
-        gemini_health.failure_class: Type
-        gemini_health.integration: Integration
+        gemini_health.source: Source
         gemini_health.reason: Reason
-        gemini_health.explanation: What it means
-        gemini_health.next_step: Next step
-        gemini_health.agent_name: Agent
+        gemini_health.occurrences: Occurrences
+        gemini_health.details: Details
+      series_cell_visualizations:
+        gemini_health.occurrences:
+          is_active: false
       show_view_names: false
       show_row_numbers: false
       table_theme: white
       header_background_color: '#F8F9FA'
       header_text_alignment: left
       header_font_size: '13'
-      rows_font_size: '12'
-      truncate_text: false
+      rows_font_size: '13'
+      truncate_text: true
       size_to_fit: true
       minimum_column_width: 80
       note_state: collapsed
       note_display: hover
-      note_text: The latest 200 failures in the selected dates. Use the filters above, or click a person, reason or connector in any tile, to narrow it down.
-      row: 67
+      note_text: Identical failures for the same person, source and reason are grouped, newest first. Hover Details for what it means and the next step; click Occurrences to see each event.
+      row: 59
       col: 0
       width: 72
-      height: 14
+      height: 11
   filters:
     - name: Date
       title: Date
@@ -556,35 +586,9 @@
       required: false
       ui_config:
         type: relative_timeframes
-        display: inline
+        display: popover
       listens_to_filters: []
       field: gemini_health.event_time
-    - name: App
-      title: Gemini Enterprise App
-      type: field_filter
-      model: gemini_enterprise
-      explore: gemini_health
-      default_value: ''
-      allow_multiple_values: true
-      required: false
-      ui_config:
-        type: dropdown_menu
-        display: popover
-      listens_to_filters: []
-      field: gemini_health.app_name
-    - name: Department
-      title: Department
-      type: field_filter
-      model: gemini_enterprise
-      explore: gemini_health
-      default_value: ''
-      allow_multiple_values: true
-      required: false
-      ui_config:
-        type: dropdown_menu
-        display: popover
-      listens_to_filters: []
-      field: user_org_unit.department
     - name: Person
       title: Person
       type: field_filter
@@ -598,19 +602,6 @@
         display: popover
       listens_to_filters: []
       field: gemini_health.user_email
-    - name: Agent
-      title: Agent
-      type: field_filter
-      model: gemini_enterprise
-      explore: gemini_health
-      default_value: ''
-      allow_multiple_values: true
-      required: false
-      ui_config:
-        type: dropdown_menu
-        display: popover
-      listens_to_filters: []
-      field: gemini_health.agent_name
     - name: Integration
       title: Integration
       type: field_filter
@@ -637,6 +628,45 @@
         display: popover
       listens_to_filters: []
       field: gemini_health.reason
+    - name: Agent
+      title: Agent
+      type: field_filter
+      model: gemini_enterprise
+      explore: gemini_health
+      default_value: ''
+      allow_multiple_values: true
+      required: false
+      ui_config:
+        type: dropdown_menu
+        display: popover
+      listens_to_filters: []
+      field: gemini_health.agent_name
+    - name: App
+      title: Gemini Enterprise App
+      type: field_filter
+      model: gemini_enterprise
+      explore: gemini_health
+      default_value: ''
+      allow_multiple_values: true
+      required: false
+      ui_config:
+        type: dropdown_menu
+        display: popover
+      listens_to_filters: []
+      field: gemini_health.app_name
+    - name: Department
+      title: Department
+      type: field_filter
+      model: gemini_enterprise
+      explore: gemini_health
+      default_value: ''
+      allow_multiple_values: true
+      required: false
+      ui_config:
+        type: dropdown_menu
+        display: popover
+      listens_to_filters: []
+      field: user_org_unit.department
     - name: Connector view
       title: Connector view
       type: field_filter

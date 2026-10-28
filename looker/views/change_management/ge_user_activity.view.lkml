@@ -321,7 +321,7 @@ view: ge_user_activity {
 
   dimension: failure_reason {
     label: "Failure Reason"
-    description: "Why a request failed, from its error code. Not enabled for this project usually means a model or feature the plan or billing setup doesn't allow, such as Claude without billing overages or a model unavailable on a trial."
+    description: "Why a request failed, from its error code. Project not enabled usually means a model or feature the plan or billing setup doesn't allow, such as Claude without billing overages or a model unavailable on a trial."
     type: string
     sql: CASE IFNULL(${TABLE}.status_code, 0)
       WHEN 0 THEN NULL
@@ -331,7 +331,7 @@ view: ge_user_activity {
       WHEN 5 THEN 'Not found'
       WHEN 7 THEN 'Permission denied'
       WHEN 8 THEN 'Quota or rate limit'
-      WHEN 9 THEN 'Not enabled for this project'
+      WHEN 9 THEN 'Project not enabled'
       WHEN 10 THEN 'Aborted'
       WHEN 13 THEN 'Internal error'
       WHEN 14 THEN 'Service unavailable'
