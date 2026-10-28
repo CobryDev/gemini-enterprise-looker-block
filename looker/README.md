@@ -123,7 +123,7 @@ The block installs four role-based dashboards instead of one large dashboard:
 - Gemini | Executive AI Adoption (`gemini_ai_executive.dashboard.lookml`): a concise decision view with canonical activation, regular adoption, engagement, retention, licence spend to review, a data-trust indicator and the top recommended actions.
 - Gemini | AI Change Management (`gemini_ai_change.dashboard.lookml`): an operational view for opportunity queues, cohort movement, use-case adoption, authorised people/coaching lists and intervention measurement.
 - Gemini | Admin AI Telemetry (`gemini_ai_admin.dashboard.lookml`): product telemetry, Workspace Gemini events, agents, models, Antigravity, governance, setup health and definitions.
-- Gemini | Service Health (`gemini_ai_health.dashboard.lookml`): operational reliability for Gemini Enterprise, including prompt failures, connector errors, Model Armor rejections, the current Healthy/Degraded/Down status and the people most affected.
+- Gemini | Service Health (`gemini_ai_health.dashboard.lookml`): an operational page for finding and fixing failures. It shows a Healthy, Degraded, Down or Unknown status, the largest issues with what they mean and the next step, failure trends, and the people and agents most affected. Every tile cross-filters, and there are Person, Agent, Integration and Reason filters.
 
 The old `gemini_ai_adoption` dashboard has been removed. Existing bookmarks to it should be replaced with one of the four role-based dashboards.
 
@@ -136,9 +136,16 @@ Headline definitions are now canonical across the dashboards:
 
 Product-specific telemetry keeps its own label and denominator. For example, **Daily Active / Seats Claimed** is the Gemini Enterprise Google export metric, while **Active Share of Workspace Gemini Events** is an event share, not a people activation rate.
 
-Dashboard filters are **Date** (default 90 days), **Product**, **Department** and **Gemini Enterprise App** where supported. Rolling 28-day people metrics ignore Date by design and show their effective window in the tile or definition. Service Health uses a **Window** filter (last day, week or month) instead of Date so the status card and affected-user list use one consistent period.
+Dashboard filters are **Date** (default 90 days), **Product**, **Department** and **Gemini Enterprise App** where supported. Rolling 28-day people metrics ignore Date by design and show their effective window in the tile or definition. Service Health defaults its Date filter to the last 7 days and covers up to 90 days.
 
-Service Health status thresholds are configurable constants in `manifest.lkml`. Defaults are: Down at 25% prompt failures over at least 20 prompts, or when at least five prompts were sent and all failed; Degraded at 5% prompt failures, three or more failed prompts in a low-volume window, connector errors equal to 10% of prompts, or Model Armor rejections equal to 10% of screened interactions over at least 20 screened interactions. Model Armor can make the status Degraded but not Down.
+Service Health classifies every failure as Service (timeouts, internal errors, the service unavailable), Capacity (quota or rate limit), Configuration (for example a model not enabled for the project), Access (permissions, expired connector consent), Policy (Model Armor), Cancelled or Other. The status uses configurable constants in `manifest.lkml`:
+
+- Unknown: fewer than 20 prompts in the selected dates (`health_min_prompts`).
+- Down: at least 25% of prompts failed with Service errors (`health_down_failure_rate`). Configuration and access failures never make the status Down, because the service is still responding.
+- Degraded: at least 5% of prompts failed for any reason (`health_degraded_failure_rate`), connector errors equal to 10% of prompts (`health_degraded_connector_rate`), or Model Armor rejected 10% of at least 20 screened items (`health_degraded_armor_rate`).
+- Healthy: otherwise.
+
+Connector errors are often logged without a person, so the People affected card also reports how many errors it couldn't match to anyone.
 
 The layout uses the 72-column `granular` grid. Outcome tiles come first, explanation charts second, and investigation tables last. Sparse sources use data-state cards so users can distinguish **Not configured**, **No records**, **Insufficient history** and **Zero activity**.
 

@@ -72,6 +72,9 @@ constant: reporting_time_zone {
 }
 
 # Service Health dashboard thresholds. Rates are decimals: 0.05 means 5%.
+# Fewer than health_min_prompts prompts is Unknown. Down uses service-side
+# failures only (timeouts, internal errors, unavailable); Degraded uses all
+# prompt failures, connector errors per prompt and Model Armor rejections.
 constant: health_min_prompts {
   value: "20"
   export: override_optional

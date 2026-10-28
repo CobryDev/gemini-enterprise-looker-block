@@ -52,11 +52,11 @@
     },
     "health_min_prompts": {
       "label": "Service Health minimum prompts",
-      "description": "Minimum prompts before failure-rate thresholds can make Gemini Service Health Down. The same minimum applies before Model Armor rejection rate can make the status Degraded. Default 20."
+      "description": "Prompts needed in the selected dates to judge Service Health. Fewer shows Unknown. The same minimum of screened items applies before Model Armor can make the status Degraded. Default 20."
     },
     "health_down_failure_rate": {
       "label": "Service Health Down failure rate",
-      "description": "Prompt failure-rate threshold for Down status. Use a decimal: 0.25 means 25%. Default 0.25."
+      "description": "Share of prompts failing with service-side errors (timeouts, internal errors, service unavailable) that makes the status Down. Configuration and access failures never count towards Down. Use a decimal: 0.25 means 25%. Default 0.25."
     },
     "health_degraded_failure_rate": {
       "label": "Service Health Degraded failure rate",
