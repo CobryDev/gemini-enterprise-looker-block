@@ -28,7 +28,7 @@
       row: 3
       col: 0
       width: 72
-      height: 2
+      height: 3
     - name: health_status
       title: ''
       type: single_value
@@ -42,13 +42,10 @@
         Department: user_org_unit.department
       show_single_value_title: false
       show_comparison: false
-      note_state: collapsed
-      note_display: hover
-      note_text: 'Unknown: fewer than 20 prompts, too few to judge. Down: 25% or more of prompts fail with service-side errors (timeouts, internal errors, the service unavailable). Degraded: 5% or more of prompts fail, connector errors reach 10% of prompts, or Model Armor rejects 10% of screened items. Healthy: otherwise. Configuration and access failures make the status Degraded, never Down, because the service is still responding. Defaults shown; set them in Marketplace > Manage.'
-      row: 5
+      row: 6
       col: 0
       width: 26
-      height: 9
+      height: 11
     - name: kpi_failed_prompts
       title: ''
       type: single_value
@@ -64,13 +61,10 @@
         Agent: gemini_health.agent_name
       show_single_value_title: false
       show_comparison: false
-      note_state: collapsed
-      note_display: hover
-      note_text: The share of prompts that returned an error. This is the main health measure; a rate rather than a count, so it doesn't fall just because usage does.
-      row: 5
+      row: 6
       col: 26
       width: 16
-      height: 9
+      height: 11
     - name: kpi_people_affected
       title: ''
       type: single_value
@@ -87,13 +81,10 @@
         Reason: gemini_health.reason
       show_single_value_title: false
       show_comparison: false
-      note_state: collapsed
-      note_display: hover
-      note_text: Identified people only. Errors not linked to a person are summarised separately in section 04.
-      row: 5
+      row: 6
       col: 42
       width: 11
-      height: 9
+      height: 11
     - name: kpi_total_errors
       title: ''
       type: single_value
@@ -111,13 +102,10 @@
         Reason: gemini_health.reason
       show_single_value_title: false
       show_comparison: false
-      note_state: collapsed
-      note_display: hover
-      note_text: Failed prompts plus connector errors, combined. It is not a separate error category. Model Armor rejections are counted separately.
-      row: 5
+      row: 6
       col: 53
       width: 11
-      height: 9
+      height: 11
     - name: kpi_model_armor
       title: ''
       type: single_value
@@ -132,23 +120,20 @@
         Person: gemini_health.user_email
       show_single_value_title: false
       show_comparison: false
-      note_state: collapsed
-      note_display: hover
-      note_text: No data means Model Armor screened nothing in this period, usually because no template is attached to the app. It is not the same as zero rejections.
-      row: 5
+      row: 6
       col: 64
       width: 8
-      height: 9
+      height: 11
 
     - name: section_fix
       type: text
       title_text: ''
       subtitle_text: ''
       body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;padding:0 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">02</span><span style="font-size:15px;font-weight:600;color:#202124;">What needs fixing?</span><span style="font-size:13px;color:#5F6368;margin-left:8px;">the three largest issues; hover the next step for what it means</span></div>
-      row: 14
+      row: 17
       col: 0
       width: 72
-      height: 2
+      height: 3
     - name: needs_attention
       title: ''
       type: single_value
@@ -165,13 +150,10 @@
         Reason: gemini_health_issues.reason_filter
       show_single_value_title: false
       show_comparison: false
-      note_state: collapsed
-      note_display: hover
-      note_text: The largest prompt, connector and Model Armor issues first, then the next largest, up to three. Hover the next step to see what the failure means. Investigate filters the page to that issue. "No person linked" means the log couldn't be matched to a person, which is common for connector errors.
-      row: 16
+      row: 20
       col: 0
       width: 72
-      height: 9
+      height: 12
     - name: prompt_failures_by_reason
       title: Prompt failures by reason
       type: looker_bar
@@ -205,7 +187,7 @@
         {
           "chart": {"style": {"fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif"}},
           "xAxis": {"labels": {"style": {"fontSize": "13px", "color": "#3C4043"}}},
-          "yAxis": {"labels": {"style": {"fontSize": "12px", "color": "#5F6368"}}},
+          "yAxis": {"title": {"text": null}, "labels": {"style": {"fontSize": "12px", "color": "#5F6368"}}},
           "plotOptions": {
             "series": {"dataLabels": {"style": {"fontSize": "13px", "fontWeight": "600", "textOutline": "none"}}},
             "bar": {"borderRadius": {"radius": 4, "where": "end"}, "pointPadding": 0.08, "groupPadding": 0.12}
@@ -214,7 +196,7 @@
       note_state: collapsed
       note_display: hover
       note_text: Click a reason to filter the page. Hover Details in Recent failures for what each reason means and the next step.
-      row: 25
+      row: 32
       col: 0
       width: 36
       height: 9
@@ -252,7 +234,7 @@
         {
           "chart": {"style": {"fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif"}},
           "xAxis": {"labels": {"style": {"fontSize": "13px", "color": "#3C4043"}}},
-          "yAxis": {"labels": {"style": {"fontSize": "12px", "color": "#5F6368"}}},
+          "yAxis": {"title": {"text": null}, "labels": {"style": {"fontSize": "12px", "color": "#5F6368"}}},
           "plotOptions": {
             "series": {"dataLabels": {"style": {"fontSize": "13px", "fontWeight": "600", "textOutline": "none"}}},
             "bar": {"borderRadius": {"radius": 4, "where": "end"}, "pointPadding": 0.08, "groupPadding": 0.12}
@@ -261,7 +243,7 @@
       note_state: collapsed
       note_display: hover
       note_text: Connector tool failures by integration and error reason. The raw error message is not stored.
-      row: 25
+      row: 32
       col: 36
       width: 36
       height: 9
@@ -271,10 +253,10 @@
       title_text: ''
       subtitle_text: ''
       body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;padding:0 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">03</span><span style="font-size:15px;font-weight:600;color:#202124;">How is it changing?</span><span style="font-size:13px;color:#5F6368;margin-left:8px;">per day, for the selected dates; the Connector view filter switches the right chart between integration and reason</span></div>
-      row: 34
+      row: 41
       col: 0
       width: 72
-      height: 2
+      height: 3
     - name: prompt_failure_trend
       title: Share of prompts that failed, per day
       type: looker_line
@@ -335,13 +317,14 @@
         {
           "chart": {"style": {"fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif"}},
           "xAxis": {"labels": {"style": {"fontSize": "12px", "color": "#3C4043"}}},
+          "yAxis": [{"title": {"text": null}}, {"title": {"text": null}}],
           "legend": {"itemStyle": {"fontSize": "12px", "fontWeight": "500", "color": "#3C4043"}},
           "plotOptions": {"line": {"lineWidth": 2.5, "marker": {"enabled": true, "radius": 3}, "zIndex": 2}, "column": {"borderRadius": 3}}
         }
       note_state: collapsed
       note_display: hover
       note_text: The red line is the share of that day's prompts that failed, so it isn't skewed by usage going up or down. The grey bars are prompt volume for context. A gap means no prompts that day. Days before the log pipeline started have no data.
-      row: 36
+      row: 44
       col: 0
       width: 36
       height: 10
@@ -378,14 +361,14 @@
         {
           "chart": {"style": {"fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif"}},
           "xAxis": {"labels": {"style": {"fontSize": "12px", "color": "#3C4043"}}},
-          "yAxis": {"labels": {"style": {"fontSize": "12px", "color": "#5F6368"}}},
+          "yAxis": {"title": {"text": null}, "labels": {"style": {"fontSize": "12px", "color": "#5F6368"}}},
           "legend": {"itemStyle": {"fontSize": "12px", "fontWeight": "500", "color": "#3C4043"}},
           "plotOptions": {"column": {"borderRadius": 3, "pointPadding": 0.08, "groupPadding": 0.12}}
         }
       note_state: collapsed
       note_display: hover
       note_text: Stacked by integration or by reason; switch with the Connector view filter at the end of the filter bar.
-      row: 36
+      row: 44
       col: 36
       width: 36
       height: 10
@@ -395,10 +378,10 @@
       title_text: ''
       subtitle_text: ''
       body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;padding:0 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">04</span><span style="font-size:15px;font-weight:600;color:#202124;">Who and what is affected?</span><span style="font-size:13px;color:#5F6368;margin-left:8px;">click a person or agent to filter the page; click a column header to sort</span></div>
-      row: 46
+      row: 54
       col: 0
       width: 72
-      height: 2
+      height: 3
     - name: most_affected_people
       title: Most affected people
       type: looker_grid
@@ -449,10 +432,10 @@
       note_state: collapsed
       note_display: hover
       note_text: The ten identified people with the most errors (failed prompts plus connector errors). Errors not linked to a person are summarised on the right, not here.
-      row: 48
+      row: 57
       col: 0
       width: 44
-      height: 11
+      height: 14
     - name: unattributed_errors
       title: ''
       type: single_value
@@ -468,13 +451,10 @@
         Reason: gemini_health.reason
       show_single_value_title: false
       show_comparison: false
-      note_state: collapsed
-      note_display: hover
-      note_text: Errors whose log has no person and whose session doesn't appear in user activity. Most are connector calls from the root agent with no trace, at all hours, so they are likely background or retried calls rather than someone being blocked. Investigate filters the page to them.
-      row: 48
+      row: 57
       col: 44
       width: 28
-      height: 5
+      height: 7
     - name: affected_agents
       title: Failures by agent
       type: looker_grid
@@ -525,10 +505,10 @@
       note_state: collapsed
       note_display: hover
       note_text: Not recorded means the prompt failed before an agent was chosen, usually a configuration or access failure.
-      row: 53
+      row: 64
       col: 44
       width: 28
-      height: 6
+      height: 7
     - name: recent_failures
       title: Recent failures
       type: looker_grid
@@ -539,7 +519,7 @@
       filters:
         gemini_health.is_failure: 'Yes'
       sorts: [gemini_health.last_error_time desc]
-      limit: 50
+      limit: 25
       listen:
         Date: gemini_health.event_time
         App: gemini_health.app_name
@@ -571,10 +551,10 @@
       note_state: collapsed
       note_display: hover
       note_text: Identical failures for the same person, source and reason are grouped, newest first. Hover Details for what it means and the next step; click Occurrences to see each event.
-      row: 59
+      row: 71
       col: 0
       width: 72
-      height: 11
+      height: 12
   filters:
     - name: Date
       title: Date
