@@ -129,7 +129,7 @@
       type: text
       title_text: ''
       subtitle_text: ''
-      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;padding:0 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">02</span><span style="font-size:15px;font-weight:600;color:#202124;">What needs fixing?</span><span style="font-size:13px;color:#5F6368;margin-left:8px;">the three largest issues; hover the next step for what it means</span></div>
+      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;letter-spacing:normal;word-spacing:normal;padding:0 4px;"><span style="font-size:12px;font-weight:700;color:#1A73E8;margin-right:8px;">02</span><span style="font-size:15px;font-weight:600;color:#202124;">What needs fixing?</span><span style="font-size:13px;color:#5F6368;margin-left:8px;">the three largest issues and what to do</span></div>
       row: 17
       col: 0
       width: 72
@@ -195,7 +195,7 @@
         }
       note_state: collapsed
       note_display: hover
-      note_text: Click a reason to filter the page. Hover Details in Recent failures for what each reason means and the next step.
+      note_text: Click a reason to filter the page. Recent failures shows what to do for each reason.
       row: 32
       col: 0
       width: 36
@@ -514,8 +514,7 @@
       type: looker_grid
       model: gemini_enterprise
       explore: gemini_health
-      fields: [gemini_health.last_error_time, gemini_health.user_email, gemini_health.source, gemini_health.reason, gemini_health.occurrences, gemini_health.details, gemini_health.next_step]
-      hidden_fields: [gemini_health.next_step]
+      fields: [gemini_health.last_error_time, gemini_health.user_email, gemini_health.source, gemini_health.reason, gemini_health.occurrences, gemini_health.next_step]
       filters:
         gemini_health.is_failure: 'Yes'
       sorts: [gemini_health.last_error_time desc]
@@ -534,7 +533,7 @@
         gemini_health.source: Source
         gemini_health.reason: Reason
         gemini_health.occurrences: Occurrences
-        gemini_health.details: Details
+        gemini_health.next_step: What to do
       series_cell_visualizations:
         gemini_health.occurrences:
           is_active: false
@@ -550,7 +549,7 @@
       minimum_column_width: 80
       note_state: collapsed
       note_display: hover
-      note_text: Identical failures for the same person, source and reason are grouped, newest first. Hover Details for what it means and the next step; click Occurrences to see each event.
+      note_text: Identical failures for the same person, source and reason are grouped, newest first. Click Occurrences to see each event with what it means.
       row: 71
       col: 0
       width: 72
