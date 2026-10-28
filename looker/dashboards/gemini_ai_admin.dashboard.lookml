@@ -27,7 +27,7 @@
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Gemini Enterprise</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Product telemetry from the Gemini Enterprise analytics export, plus agents, models and tools.</div>
           </div>
-          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Admin</a></div>
+          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Admin</a><a href="/dashboards/gemini_enterprise::gemini_ai_health" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Health</a></div>
         </div>
       row: 0
       col: 0
@@ -286,7 +286,7 @@
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Workspace Gemini</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Raw Workspace audit events for the selected dates, not limited to eligible people. Hands-on, automated and proactive are counted separately.</div>
           </div>
-          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Admin</a></div>
+          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Admin</a><a href="/dashboards/gemini_enterprise::gemini_ai_health" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Health</a></div>
         </div>
       row: 0
       col: 0
@@ -1331,7 +1331,7 @@
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Antigravity</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Antigravity coding-agent usage, once telemetry is configured and people use it.</div>
           </div>
-          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Admin</a></div>
+          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Admin</a><a href="/dashboards/gemini_enterprise::gemini_ai_health" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Health</a></div>
         </div>
       row: 0
       col: 0
@@ -1526,7 +1526,7 @@
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Governance</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Safety screening and admin changes. Zero flags means the configured sources recorded none.</div>
           </div>
-          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Admin</a></div>
+          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Admin</a><a href="/dashboards/gemini_enterprise::gemini_ai_health" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Health</a></div>
         </div>
       row: 0
       col: 0
@@ -1729,7 +1729,7 @@
             <div style="font-size:20px;font-weight:600;color:#202124;line-height:1.35;">Data health</div>
             <div style="font-size:13px;color:#5f6368;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Source freshness, population scope, install settings, definitions and methodology changes.</div>
           </div>
-          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Admin</a></div>
+          <div style="flex:none;display:flex;gap:4px;font-size:12px;font-weight:600;"><a href="/dashboards/gemini_enterprise::gemini_ai_executive" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Executive</a><a href="/dashboards/gemini_enterprise::gemini_ai_change" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Change management</a><a href="/dashboards/gemini_enterprise::gemini_ai_admin" style="padding:6px 12px;border-radius:16px;text-decoration:none;background:#E8F0FE;color:#174EA6;">Admin</a><a href="/dashboards/gemini_enterprise::gemini_ai_health" style="padding:6px 12px;border-radius:16px;text-decoration:none;color:#5f6368;">Health</a></div>
         </div>
       row: 0
       col: 0
@@ -2222,411 +2222,21 @@
       note_display: hover
       note_text: Gemini Enterprise tokens in the selected dates by model. Input is what was sent to the model, output is the reply, and reasoning is thinking tokens. Unattributed means the call couldn't be matched to a model.
       show_y_axis_labels: false
-    - name: reliability_header
+    - name: reliability_moved
       type: text
       title_text: ''
       subtitle_text: ''
-      body_text: <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;padding:2px 4px;"><span style="font-size:15px;font-weight:600;color:#202124;">Reliability</span><span style="font-size:13px;color:#5f6368;margin-left:8px;">prompts that failed, and why</span></div>
+      body_text: |-
+        <div style="font-family:'Google Sans',Roboto,Arial,sans-serif;padding:14px 18px;border:1px solid #E8EAED;border-radius:12px;background:#F8F9FA;line-height:1.35;">
+          <div style="font-size:15px;font-weight:600;color:#202124;">Reliability moved to Service Health</div>
+          <div style="font-size:13px;color:#5f6368;margin-top:4px;">Prompt failures, Model Armor rejections, connector errors and the most affected people now live in the dedicated health dashboard.</div>
+          <a href="/dashboards/gemini_enterprise::gemini_ai_health" style="display:inline-block;margin-top:10px;color:#1a73e8;text-decoration:none;font-size:13px;font-weight:600;">Open Service Health</a>
+        </div>
       row: 56
       col: 0
       width: 72
-      height: 3
-      tab_name: ge_analytics
-    - name: failure_rate_kpi
-      title: Prompt failure rate
-      type: single_value
-      model: gemini_enterprise
-      explore: ge_user_activity
-      fields: [ge_user_activity.prompt_failure_rate]
-      limit: 1
-      listen:
-        Date: ge_user_activity.event_date
-        App: ge_user_activity.app_name
-      show_single_value_title: true
-      show_comparison: false
-      custom_color_enabled: true
-      custom_color: '#EE675C'
-      tab_name: ge_analytics
-      row: 59
-      col: 0
-      width: 24
       height: 5
-    - name: failed_prompts_kpi
-      title: Failed prompts
-      type: single_value
-      model: gemini_enterprise
-      explore: ge_user_activity
-      fields: [ge_user_activity.failed_prompts]
-      limit: 1
-      listen:
-        Date: ge_user_activity.event_date
-        App: ge_user_activity.app_name
-      show_single_value_title: true
-      show_comparison: false
-      custom_color_enabled: true
-      custom_color: '#202124'
       tab_name: ge_analytics
-      row: 59
-      col: 24
-      width: 24
-      height: 5
-    - name: people_failed_kpi
-      title: People with a failed prompt
-      type: single_value
-      model: gemini_enterprise
-      explore: ge_user_activity
-      fields: [ge_user_activity.people_with_failed_prompts]
-      limit: 1
-      listen:
-        Date: ge_user_activity.event_date
-        App: ge_user_activity.app_name
-      show_single_value_title: true
-      show_comparison: false
-      custom_color_enabled: true
-      custom_color: '#202124'
-      tab_name: ge_analytics
-      row: 59
-      col: 48
-      width: 24
-      height: 5
-    - name: failure_reasons
-      title: Why prompts fail | failed prompts by reason
-      type: looker_bar
-      model: gemini_enterprise
-      explore: ge_user_activity
-      fields: [ge_user_activity.failure_reason, ge_user_activity.failed_prompts]
-      sorts: [ge_user_activity.failed_prompts desc]
-      limit: 10
-      listen:
-        Date: ge_user_activity.event_date
-        App: ge_user_activity.app_name
-      row: 64
-      col: 0
-      width: 36
-      height: 11
-      tab_name: ge_analytics
-      series_colors:
-        ge_user_activity.failed_prompts: '#EE675C'
-      legend_position: none
-      show_view_names: false
-      x_axis_gridlines: false
-      y_axis_gridlines: false
-      show_x_axis_label: false
-      show_value_labels: true
-      show_y_axis_labels: false
-      show_y_axis_ticks: false
-      advanced_vis_config: |-
-        {
-          "chart": {
-            "style": {
-              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif"
-            },
-            "borderRadius": 10,
-            "spacing": [
-              8,
-              8,
-              8,
-              8
-            ]
-          },
-          "title": {
-            "style": {
-              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-              "fontSize": "16px",
-              "fontWeight": "600",
-              "color": "#202124"
-            }
-          },
-          "xAxis": {
-            "labels": {
-              "style": {
-                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-                "color": "#5F6368",
-                "fontSize": "11px"
-              }
-            },
-            "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0",
-            "title": {
-              "text": null
-            }
-          },
-          "yAxis": {
-            "gridLineColor": "#E8EAED",
-            "gridLineDashStyle": "ShortDash",
-            "labels": {
-              "style": {
-                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-                "color": "#5F6368",
-                "fontSize": "11px"
-              }
-            },
-            "title": {
-              "style": {
-                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-                "color": "#5F6368",
-                "fontSize": "12px"
-              },
-              "text": null
-            },
-            "gridLineWidth": 0
-          },
-          "legend": {
-            "align": "center",
-            "verticalAlign": "top",
-            "itemStyle": {
-              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-              "fontWeight": "500",
-              "color": "#3C4043"
-            },
-            "symbolRadius": 6,
-            "layout": "horizontal",
-            "itemDistance": 16
-          },
-          "tooltip": {
-            "backgroundColor": "#FFFFFF",
-            "borderColor": "#DADCE0",
-            "borderRadius": 8,
-            "shadow": true,
-            "style": {
-              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-              "color": "#202124"
-            }
-          },
-          "plotOptions": {
-            "series": {
-              "dataLabels": {
-                "style": {
-                  "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-                  "fontWeight": "600",
-                  "textOutline": "none"
-                }
-              }
-            },
-            "column": {
-              "borderRadius": {
-                "radius": 4,
-                "where": "end"
-              },
-              "pointPadding": 0.08,
-              "groupPadding": 0.12
-            },
-            "bar": {
-              "borderRadius": {
-                "radius": 4,
-                "where": "end"
-              },
-              "pointPadding": 0.08,
-              "groupPadding": 0.12
-            },
-            "line": {
-              "lineWidth": 2.5,
-              "marker": {
-                "enabled": false
-              }
-            },
-            "area": {
-              "lineWidth": 2.5,
-              "marker": {
-                "enabled": false
-              }
-            }
-          }
-        }
-      note_state: collapsed
-      note_display: hover
-      note_text: Failed prompts in the selected dates, by the error code the service returned. Not enabled for this project usually means a model or feature the plan or billing setup doesn't allow, such as Claude without billing overages or a model unavailable on a trial. Timed out and Internal error are service-side and usually clear on retry.
-      filters:
-        ge_user_activity.failed_prompts: '>0'
-    - name: prompt_outcomes
-      title: Prompt outcomes per day | answered, failed and blocked
-      type: looker_column
-      model: gemini_enterprise
-      explore: ge_user_activity
-      fields: [ge_user_activity.event_date, ge_user_activity.outcome, ge_user_activity.prompts]
-      sorts: [ge_user_activity.outcome, ge_user_activity.event_date]
-      limit: 90
-      listen:
-        Date: ge_user_activity.event_date
-        App: ge_user_activity.app_name
-      row: 64
-      col: 36
-      width: 36
-      height: 11
-      tab_name: ge_analytics
-      series_colors:
-        Answered: '#1A73E8'
-        Failed: '#EE675C'
-        Blocked: '#5F6368'
-        No answer recorded: '#DADCE0'
-      legend_position: center
-      show_view_names: false
-      x_axis_gridlines: false
-      y_axis_gridlines: false
-      show_x_axis_label: false
-      show_value_labels: false
-      advanced_vis_config: |-
-        {
-          "chart": {
-            "style": {
-              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif"
-            },
-            "borderRadius": 10,
-            "spacing": [
-              8,
-              8,
-              8,
-              8
-            ]
-          },
-          "title": {
-            "style": {
-              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-              "fontSize": "16px",
-              "fontWeight": "600",
-              "color": "#202124"
-            }
-          },
-          "xAxis": {
-            "labels": {
-              "style": {
-                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-                "color": "#5F6368",
-                "fontSize": "11px"
-              }
-            },
-            "lineColor": "#DADCE0",
-            "tickColor": "#DADCE0",
-            "title": {
-              "text": null
-            }
-          },
-          "yAxis": {
-            "gridLineColor": "#E8EAED",
-            "gridLineDashStyle": "ShortDash",
-            "labels": {
-              "style": {
-                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-                "color": "#5F6368",
-                "fontSize": "11px"
-              }
-            },
-            "title": {
-              "style": {
-                "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-                "color": "#5F6368",
-                "fontSize": "12px"
-              },
-              "text": null
-            },
-            "gridLineWidth": 0
-          },
-          "legend": {
-            "align": "center",
-            "verticalAlign": "top",
-            "itemStyle": {
-              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-              "fontWeight": "500",
-              "color": "#3C4043"
-            },
-            "symbolRadius": 6,
-            "layout": "horizontal",
-            "itemDistance": 16
-          },
-          "tooltip": {
-            "backgroundColor": "#FFFFFF",
-            "borderColor": "#DADCE0",
-            "borderRadius": 8,
-            "shadow": true,
-            "style": {
-              "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-              "color": "#202124"
-            }
-          },
-          "plotOptions": {
-            "series": {
-              "dataLabels": {
-                "style": {
-                  "fontFamily": "'Plus Jakarta Sans', 'Google Sans', Roboto, Arial, sans-serif",
-                  "fontWeight": "600",
-                  "textOutline": "none"
-                }
-              }
-            },
-            "column": {
-              "borderRadius": {
-                "radius": 4,
-                "where": "end"
-              },
-              "pointPadding": 0.08,
-              "groupPadding": 0.12
-            },
-            "bar": {
-              "borderRadius": {
-                "radius": 4,
-                "where": "end"
-              },
-              "pointPadding": 0.08,
-              "groupPadding": 0.12
-            },
-            "line": {
-              "lineWidth": 2.5,
-              "marker": {
-                "enabled": false
-              }
-            },
-            "area": {
-              "lineWidth": 2.5,
-              "marker": {
-                "enabled": false
-              }
-            }
-          }
-        }
-      note_state: collapsed
-      note_display: hover
-      note_text: Gemini Enterprise prompts per day by what happened. Failed means the request returned an error, so the person got no answer. Blocked means the answer was skipped for a policy or safety reason.
-      show_y_axis_labels: false
-      pivots: [ge_user_activity.outcome]
-      filters:
-        ge_user_activity.prompts: '>0'
-      stacking: normal
-    - name: failure_detail
-      title: Failures by reason and agent | selected dates
-      type: looker_grid
-      model: gemini_enterprise
-      explore: ge_user_activity
-      fields: [ge_user_activity.failure_reason, ge_user_activity.agent_name, ge_user_activity.failed_prompts, ge_user_activity.people_with_failed_prompts]
-      filters:
-        ge_user_activity.failed_prompts: '>0'
-      sorts: [ge_user_activity.failed_prompts desc]
-      limit: 50
-      listen:
-        Date: ge_user_activity.event_date
-        App: ge_user_activity.app_name
-      tab_name: ge_analytics
-      series_labels:
-        ge_user_activity.failure_reason: Reason
-        ge_user_activity.agent_name: Agent
-        ge_user_activity.failed_prompts: Failed prompts
-        ge_user_activity.people_with_failed_prompts: People
-      show_view_names: false
-      show_row_numbers: false
-      table_theme: white
-      header_background_color: '#F8F9FA'
-      header_text_alignment: left
-      header_font_size: '12'
-      rows_font_size: '12'
-      truncate_text: true
-      size_to_fit: true
-      minimum_column_width: 80
-      note_state: collapsed
-      note_display: hover
-      note_text: Where failures cluster. Drill into Failed prompts for the individual requests, people and times.
-      row: 75
-      col: 0
-      width: 72
-      height: 9
   filters:
     - name: Date
       title: Date

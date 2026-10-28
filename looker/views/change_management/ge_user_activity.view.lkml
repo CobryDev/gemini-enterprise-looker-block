@@ -340,6 +340,13 @@ view: ge_user_activity {
     END ;;
   }
 
+  dimension: error_detail {
+    label: "Error Detail"
+    description: "Non-sensitive failure detail bucketed from the returned status message. The raw message is not stored."
+    type: string
+    sql: ${TABLE}.failure_cause ;;
+  }
+
   dimension: search_result_count {
     hidden: yes
     type: number

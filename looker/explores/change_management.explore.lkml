@@ -134,6 +134,27 @@ explore: ge_safety_events {
   }
 }
 
+explore: gemini_health {
+  hidden: yes
+  label: "Gemini Service Health"
+  description: "Prompt errors, Model Armor rejections and connector failures for the Service Health dashboard."
+  persist_with: gemini_change_management_datagroup
+  sql_always_where: ${gemini_health.event_raw} >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL {% parameter gemini_health.health_window %} DAY) ;;
+
+  join: ai_user_profile {
+    view_label: "Person"
+    fields: [ai_user_profile.person*]
+    sql_on: ${ai_user_profile.user_email} = ${gemini_health.user_email} ;;
+    relationship: many_to_one
+  }
+
+  join: user_org_unit {
+    view_label: "Person"
+    sql_on: ${user_org_unit.user_email} = ${gemini_health.user_email} ;;
+    relationship: many_to_one
+  }
+}
+
 explore: setup_health_tables {
   hidden: yes
   label: "Setup Health"

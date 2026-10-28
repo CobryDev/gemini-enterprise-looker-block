@@ -71,6 +71,32 @@ constant: reporting_time_zone {
   export: override_optional
 }
 
+# Service Health dashboard thresholds. Rates are decimals: 0.05 means 5%.
+constant: health_min_prompts {
+  value: "20"
+  export: override_optional
+}
+
+constant: health_down_failure_rate {
+  value: "0.25"
+  export: override_optional
+}
+
+constant: health_degraded_failure_rate {
+  value: "0.05"
+  export: override_optional
+}
+
+constant: health_degraded_connector_rate {
+  value: "0.10"
+  export: override_optional
+}
+
+constant: health_degraded_armor_rate {
+  value: "0.10"
+  export: override_optional
+}
+
 # AI-active days in the trailing 28 days that make someone a Power or Normal
 # user. One or more days below the Normal threshold is Casual; zero is Non-AI.
 constant: power_user_min_days {

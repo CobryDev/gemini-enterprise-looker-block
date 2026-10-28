@@ -42,8 +42,8 @@ You also need the `develop`, `manage_models`, and `deploy` Looker permissions to
    - Gemini analytics dataset: prefilled with `gemini_analytics`; leave it unless you renamed it.
    - Workspace audit dataset: prefilled with `workspace_audit`; set it to your Workspace export dataset name.
    - Workspace audit export: `none` (default), `separate_region` or `same_region`. `same_region` adds Gemini for Workspace adoption, the Workspace population and org units to the AI adoption tabs.
-   - Optional, all with defaults: reporting time zone, Power and Normal user thresholds, seat costs, loaded hourly rate, currency symbol, minutes saved per AI action, and org-unit depth for departments.
-4. Click **Install**, then open the **Data Health** tab of **Gemini | Admin AI Telemetry** to see which sources the block can read. Looker creates a read-only `marketplace_gemini_enterprise_looker_block` project with one model, its explores and three role-based dashboards.
+   - Optional, all with defaults: reporting time zone, Power and Normal user thresholds, Service Health thresholds, seat costs, loaded hourly rate, currency symbol, minutes saved per AI action, and org-unit depth for departments.
+4. Click **Install**, then open the **Data Health** tab of **Gemini | Admin AI Telemetry** to see which sources the block can read. Looker creates a read-only `marketplace_gemini_enterprise_looker_block` project with one model, its explores and four role-based dashboards.
 
 To change any value later, use **Manage** on the block's Marketplace listing.
 
@@ -118,13 +118,14 @@ To change it, edit the `CASE` in `apps/exporter/src/gemini_exporter/sql/logs/ge_
 
 ## Dashboards
 
-The block installs three role-based dashboards instead of one large dashboard:
+The block installs four role-based dashboards instead of one large dashboard:
 
 - Gemini | Executive AI Adoption (`gemini_ai_executive.dashboard.lookml`): a concise decision view with canonical activation, regular adoption, engagement, retention, licence spend to review, a data-trust indicator and the top recommended actions.
 - Gemini | AI Change Management (`gemini_ai_change.dashboard.lookml`): an operational view for opportunity queues, cohort movement, use-case adoption, authorised people/coaching lists and intervention measurement.
 - Gemini | Admin AI Telemetry (`gemini_ai_admin.dashboard.lookml`): product telemetry, Workspace Gemini events, agents, models, Antigravity, governance, setup health and definitions.
+- Gemini | Service Health (`gemini_ai_health.dashboard.lookml`): operational reliability for Gemini Enterprise, including prompt failures, connector errors, Model Armor rejections, the current Healthy/Degraded/Down status and the people most affected.
 
-The old `gemini_ai_adoption` dashboard has been removed. Existing bookmarks to it should be replaced with one of the three role-based dashboards.
+The old `gemini_ai_adoption` dashboard has been removed. Existing bookmarks to it should be replaced with one of the four role-based dashboards.
 
 Headline definitions are now canonical across the dashboards:
 
@@ -135,7 +136,9 @@ Headline definitions are now canonical across the dashboards:
 
 Product-specific telemetry keeps its own label and denominator. For example, **Daily Active / Seats Claimed** is the Gemini Enterprise Google export metric, while **Active Share of Workspace Gemini Events** is an event share, not a people activation rate.
 
-Dashboard filters are **Date** (default 90 days), **Product**, **Department** and **Gemini Enterprise App** where supported. Rolling 28-day people metrics ignore Date by design and show their effective window in the tile or definition.
+Dashboard filters are **Date** (default 90 days), **Product**, **Department** and **Gemini Enterprise App** where supported. Rolling 28-day people metrics ignore Date by design and show their effective window in the tile or definition. Service Health uses a **Window** filter (last day, week or month) instead of Date so the status card and affected-user list use one consistent period.
+
+Service Health status thresholds are configurable constants in `manifest.lkml`. Defaults are: Down at 25% prompt failures over at least 20 prompts, or when at least five prompts were sent and all failed; Degraded at 5% prompt failures, three or more failed prompts in a low-volume window, connector errors equal to 10% of prompts, or Model Armor rejections equal to 10% of screened interactions over at least 20 screened interactions. Model Armor can make the status Degraded but not Down.
 
 The layout uses the 72-column `granular` grid. Outcome tiles come first, explanation charts second, and investigation tables last. Sparse sources use data-state cards so users can distinguish **Not configured**, **No records**, **Insufficient history** and **Zero activity**.
 

@@ -50,6 +50,26 @@
       "label": "Normal user threshold (days)",
       "description": "AI-active days in the trailing 28 days that make someone a Normal user. Default 4, about once a week. Fewer is Casual; zero is Non-AI."
     },
+    "health_min_prompts": {
+      "label": "Service Health minimum prompts",
+      "description": "Minimum prompts before failure-rate thresholds can make Gemini Service Health Down. The same minimum applies before Model Armor rejection rate can make the status Degraded. Default 20."
+    },
+    "health_down_failure_rate": {
+      "label": "Service Health Down failure rate",
+      "description": "Prompt failure-rate threshold for Down status. Use a decimal: 0.25 means 25%. Default 0.25."
+    },
+    "health_degraded_failure_rate": {
+      "label": "Service Health Degraded failure rate",
+      "description": "Prompt failure-rate threshold for Degraded status. Use a decimal: 0.05 means 5%. Default 0.05."
+    },
+    "health_degraded_connector_rate": {
+      "label": "Service Health connector error rate",
+      "description": "Connector errors divided by prompts threshold for Degraded status. Use a decimal: 0.10 means 10%. Default 0.10."
+    },
+    "health_degraded_armor_rate": {
+      "label": "Service Health Model Armor rejection rate",
+      "description": "Model Armor rejection-rate threshold for Degraded status. Model Armor cannot make the status Down. Use a decimal: 0.10 means 10%. Default 0.10."
+    },
     "ge_seat_cost_monthly": {
       "label": "Gemini Enterprise monthly seat cost",
       "description": "Per licence, in your currency. Leave 0 to hide spend figures."
