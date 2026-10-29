@@ -34,6 +34,20 @@ resource "google_bigquery_dataset" "staging" {
   depends_on = [google_project_service.engine_required]
 }
 
+data "google_project" "engine" {
+  project_id = var.project_id
+}
+
+# The export's BigQuery load runs as the Discovery Engine service agent, which
+# only has table rights in its project while it keeps the default
+# discoveryengine.serviceAgent role.
+resource "google_bigquery_dataset_iam_member" "discoveryengine_agent_staging_editor" {
+  project    = local.staging_project_id
+  dataset_id = google_bigquery_dataset.staging.dataset_id
+  role       = "roles/bigquery.dataEditor"
+  member     = "serviceAccount:service-${data.google_project.engine.number}@gcp-sa-discoveryengine.iam.gserviceaccount.com"
+}
+
 resource "google_bigquery_dataset_iam_member" "exporter_staging_editor" {
   count = var.grant_exporter_access ? 1 : 0
 
