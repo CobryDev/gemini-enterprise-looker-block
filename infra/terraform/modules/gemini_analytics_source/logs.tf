@@ -101,8 +101,10 @@ resource "google_logging_project_sink" "gemini" {
   unique_writer_identity = true
 }
 
+# Sinks writing to a bucket in their own project have no writer identity and
+# need no grant.
 resource "google_project_iam_member" "sink_bucket_writer" {
-  for_each = local.log_sinks
+  for_each = { for key, sink in local.log_sinks : key => sink if sink.project != local.raw_logs_project_id }
 
   project = local.raw_logs_project_id
   role    = "roles/logging.bucketWriter"
