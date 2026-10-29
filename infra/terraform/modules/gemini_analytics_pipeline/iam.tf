@@ -8,13 +8,6 @@ resource "google_project_iam_member" "exporter_bigquery_job_user" {
   member  = "serviceAccount:${google_service_account.exporter.email}"
 }
 
-resource "google_bigquery_dataset_iam_member" "exporter_staging_editor" {
-  project    = local.staging_project_id
-  dataset_id = google_bigquery_dataset.staging.dataset_id
-  role       = "roles/bigquery.dataEditor"
-  member     = "serviceAccount:${google_service_account.exporter.email}"
-}
-
 # The exporter runs the export_history merge itself after each export, so it
 # needs write access to the analytics dataset.
 resource "google_bigquery_dataset_iam_member" "exporter_analytics_editor" {
@@ -22,18 +15,6 @@ resource "google_bigquery_dataset_iam_member" "exporter_analytics_editor" {
   dataset_id = google_bigquery_dataset.analytics.dataset_id
   role       = "roles/bigquery.dataEditor"
   member     = "serviceAccount:${google_service_account.exporter.email}"
-}
-
-resource "google_project_iam_member" "exporter_discovery_engine_viewer" {
-  project = local.engine_project_id
-  role    = "roles/discoveryengine.viewer"
-  member  = "serviceAccount:${google_service_account.exporter.email}"
-}
-
-resource "google_project_iam_member" "exporter_engine_project_service_usage_consumer" {
-  project = local.engine_project_id
-  role    = "roles/serviceusage.serviceUsageConsumer"
-  member  = "serviceAccount:${google_service_account.exporter.email}"
 }
 
 # The scheduler only needs to execute one specific job, with env overrides, so

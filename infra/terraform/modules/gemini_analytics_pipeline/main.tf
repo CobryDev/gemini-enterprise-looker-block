@@ -6,14 +6,6 @@ resource "google_project_service" "required" {
   disable_on_destroy = false
 }
 
-resource "google_project_service" "engine_required" {
-  for_each = local.engine_project_services
-
-  project            = local.engine_project_id
-  service            = each.value
-  disable_on_destroy = false
-}
-
 resource "google_service_account" "exporter" {
   project      = var.project_id
   account_id   = "gemini-exporter"
@@ -30,9 +22,9 @@ resource "google_service_account" "scheduler" {
   depends_on = [google_project_service.required]
 }
 
-resource "google_bigquery_dataset" "staging" {
-  project                    = local.staging_project_id
-  dataset_id                 = var.staging_dataset_id
+resource "google_bigquery_dataset" "analytics" {
+  project                    = var.project_id
+  dataset_id                 = var.analytics_dataset_id
   location                   = var.dataset_location
   delete_contents_on_destroy = false
   labels                     = var.labels
@@ -43,19 +35,6 @@ resource "google_bigquery_dataset" "staging" {
       error_message = "dataset_location does not match the engines' export location: eu engines export to BigQuery EU, global/us engines export to BigQuery US. Align dataset_location with the engine location (or deploy one stack per region)."
     }
   }
-
-  depends_on = [
-    google_project_service.required,
-    google_project_service.engine_required,
-  ]
-}
-
-resource "google_bigquery_dataset" "analytics" {
-  project                    = var.project_id
-  dataset_id                 = var.analytics_dataset_id
-  location                   = var.dataset_location
-  delete_contents_on_destroy = false
-  labels                     = var.labels
 
   depends_on = [google_project_service.required]
 }
@@ -221,7 +200,7 @@ resource "google_cloud_run_v2_job" "exporter" {
 
         env {
           name  = "STAGING_DATASET"
-          value = google_bigquery_dataset.staging.dataset_id
+          value = local.staging_dataset_id
         }
 
         env {

@@ -5,6 +5,10 @@ region           = "europe-west2"
 dataset_location = "EU"
 exporter_image   = "europe-docker.pkg.dev/your-gcp-project-id/gemini-analytics/gemini-exporter:latest"
 
+# When the engine project applies modules/gemini_analytics_source itself:
+# manage_source_project_resources = false
+# raw_logs_project_id             = "your-gemini-enterprise-project-id"
+
 # One entry per Gemini Enterprise app. display_name is the friendly label exposed
 # as app_name in BigQuery and Looker (defaults to engine_id if omitted). Stagger
 # schedules across engines to stay under org-level API limits.

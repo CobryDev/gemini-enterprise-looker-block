@@ -1,6 +1,6 @@
 output "staging_dataset_id" {
   description = "BigQuery staging dataset ID."
-  value       = google_bigquery_dataset.staging.dataset_id
+  value       = local.staging_dataset_id
 }
 
 output "staging_project_id" {
@@ -30,7 +30,7 @@ output "raw_logs_view" {
 
 output "log_sink_writer_identities" {
   description = "Writer identity of each log sink, keyed by source project and sink kind."
-  value       = { for key, sink in google_logging_project_sink.gemini : key => sink.writer_identity }
+  value       = var.manage_source_project_resources ? module.source[0].log_sink_writer_identities : {}
 }
 
 output "exporter_service_account_email" {

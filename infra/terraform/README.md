@@ -17,6 +17,7 @@ Terraform creates the scheduled ETL path for Gemini Enterprise metrics:
 - Optional: a Cloud Monitoring email alert on exporter failures (`alert_email`).
 - Optional: read access for the Looker connection service account (`looker_service_account_email`).
 - Optional: the log pipeline for user-level Change Management analytics (`enable_log_pipeline`). See below.
+- Optional: leave the engine-project resources to that project's own Terraform (`manage_source_project_resources = false`). See [Manage the engine project separately](#manage-the-engine-project-separately).
 - Optional: a daily cross-region copy of the Workspace audit export into `dataset_location` (`workspace_audit_dataset_id`). See [Workspace Gemini export](#workspace-gemini-export).
 
 Cloud Scheduler is part of the required production setup. It invokes the Cloud Run job every day so both the staging export and the `export_history` table stay fresh. There is no separate scheduled query: the merge runs inside the exporter, so it can never fire before the export it depends on.
@@ -158,6 +159,30 @@ A few design points:
 - `enable_model_armor_audit_logs` uses `google_project_iam_audit_config`, which is authoritative for `modelarmor.googleapis.com` only. If you already manage that service's audit config elsewhere, leave the flag off and turn on DATA_READ there.
 - The curated tables have `deletion_protection = true`. User-level history can't be rebuilt once raw entries expire.
 - The transform SQL lives in `apps/exporter/src/gemini_exporter/sql/logs/`, one MERGE per curated table. The table schemas live in `modules/gemini_analytics_pipeline/logs.tf`, and a pytest check keeps the two in step.
+
+## Manage the engine project separately
+
+By default one apply creates everything, including the resources that must live in the Gemini Enterprise engine project: the staging dataset (the export API writes there), the raw log bucket, linked dataset and sinks, the Model Armor audit config, the licence reader role, and the exporter's grants in that project.
+
+When a different team or Terraform state owns the engine project, split the deployment:
+
+1. **Analytics side (this stack).** Set `manage_source_project_resources = false`, `engine_project_id` and `staging_project_id` to the engine project, and `raw_logs_project_id` to the project that will hold the raw log bucket (usually the engine project). This stack then only references the staging dataset and raw logs view by name. Apply it first: it creates the `gemini-exporter` service account the source side grants access to.
+2. **Source side.** In the engine project's Terraform, call `modules/gemini_analytics_source`:
+
+   ```hcl
+   module "gemini_analytics_source" {
+     source = "git::https://github.com/CobryDev/gemini-enterprise-looker-block.git//infra/terraform/modules/gemini_analytics_source?ref=main"
+
+     project_id                     = "your-gemini-enterprise-project-id"
+     dataset_location               = "US"
+     enable_log_pipeline            = true
+     exporter_service_account_email = "gemini-exporter@your-analytics-project-id.iam.gserviceaccount.com"
+   }
+   ```
+
+   Keep `staging_dataset_id` and `raw_logs_dataset_id` the same on both sides. If the source side applies before the analytics side exists, set `grant_exporter_access = false` and flip it once the service account has been created; IAM rejects grants to accounts that don't exist yet.
+
+Existing single-stack deployments need no changes: `moved` blocks carry the resources into the nested module without replacing them.
 
 ## Workspace Gemini export
 
