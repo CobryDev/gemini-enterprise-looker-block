@@ -1,6 +1,8 @@
 locals {
-  engine_project_id  = coalesce(var.engine_project_id, var.project_id)
-  staging_project_id = coalesce(var.staging_project_id, local.engine_project_id)
+  engine_project_id   = coalesce(var.engine_project_id, var.project_id)
+  staging_project_id  = coalesce(var.staging_project_id, local.engine_project_id)
+  raw_logs_project_id = coalesce(var.raw_logs_project_id, var.project_id)
+  staging_dataset_id  = var.manage_source_project_resources ? module.source[0].staging_dataset_id : var.staging_dataset_id
 
   pipeline_project_services = toset([
     "bigquery.googleapis.com",
@@ -8,12 +10,6 @@ locals {
     "iam.googleapis.com",
     "monitoring.googleapis.com",
     "run.googleapis.com",
-  ])
-
-  engine_project_services = toset([
-    "bigquery.googleapis.com",
-    "discoveryengine.googleapis.com",
-    "serviceusage.googleapis.com",
   ])
 
   engines_by_id = {

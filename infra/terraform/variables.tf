@@ -33,6 +33,18 @@ variable "staging_dataset_id" {
   default     = "gemini_analytics_staging"
 }
 
+variable "manage_source_project_resources" {
+  description = "Create the staging dataset, raw log bucket, sinks and the exporter's engine-project grants from this stack. Set false when the engine project applies modules/gemini_analytics_source itself."
+  type        = bool
+  default     = true
+}
+
+variable "raw_logs_project_id" {
+  description = "Project that holds the raw log bucket and its linked dataset. Defaults to project_id. Set to the engine project when the source side is managed separately."
+  type        = string
+  default     = null
+}
+
 variable "analytics_dataset_id" {
   description = "BigQuery dataset for longitudinal analytics tables consumed by Looker."
   type        = string

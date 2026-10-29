@@ -7,12 +7,15 @@ module "gemini_analytics_pipeline" {
   region                       = var.region
   dataset_location             = var.dataset_location
   staging_dataset_id           = var.staging_dataset_id
+  raw_logs_project_id          = var.raw_logs_project_id
   analytics_dataset_id         = var.analytics_dataset_id
   exporter_image               = var.exporter_image
   engines                      = var.engines
   alert_email                  = var.alert_email
   looker_service_account_email = var.looker_service_account_email
   labels                       = var.labels
+
+  manage_source_project_resources = var.manage_source_project_resources
 
   enable_log_pipeline                      = var.enable_log_pipeline
   log_source_project_ids                   = var.log_source_project_ids
